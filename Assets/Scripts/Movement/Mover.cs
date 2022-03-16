@@ -4,11 +4,17 @@ using UnityEngine.AI;
 
 namespace RedDust.Movement
 {
+	/// <summary>
+	/// Handles messaging with the NavMeshAgent and updates all movement-related animator parameters.
+	/// </summary>
 	[RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent), typeof(Animator))]
 	public class Mover : MonoBehaviour
-	{
+	{		
+		[SerializeField, Range(2, Config.Navigation.MaxSpeed)]
+		float moveSpeed = 5f;
+
 		[SerializeField]
-		private float turningSpeed = 2f, moveSpeed = 5f;
+		private float turningSpeed = 2f;
 
 		private Rigidbody _rb;
 		private NavMeshAgent _navMeshAgent;
@@ -16,7 +22,6 @@ namespace RedDust.Movement
 		private bool _isSneaking;
 		private float _forwardSpeed;
 
-		public float TurningSpeed => turningSpeed;
 		public float MoveSpeed => moveSpeed;
 		public bool IsSneaking => _isSneaking;
 		public bool IsMoving => _forwardSpeed > Config.Navigation.MovingThreshold;
@@ -28,6 +33,7 @@ namespace RedDust.Movement
 			_rb = GetComponent<Rigidbody>();
 			_navMeshAgent = GetComponent<NavMeshAgent>();
 			_navMeshAgent.SetDestination(transform.position);
+			_navMeshAgent.speed = moveSpeed;
 			_animator = GetComponent<Animator>();
 		}
 
@@ -48,8 +54,11 @@ namespace RedDust.Movement
 
 		private void UpdateAnimator()
 		{
-			_forwardSpeed = transform.InverseTransformVector(_rb.velocity).z;
-			_animator.SetFloat(Config.Animation.LocomotionVelocity, _forwardSpeed);
+			Vector3 local = transform.InverseTransformDirection(_navMeshAgent.velocity);
+			_forwardSpeed = local.z / Config.Navigation.MaxSpeed;
+			float turningSpeed = Mathf.Lerp(local.normalized.x, 0, 10f * Time.deltaTime);
+			_animator.SetFloat(Config.Animation.Velocity, _forwardSpeed);
+			_animator.SetFloat(Config.Animation.Turning, turningSpeed);
 		}
 
 		private void SetSpeed(float speed)
@@ -96,7 +105,7 @@ namespace RedDust.Movement
 
 			if (!Mathf.Approximately(dot, 1))
 			{
-				float speed = Time.deltaTime * TurningSpeed;
+				float speed = Time.deltaTime * turningSpeed;
 				float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up) * speed;
 				transform.Rotate(Vector3.up, angle);
 			}
@@ -131,7 +140,7 @@ namespace RedDust.Movement
 				_isSneaking = false;
 			}
 
-			_animator.SetBool(Config.Animation.IsCrouched, _isSneaking);
+			_animator.SetBool(Config.Animation.Crouched, _isSneaking);
 		}
 
 		public void Warp(Vector3 position, Quaternion rotation)
