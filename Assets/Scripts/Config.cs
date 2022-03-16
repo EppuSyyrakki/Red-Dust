@@ -16,7 +16,7 @@ namespace RedDust
 
 		public class Animation
 		{
-			public const string Speed = "forwardSpeed";
+			public const string LocomotionVelocity = "locomotionVel";
 			public const string IsCrouched = "isCrouched";
 		}
 	}

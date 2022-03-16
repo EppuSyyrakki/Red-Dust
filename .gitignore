@@ -10,7 +10,7 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 /[Uu]serSettings/
-/[Aa]ssets/[Aa]ssetPacks
+/[Aa]ssets/_*/
 
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta

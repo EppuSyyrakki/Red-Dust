@@ -39,7 +39,7 @@ namespace RedDust.Movement
 
 		private void Update()
 		{
-			// UpdateAnimator();
+			UpdateAnimator();
 		}
 
 		#endregion Unity messages
@@ -49,7 +49,7 @@ namespace RedDust.Movement
 		private void UpdateAnimator()
 		{
 			_forwardSpeed = transform.InverseTransformVector(_rb.velocity).z;
-			_animator.SetFloat(Config.Animation.Speed, _forwardSpeed);
+			_animator.SetFloat(Config.Animation.LocomotionVelocity, _forwardSpeed);
 		}
 
 		private void SetSpeed(float speed)

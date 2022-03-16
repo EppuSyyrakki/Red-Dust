@@ -11,7 +11,7 @@ namespace RedDust.Control
 	{
 		[SerializeField]
 		private bool logActions = false;
-		
+
 		private Queue<ActionBase> _actionQueue = new Queue<ActionBase>();
 		private ActionBase _currentAction;
 		private ActionState _actionState;
@@ -24,7 +24,7 @@ namespace RedDust.Control
 		public virtual void Awake()
 		{
 			Mover = GetComponent<Mover>();
-			AddAction(new IdleAction(this));			
+			AddAction(new IdleAction(this));
 		}
 
 		#endregion
