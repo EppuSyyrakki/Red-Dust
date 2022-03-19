@@ -1,13 +1,13 @@
-﻿using RedDust.Control.Actions;
+﻿using RedDust.Combat;
+using RedDust.Control.Actions;
 using RedDust.Movement;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace RedDust.Control
 {
 	[RequireComponent(typeof(Mover))]
-	public abstract class CharacterControl : MonoBehaviour
+	public abstract class Character : MonoBehaviour
 	{
 		[SerializeField]
 		private bool logActions = false;
@@ -18,12 +18,15 @@ namespace RedDust.Control
 
 		public bool LoggingEnabled => logActions;
 		public Mover Mover { get; private set; }
+		public Fighter Fighter { get; private set; }
+		public Squad Squad { get; private set; }
 
 		#region Unity messages
 
 		public virtual void Awake()
 		{
 			Mover = GetComponent<Mover>();
+			Fighter = GetComponent<Fighter>();
 			AddAction(new IdleAction(this));
 		}
 
@@ -31,7 +34,12 @@ namespace RedDust.Control
 
 		protected void ExecuteAction()
 		{
-			if (_currentAction == null) { _currentAction = GetNextAction(); }
+			if (_currentAction == null) 
+			{ 
+				_currentAction = GetNextAction();
+				_currentAction.OnStart();
+				return;	// TODO: Is this return necessary? Written as a safety measure.
+			}
 
 			_actionState = _currentAction.Execute();
 
@@ -59,7 +67,6 @@ namespace RedDust.Control
 			}
 		}
 
-
 		#region Public API
 
 		public void AddAction(ActionBase action)
@@ -77,6 +84,11 @@ namespace RedDust.Control
 			_currentAction.OnCancel();
 			_currentAction = null;
 			_actionQueue.Clear();
+		}
+
+		public void SetSquad(Squad s)
+		{
+			Squad = s;
 		}
 
 		#endregion

@@ -14,20 +14,29 @@ namespace RedDust.Control.Actions
 
 	public abstract class ActionBase
 	{
-		protected CharacterControl Character { get; private set; }
+		protected Character Character { get; private set; }
+		public string Name => GetType().Name;
 
-		protected ActionBase(CharacterControl character)
+		protected ActionBase(Character character)
 		{
 			Character = character;
 		}
 
 		public abstract ActionState Execute();
 
+		public virtual void OnStart()
+		{
+			if (Character.LoggingEnabled)
+			{
+				Debug.Log(Character.gameObject.name + " started " + Name);
+			}
+		}
+
 		public virtual void OnSuccess()
 		{
 			if (Character.LoggingEnabled)
 			{
-				Debug.Log(Character.gameObject.name + " succeeded in " + this);
+				Debug.Log(Character.gameObject.name + " succeeded in " + Name);
 			}
 		}
 
@@ -35,7 +44,7 @@ namespace RedDust.Control.Actions
 		{
 			if (Character.LoggingEnabled)
 			{
-				Debug.Log(Character.gameObject.name + " failed in " + this);
+				Debug.Log(Character.gameObject.name + " failed in " + Name);
 			}
 		}
 

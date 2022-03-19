@@ -1,32 +1,34 @@
-using RedDust.Movement;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.AI;
 
 namespace RedDust.Control.Actions
 {
+	/// <summary>
+	/// Sets the Character's NavMesh path. Validity of the path should be done elsewhere to prevent a character
+	/// from stopping if an impossible move action is given.
+	/// </summary>
 	public class MoveToAction : ActionBase
 	{
-		private Mover _mover;
 		private NavMeshPath _path;
-		private bool _pathSet;
 
-		public MoveToAction(CharacterControl character, NavMeshPath path) : base(character)
+		/// <summary>
+		/// Create a new Move action.
+		/// </summary>
+		/// <param name="c">The character executing this order.</param>
+		/// <param name="path">The path that will be passed to the NavMeshAgent of the character.</param>
+		public MoveToAction(Character c, NavMeshPath path) : base(c)
 		{
-			_mover = Character.Mover;
 			_path = path;
+		}
+
+		public override void OnStart()
+		{
+			base.OnStart();
+			Character.Mover.SetPath(_path);
 		}
 
 		public override ActionState Execute()
 		{
-			if (!_pathSet)
-			{
-				_mover.SetPath(_path);
-				_pathSet = true;
-			}
-
-			if (_mover.IsAtDestination())
+			if (Character.Mover.IsAtDestination())
 			{
 				return ActionState.Success;
 			}

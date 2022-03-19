@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 namespace RedDust.Movement
@@ -16,7 +15,6 @@ namespace RedDust.Movement
 		[SerializeField]
 		private float turningSpeed = 2f;
 
-		private Rigidbody _rb;
 		private NavMeshAgent _navMeshAgent;
 		private Animator _animator;
 		private bool _isSneaking;
@@ -30,7 +28,6 @@ namespace RedDust.Movement
 
 		private void Awake()
 		{
-			_rb = GetComponent<Rigidbody>();
 			_navMeshAgent = GetComponent<NavMeshAgent>();
 			_navMeshAgent.SetDestination(transform.position);
 			_navMeshAgent.speed = moveSpeed;
@@ -70,20 +67,30 @@ namespace RedDust.Movement
 
 		#region Public API
 
-		public bool HasPathTo(Vector3 point, ref Vector3 target, ref NavMeshPath path)
+		public bool HasPathTo(Vector3 target, out NavMeshPath path)
 		{
-			float dist = Config.Navigation.MaxNavMeshProjection;
-			NavMeshHit navMeshHit;
 			int areas = NavMesh.AllAreas;
+			path = new NavMeshPath();
 
-			if (!NavMesh.SamplePosition(point, out navMeshHit, dist, areas)) { return false; }
+			if (!NavMesh.SamplePosition(target, out NavMeshHit navMeshHit, Config.Navigation.MaxNavMeshProjection, areas)) 
+			{ 
+				// No such point on the NavMesh within the MaxNavMeshProjection range
+				return false; 
+			}
 
 			target = navMeshHit.position;
-			Vector3 source = transform.position;
 
-			if (!NavMesh.CalculatePath(source, target, areas, path)) { return false; }
+			if (!NavMesh.CalculatePath(transform.position, target, areas, path)) 
+			{ 
+				// No path found to target
+				return false; 
+			}
 
-			if (path.status != NavMeshPathStatus.PathComplete) { return false; }
+			if (path.status != NavMeshPathStatus.PathComplete) 
+			{ 
+				// The path doesn't go all the way to target (?)
+				return false; 
+			}
 
 			return true;
 		}
