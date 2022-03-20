@@ -1,81 +1,122 @@
-﻿using System;
+﻿using RedDust.Messages;
+using Messaging;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace RedDust.Control
 {
+	public enum SquadStatus { Neutral, Friendly, Hostile, Player }
+
 	public class Squad : MonoBehaviour
 	{
 		[SerializeField]
-		private List<Character> members = new List<Character>();
+		private Squad[] initialHostileSquads = null;
 
 		[SerializeField]
-		private List<Squad> hostileSquads = new List<Squad>();
+		private Squad[] initialFriendlySquads = null;
 
-		[SerializeField]
-		private List<Squad> friendlySquads = new List<Squad>();
+		private List<Character> _members = new List<Character>();
+		private List<Squad> _hostiles = new List<Squad>();
+		private List<Squad> _friendlies = new List<Squad>();
+
+		private bool _isPlayerSquad = false;		
+
+		public List<Character> Members => _members;
+
+		#region Unity messages
 
 		private void Awake()
 		{
-			// CharacterControls as childPort to this will get added as members
-			List<Character> characters = new List<Character>();
-			characters.AddRange(GetComponentsInChildren<Character>());	
+			_isPlayerSquad = gameObject.CompareTag(Game.Tag.PlayerSquad);
 
-			foreach (var c in characters)
+			// Any Characters as child to this will get added as members
+			_members.AddRange(GetComponentsInChildren<Character>());
+
+			foreach (var c in _members)
 			{
-				members.Add(c);
 				c.SetSquad(this);
 			}
 		}
 
+		private void Start()
+		{
+			foreach (var s in initialFriendlySquads) { AddFriendlySquad(s); }
+			foreach (var s in initialHostileSquads) { AddHostileSquad(s); }
+		}
+
+		#endregion		
+
+		private void TrySendMsg(Squad s, SquadStatus status)
+		{
+			if (!_isPlayerSquad) { return; }
+			
+			var msg = new PlayerSquadMsg(s, status);
+			Game.Instance.Bus.Send(msg);		
+		}
+
 		public bool HasMember(Character c)
 		{
-			return members.Contains(c);
+			return _members.Contains(c);
 		}
 
 		public bool AddMember(Character c)
 		{
-			if (members.Contains(c)) { return false; }
+			if (_members.Contains(c)) { return false; }
 			
-			members.Add(c);
+			_members.Add(c);
 			return true;
 		}
 
 		public bool RemoveMember(Character c)
 		{
-			return members.Remove(c);
+			return _members.Remove(c);
 		}
 
-		public bool RemoveHostileGroup(Squad s)
+		public bool AddHostileSquad(Squad s)
 		{
-			return hostileSquads.Remove(s);
-		}
-
-		public bool AddFriendlyGroup(Squad s)
-		{
-			if (!friendlySquads.Contains(s))
+			if (!_hostiles.Contains(s))
 			{
-				friendlySquads.Add(s);
-
-				if (hostileSquads.Contains(s))
-				{
-					hostileSquads.Remove(s);
-				}
-
+				_friendlies.Remove(s);
+				_hostiles.Add(s);
+				TrySendMsg(s, SquadStatus.Hostile);
 				return true;
 			}
 
 			return false;
 		}
 
-		public bool RemoveFriendlyGroup(Squad s)
+		public bool RemoveHostileSquad(Squad s)
 		{
-			return friendlySquads.Remove(s);
+			if (!_hostiles.Remove(s)) { return false; }
+
+			TrySendMsg(s, SquadStatus.Neutral);
+			return true;
+		}
+
+		public bool AddFriendlySquad(Squad s)
+		{
+			if (!_friendlies.Contains(s))
+			{
+				_hostiles.Remove(s);
+				_friendlies.Add(s);
+				TrySendMsg(s, SquadStatus.Friendly);
+				return true;
+			}
+
+			return false;
+		}
+
+		public bool RemoveFriendlySquad(Squad s)
+		{
+			if (!_friendlies.Remove(s)) { return false; }
+
+			TrySendMsg(s, SquadStatus.Neutral);
+			return _friendlies.Remove(s);
 		}
 
 		public bool IsHostileTo(Character c)
 		{
-			foreach (var hostileSquad in hostileSquads)
+			foreach (var hostileSquad in _hostiles)
 			{
 				if (hostileSquad.HasMember(c)) { return true; }
 			}
@@ -85,31 +126,14 @@ namespace RedDust.Control
 
 		public bool IsFriendlyTo(Character c)
 		{
-			foreach (var friendlySquad in friendlySquads)
+			foreach (var friendlySquad in _friendlies)
 			{
 				if (friendlySquad.HasMember(c)) { return true; }
 			}
 
 			return false;
 		}
-
-		public bool AddHostileGroup(Squad s)
-		{
-			if (!hostileSquads.Contains(s))
-			{
-				hostileSquads.Add(s);
-
-				if (friendlySquads.Contains(s))
-				{
-					friendlySquads.Remove(s);
-				}
-
-				return true;
-			}
-
-			return false;
-		}		
-
+	
 		///// <summary>
 		///// Alert other group members to an enemy, adds enemy group to hostile groups if not already hostile.
 		///// </summary>

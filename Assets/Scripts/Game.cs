@@ -43,6 +43,7 @@ namespace RedDust
 			public const float WalkMulti = 0.6f;
 			public const float CrouchMulti = 0.5f;
 			public const float MaxSpeed = 10f;
+			public const float StopDistance = 0.75f;
 		}
 
 		public static class Animation
@@ -83,8 +84,9 @@ namespace RedDust
 		public class Colors
 		{
 			public static readonly Color SelectionBox = new Color(0.35f, 1f, 0.2f, 1f);
-			public static readonly Color Friendly = new Color(0.35f, 1f, 0.2f, 1f);
-			public static readonly Color Neutral = new Color(0.95f, 0.9f, 0.2f, 1f);
+			public static readonly Color Player = new Color(0.35f, 1f, 0.2f, 1f);
+			public static readonly Color Friendly = new Color(0.2f, 0.5f, 0.9f, 1f);
+			public static readonly Color Neutral = new Color(1f, 1f, 1f, 1f);
 			public static readonly Color Hostile = new Color(1f, 0.2f, 0.2f, 1f);
 			public static readonly Color WhiteTransparent = new Color(1f, 1f, 1f, 0);
 			public static readonly Color WhiteOpaque = new Color(1f, 1f, 1f, 1f);

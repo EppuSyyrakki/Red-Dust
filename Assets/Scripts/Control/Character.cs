@@ -16,6 +16,8 @@ namespace RedDust.Control
 		private ActionBase _currentAction;
 		private ActionState _actionState;
 
+		protected HostilityIndicator Indicator { get; private set; }
+
 		public bool LoggingEnabled => logActions;
 		public Mover Mover { get; private set; }
 		public Fighter Fighter { get; private set; }
@@ -27,6 +29,7 @@ namespace RedDust.Control
 		{
 			Mover = GetComponent<Mover>();
 			Fighter = GetComponent<Fighter>();
+			Indicator = GetComponentInChildren<HostilityIndicator>();
 			AddAction(new IdleAction(this));
 		}
 
@@ -92,6 +95,26 @@ namespace RedDust.Control
 		public void SetSquad(Squad s)
 		{
 			Squad = s;
+		}
+
+		public void SetIndicatorColor(SquadStatus status)
+		{
+			Color color = Game.Colors.Neutral;
+
+			if (status == SquadStatus.Friendly)
+			{
+				color = Game.Colors.Friendly;
+			}
+			else if (status == SquadStatus.Hostile)
+			{
+				color = Game.Colors.Hostile;
+			}
+			else if (status == SquadStatus.Player)
+			{
+				color = Game.Colors.Player;
+			}
+
+			Indicator.SetColor(color);
 		}
 
 		#endregion

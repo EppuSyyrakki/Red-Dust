@@ -18,9 +18,23 @@ namespace RedDust.Control
 			base.Awake();
 		}
 
+		private void Start()
+		{
+			SetIndicatorColor(SquadStatus.Player);
+		}
+
 		private void Update()
 		{
 			base.ExecuteAction();
+		}
+
+		#endregion
+
+		#region Public API
+
+		public void SetIndicatorSelected(bool selected)
+		{
+			Indicator.SetSelected(selected);
 		}
 
 		#endregion

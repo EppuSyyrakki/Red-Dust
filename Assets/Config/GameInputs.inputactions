@@ -84,7 +84,7 @@
                 {
                     "name": "",
                     "id": "e259ae8f-ae81-4106-9cad-efd48f51d958",
-                    "path": "<Keyboard>/ctrl",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -95,7 +95,7 @@
                 {
                     "name": "",
                     "id": "843981c9-0d2f-425f-8626-d44fc8981479",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",

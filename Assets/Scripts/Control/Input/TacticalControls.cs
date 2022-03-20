@@ -20,9 +20,11 @@ namespace RedDust.Control.Input
 		[SerializeField]
 		private LayerMask interactionLayers;
 
+		/// <summary>
+		/// Don't modify this directly, use the provided 
+		/// </summary>
 		[SerializeField]
 		private List<Player> _selected = new List<Player>();
-		private List<Player> _allCharacters = new List<Player>();
 
 		private PlayerInput _playerInput;
 		private GameInputs _gameInputs;
@@ -83,9 +85,13 @@ namespace RedDust.Control.Input
 			// 2. some activated ability check? Like first aid
 			// 3. Interactable check
 
-			if (TryGetInteractable(ray)) 
-			{ 
-				return; 
+			if (TryGetInteractable(ray, out IPlayerInteractable newInteractable)) 
+			{
+				if (_currentInteractable == null || newInteractable != _currentInteractable)
+				{
+					_currentInteractable = newInteractable;
+					InteractableChanged?.Invoke(_currentInteractable.GetIcon());
+				}
 			}
 			else
 			{
@@ -98,15 +104,17 @@ namespace RedDust.Control.Input
 
 		#region Private methods
 
-		private bool TryGetInteractable(Ray cursorRay)
+		private bool TryGetInteractable(Ray cursorRay, out IPlayerInteractable newInteractable)
 		{
+			newInteractable = null;
+
 			if (Physics.Raycast(cursorRay, out RaycastHit hit, Game.Input.CursorCastRange, interactionLayers)
-				&& hit.collider.TryGetComponent(out IPlayerInteractable newInteractable))
+				&& hit.collider.TryGetComponent(out newInteractable))
 			{
-				if (_currentInteractable == null || newInteractable != _currentInteractable)
+				if (newInteractable is Player p && _selected.Contains(p)) 
 				{
-					_currentInteractable = newInteractable;
-					InteractableChanged?.Invoke(_currentInteractable.GetIcon());				
+					// Don't allow player to interact with itself
+					return false; 
 				}
 
 				return true;
@@ -154,6 +162,8 @@ namespace RedDust.Control.Input
 			return havePaths;
 		}
 
+		#region Selection modification
+
 		/// <summary>
 		/// Depending on the state of _addModifier and if _selected contains p, adds p to selection,  
 		/// removes it, or clears the _selected and adds p.
@@ -165,22 +175,44 @@ namespace RedDust.Control.Input
 			{
 				if (_selected.Contains(p))
 				{
-					_selected.Remove(p);
+					RemoveFromSelection(p);
 					return;
 				}
 
-				_selected.Add(p);
+				AddToSelection(p);
 				return;
 			}
 
-			_selected.Clear();
+			ClearSelection();
+			AddToSelection(p);
+		}
+
+		private void AddToSelection(Player p)
+		{
 			_selected.Add(p);
+			p.SetIndicatorSelected(true);
+		}
+
+		private void RemoveFromSelection(Player p)
+		{
+			_selected.Remove(p); 
+			p.SetIndicatorSelected(false);
+		}
+
+		private void ClearSelection()
+		{
+			foreach (var p in _selected) { p.SetIndicatorSelected(false); }
+			_selected.Clear();
 		}
 
 		private void SetSelection(List<Player> newSelection)
 		{
+			ClearSelection();
 			_selected = newSelection;
+			foreach (var p in _selected) { p.SetIndicatorSelected(true); }
 		}
+
+		#endregion
 
 		//private IEnumerator DrawLookDirection()
 		//{

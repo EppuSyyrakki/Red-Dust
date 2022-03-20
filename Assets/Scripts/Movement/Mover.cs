@@ -82,7 +82,8 @@ namespace RedDust.Movement
 
 		public void Stop()
 		{
-			_navMeshAgent.SetDestination(transform.position);
+			Vector3 stopPosition = transform.position + transform.forward * Game.Navigation.StopDistance;
+			_navMeshAgent.SetDestination(stopPosition);
 		}
 
 		public void SetDestination(Vector3 destination)
