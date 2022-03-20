@@ -57,8 +57,9 @@ namespace RedDust.UI.Cursor
 			_iconRenderer.color = _transparent;
 		}
 
-		private void OnShowActionIcon(Type actionType)
+		private void OnShowActionIcon(Sprite icon)
 		{
+			_iconRenderer.sprite = icon;
 			_iconRenderer.color = _opaque;
 		}
 	}

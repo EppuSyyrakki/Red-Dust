@@ -31,14 +31,13 @@ namespace RedDust.Control.Input
 		private Vector2 _cursorPosition;
 		private bool _addModifier = false;
 		private bool _chainModifier = false;
-		private RaycastHit[] _cursorCast = new RaycastHit[32];
 		private DragMode _dragMode = DragMode.None;
 		private Type _raycastActionType = null;
 		private IPlayerInteractable _currentInteractable = null;
 
 		public Vector2 CursorPosition => _cursorPosition;
 		public event Action SelectionBox;
-		public event Action<Type> ShowActionIcon;
+		public event Action<Sprite> ShowActionIcon;
 		public event Action HideActionIcon;
 
 		#region Unity messages
@@ -84,19 +83,21 @@ namespace RedDust.Control.Input
 				Config.Input.MouseCastRange, interactionLayers)
 				&& hit.collider.TryGetComponent(out _currentInteractable))
 			{
-				Type newActionType = _currentInteractable.GetActionType();
+				Type newActionType = _currentInteractable.ActionType;
 
 				if (_raycastActionType == null || _raycastActionType != newActionType)
 				{
 					_raycastActionType = newActionType;
-					ShowActionIcon?.Invoke(_raycastActionType);
+					ShowActionIcon?.Invoke(_currentInteractable.ActionIcon);
 					return;
 				}
 			}
-
-			// No interactable from cursor ray found
-			HideActionIcon?.Invoke();
-			_raycastActionType = null;
+			else
+			{
+				// No interactable from cursor ray found
+				HideActionIcon?.Invoke();
+				_raycastActionType = null;
+			}
 		}
 
 		#endregion

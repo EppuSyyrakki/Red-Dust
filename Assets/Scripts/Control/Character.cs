@@ -71,7 +71,10 @@ namespace RedDust.Control
 
 		public void AddAction(ActionBase action)
 		{
-			_actionQueue.Enqueue(action);
+			if (action != null)
+			{
+				_actionQueue.Enqueue(action);
+			}		
 
 			if (_actionState == ActionState.Idle)
 			{

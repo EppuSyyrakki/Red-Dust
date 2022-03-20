@@ -9,7 +9,7 @@ namespace RedDust.Control.Actions
 	[System.Serializable]
 	public class FollowAction : ActionBase
 	{
-		private Transform _targetToFollow;
+		private Transform _target;
 		private NavMeshPath _pathToTarget;	
 		private float _updateTargetTimer;
 		private float _updateInterval;
@@ -22,9 +22,10 @@ namespace RedDust.Control.Actions
 		/// <param name="path">The path to the target. Will be updated at specific intervals.</param>
 		public FollowAction(Character c, Transform target, NavMeshPath path) : base(c)
 		{
-			_targetToFollow = target;
+			_target = target;
 			_pathToTarget = path;
 			_updateInterval = Config.AI.FollowUpdateInterval;
+			_updateTargetTimer = Random.Range(0, _updateInterval);
 		}
 
 		public override void OnStart()
@@ -39,7 +40,7 @@ namespace RedDust.Control.Actions
 
 			if (_updateTargetTimer > _updateInterval)
 			{
-				Vector3 followPosition = -_targetToFollow.forward;
+				Vector3 followPosition = _target.position - _target.forward * Config.AI.FollowDistance;
 
 				if (Character.Mover.HasPathTo(followPosition, out NavMeshPath path))
 				{
