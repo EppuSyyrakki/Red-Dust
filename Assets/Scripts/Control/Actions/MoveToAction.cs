@@ -1,4 +1,4 @@
-using UnityEngine.AI;
+using UnityEngine;
 
 namespace RedDust.Control.Actions
 {
@@ -8,22 +8,22 @@ namespace RedDust.Control.Actions
 	/// </summary>
 	public class MoveToAction : ActionBase
 	{
-		private NavMeshPath _path;
+		private Vector3 _destination;
 
 		/// <summary>
 		/// Create a new Move action.
 		/// </summary>
 		/// <param name="c">The character executing this order.</param>
-		/// <param name="path">The path that will be passed to the NavMeshAgent of the character.</param>
-		public MoveToAction(Character c, NavMeshPath path) : base(c)
+		/// <param name="destination">The destination that will be passed to the NavMeshAgent of the character.</param>
+		public MoveToAction(Character c, Vector3 destination) : base(c)
 		{
-			_path = path;
+			_destination = destination;
 		}
 
 		public override void OnStart()
 		{
 			base.OnStart();
-			Character.Mover.SetPath(_path);
+			Character.Mover.SetDestination(_destination);
 		}
 
 		public override ActionState Execute()
@@ -34,6 +34,12 @@ namespace RedDust.Control.Actions
 			}
 
 			return ActionState.Running;
+		}
+
+		public override void OnCancel()
+		{
+			base.OnCancel();
+			Character.Mover.Stop();
 		}
 	}
 }

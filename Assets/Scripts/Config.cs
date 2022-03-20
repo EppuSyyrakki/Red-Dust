@@ -33,6 +33,7 @@
 		{
 			public const float FollowUpdateInterval = 1f;
 			public const float FollowDistance = 1.75f;
+			public const int RandomPositionTries = 3;
 		}
 
 		public class Layers

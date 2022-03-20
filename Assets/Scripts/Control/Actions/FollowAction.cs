@@ -10,7 +10,6 @@ namespace RedDust.Control.Actions
 	public class FollowAction : ActionBase
 	{
 		private Transform _target;
-		private NavMeshPath _pathToTarget;	
 		private float _updateTargetTimer;
 		private float _updateInterval;
 
@@ -20,10 +19,9 @@ namespace RedDust.Control.Actions
 		/// <param name="c">The character executing this order.</param>
 		/// <param name="target">The transform to follow.</param>
 		/// <param name="path">The path to the target. Will be updated at specific intervals.</param>
-		public FollowAction(Character c, Transform target, NavMeshPath path) : base(c)
+		public FollowAction(Character c, Transform target) : base(c)
 		{
 			_target = target;
-			_pathToTarget = path;
 			_updateInterval = Config.AI.FollowUpdateInterval;
 			_updateTargetTimer = Random.Range(0, _updateInterval);
 		}
@@ -31,7 +29,7 @@ namespace RedDust.Control.Actions
 		public override void OnStart()
 		{
 			base.OnStart();
-			Character.Mover.SetPath(_pathToTarget);
+			Character.Mover.SetDestination(_target.position);
 		}
 
 		public override ActionState Execute()
@@ -40,12 +38,13 @@ namespace RedDust.Control.Actions
 
 			if (_updateTargetTimer > _updateInterval)
 			{
-				Vector3 followPosition = _target.position - _target.forward * Config.AI.FollowDistance;
+				Vector3 follow = _target.position - _target.forward * Config.AI.FollowDistance;
 
-				if (Character.Mover.HasPathTo(followPosition, out NavMeshPath path))
+				if (Character.Mover.IsPointOnNavMesh(follow, out NavMeshHit hit))
 				{
-					Character.Mover.SetPath(path);
+					Character.Mover.SetDestination(hit.position);
 					_updateTargetTimer = 0;
+
 				}
 				else
 				{

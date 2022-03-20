@@ -34,9 +34,9 @@ namespace RedDust.Control
 		{
 			if (p == this) { return null; }
 
-			if (p.Mover.HasPathTo(transform.position, out var path))
+			if (p.Mover.IsPointOnNavMesh(transform.position, out _))
 			{
-				return new FollowAction(p, transform, path);
+				return new FollowAction(p, transform);
 			}
 
 			return null;

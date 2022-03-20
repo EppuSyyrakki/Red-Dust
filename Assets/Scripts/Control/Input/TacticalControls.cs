@@ -121,7 +121,7 @@ namespace RedDust.Control.Input
 			if (!Physics.Raycast(ray, out RaycastHit hit, Config.Input.MouseCastRange, Config.Layers.Character)) 
 			{
 				// If we don't hit anything in the Character layer, it's supposed to be a move order
-				TryMoveSelectedToCursor(ray);
+				MoveSelectedToCursor(ray);
 				return;
 			}
 
@@ -140,6 +140,9 @@ namespace RedDust.Control.Input
 			for (int i = 0; i < _selected.Count; i++)
 			{
 				var player = _selected[i];
+
+				if (!_chainModifier) { player.CancelActions(); }
+
 				player.AddAction(_currentInteractable.GetAction(player));
 			}			
 		}
@@ -196,9 +199,9 @@ namespace RedDust.Control.Input
 
 		#endregion
 
-		private bool TryMoveSelectedToCursor(Ray cursorRay)
+		private bool MoveSelectedToCursor(Ray cursorRay)
 		{
-			var paths = RaycastNavMesh(cursorRay, out NavMeshPath[] path);
+			var paths = RaycastNavMesh(cursorRay, out NavMeshHit navMeshHit);
 
 			for (int i = 0; i < _selected.Count; i++)
 			{
@@ -206,7 +209,7 @@ namespace RedDust.Control.Input
 
 				if (!_chainModifier) { _selected[i].CancelActions(); }
 				
-				_selected[i].AddAction(new MoveToAction(_selected[i], path[i]));
+				_selected[i].AddAction(new MoveToAction(_selected[i], navMeshHit.position));
 			}
 
 			return true;
@@ -217,19 +220,18 @@ namespace RedDust.Control.Input
 		/// </summary>
 		/// <param name="paths">The NavMeshPaths for _selected with matching indices.</param>
 		/// <returns>Array of bools denoting if path was found for _selected with matching indices.</returns>
-		private bool[] RaycastNavMesh(Ray mouseRay, out NavMeshPath[] paths)
+		private bool[] RaycastNavMesh(Ray mouseRay, out NavMeshHit navMeshHit)
 		{
 			bool[] havePaths = new bool[_selected.Count];
 
-			paths = new NavMeshPath[_selected.Count];
 			int layer = Config.Layers.Ground;
+			navMeshHit = new NavMeshHit();
 
-			if (!Physics.Raycast(mouseRay, out RaycastHit hit, 200f, layer)) { return havePaths; }
+			if (!Physics.Raycast(mouseRay, out RaycastHit raycastHit, 200f, layer)) { return havePaths; }
 
 			for (int i = 0; i < _selected.Count; i++)
 			{
-				paths[i] = new NavMeshPath();
-				havePaths[i] = _selected[i].Mover.HasPathTo(hit.point, out paths[i]);
+				havePaths[i] = _selected[i].Mover.IsPointOnNavMesh(raycastHit.point, out navMeshHit);
 			}
 
 			return havePaths;

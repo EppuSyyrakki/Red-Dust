@@ -67,37 +67,27 @@ namespace RedDust.Movement
 
 		#region Public API
 
-		public bool HasPathTo(Vector3 target, out NavMeshPath path)
+		public bool IsPointOnNavMesh(Vector3 point, out NavMeshHit hit)
 		{
 			int areas = NavMesh.AllAreas;
-			path = new NavMeshPath();
 
-			if (!NavMesh.SamplePosition(target, out NavMeshHit navMeshHit, Config.Navigation.MaxNavMeshProjection, areas)) 
-			{ 
+			if (!NavMesh.SamplePosition(point, out hit, Config.Navigation.MaxNavMeshProjection, areas)) 
+			{
 				// No such point on the NavMesh within the MaxNavMeshProjection range
-				return false; 
-			}
-
-			target = navMeshHit.position;
-
-			if (!NavMesh.CalculatePath(transform.position, target, areas, path)) 
-			{ 
-				// No path found to target
-				return false; 
-			}
-
-			if (path.status != NavMeshPathStatus.PathComplete) 
-			{ 
-				// The path doesn't go all the way to target (?)
 				return false; 
 			}
 
 			return true;
 		}
 
-		public void SetPath(NavMeshPath path)
+		public void Stop()
 		{
-			_navMeshAgent.SetPath(path);
+			_navMeshAgent.SetDestination(transform.position);
+		}
+
+		public void SetDestination(Vector3 destination)
+		{
+			_navMeshAgent.SetDestination(destination);
 		}
 
 		public bool IsAtDestination()
@@ -116,12 +106,6 @@ namespace RedDust.Movement
 				float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up) * speed;
 				transform.Rotate(Vector3.up, angle);
 			}
-		}
-
-		public void Stop()
-		{
-			_navMeshAgent.destination = transform.position;
-			_navMeshAgent.isStopped = true;
 		}
 
 		public void Walk()
