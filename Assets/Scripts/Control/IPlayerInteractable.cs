@@ -1,4 +1,5 @@
 ﻿using RedDust.Control.Actions;
+using System;
 using UnityEngine;
 
 namespace RedDust.Control
@@ -16,5 +17,7 @@ namespace RedDust.Control
 		/// <param name="p">The Player interacting with this IInteractable.</param>
 		/// <returns>The associated action. If the caller can't do this action, returns null.</returns>
 		ActionBase GetAction(Player p);
+
+		Type GetActionType(); 
 	}
 }

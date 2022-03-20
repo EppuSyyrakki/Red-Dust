@@ -42,7 +42,7 @@
 
 		public class Tags
 		{
-			public const string TacticalControl = "TacticalControl";
+			public const string PlayerSquad = "PlayerSquad";
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace RedDust.Control.Input
 		private bool logInput;
 
 		[SerializeField]
-		private LayerMask cursorCastLayers;
+		private LayerMask interactionLayers;
 
 		[SerializeField]
 		private List<Player> _selected = new List<Player>();
@@ -33,11 +33,13 @@ namespace RedDust.Control.Input
 		private bool _chainModifier = false;
 		private RaycastHit[] _cursorCast = new RaycastHit[32];
 		private DragMode _dragMode = DragMode.None;
-		private ActionBase _currentAction = null;
+		private Type _raycastActionType = null;
+		private IPlayerInteractable _currentInteractable = null;
 
 		public Vector2 CursorPosition => _cursorPosition;
 		public event Action SelectionBox;
-		public event Action<string> ChangeActionIcon;
+		public event Action<Type> ShowActionIcon;
+		public event Action HideActionIcon;
 
 		#region Unity messages
 
@@ -75,16 +77,26 @@ namespace RedDust.Control.Input
 
 		private void Update()
 		{
-			int hitCount = Physics.RaycastNonAlloc(GetCursorRay(_cursorPosition), 
-				_cursorCast, Config.Input.MouseCastRange, cursorCastLayers);
+			// No selected players means no action can be added
+			if (_selected.Count == 0) { return; }  
 
-			for (int i = 0; i < hitCount; i++)
-			{			
-				if (_cursorCast[i].transform.TryGetComponent(out IPlayerInteractable hit))
+			if (Physics.Raycast(GetCursorRay(_cursorPosition), out RaycastHit hit,
+				Config.Input.MouseCastRange, interactionLayers)
+				&& hit.collider.TryGetComponent(out _currentInteractable))
+			{
+				Type newActionType = _currentInteractable.GetActionType();
+
+				if (_raycastActionType == null || _raycastActionType != newActionType)
 				{
-					// ChangeActionIcon?.Invoke();
+					_raycastActionType = newActionType;
+					ShowActionIcon?.Invoke(_raycastActionType);
+					return;
 				}
 			}
+
+			// No interactable from cursor ray found
+			HideActionIcon?.Invoke();
+			_raycastActionType = null;
 		}
 
 		#endregion
@@ -120,9 +132,15 @@ namespace RedDust.Control.Input
 
 		public void OnInteract(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase != InputActionPhase.Performed) { return; }
-
-			// Raycast IPlayerInteractables and do stuff
+			if (ctx.phase != InputActionPhase.Performed 
+				|| _selected.Count == 0
+				|| _raycastActionType == null) { return; }
+			
+			for (int i = 0; i < _selected.Count; i++)
+			{
+				var player = _selected[i];
+				player.AddAction(_currentInteractable.GetAction(player));
+			}			
 		}
 
 		public void OnAddModifier(InputAction.CallbackContext ctx)
@@ -143,26 +161,26 @@ namespace RedDust.Control.Input
 
 		public void OnDrag(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase == InputActionPhase.Started) { return; }
+			//if (ctx.phase == InputActionPhase.Started) { return; }
 
-			if (ctx.phase == InputActionPhase.Performed)
-			{
-				if (_addModifier)
-				{
-					_dragMode = DragMode.Selection;
-					SelectionBox?.Invoke();
-				}
+			//if (ctx.phase == InputActionPhase.Performed)
+			//{
+			//	if (_addModifier)
+			//	{
+			//		_dragMode = DragMode.Selection;
+			//		SelectionBox?.Invoke();
+			//	}
 
-				StartCoroutine(DrawLookDirection());
-				// start drawing a lookdirection
-			}
-			else	// ctx.phase.Canceled
-			{
+			//	StartCoroutine(DrawLookDirection());
+			//	// start drawing a lookdirection
+			//}
+			//else	// ctx.phase.Canceled
+			//{
 				
-				// finish dragging
-			}
+			//	// finish dragging
+			//}
 
-			if (logInput) { Debug.Log("Dragging: " + ctx.phase); }
+			//if (logInput) { Debug.Log("Dragging: " + ctx.phase); }
 		}
 
 		public void SwitchInputToMenu()
@@ -203,8 +221,9 @@ namespace RedDust.Control.Input
 			bool[] havePaths = new bool[_selected.Count];
 
 			paths = new NavMeshPath[_selected.Count];
+			int layer = Config.Layers.Ground;
 
-			if (!Physics.Raycast(mouseRay, out RaycastHit hit, 200f, cursorCastLayers)) { return havePaths; }
+			if (!Physics.Raycast(mouseRay, out RaycastHit hit, 200f, layer)) { return havePaths; }
 
 			for (int i = 0; i < _selected.Count; i++)
 			{
@@ -243,18 +262,18 @@ namespace RedDust.Control.Input
 			_selected = newSelection;
 		}
 
-		private IEnumerator DrawLookDirection()
-		{
-			while (_dragMode == DragMode.LookDirection)
-			{
-				if (GetWorldPosition(_cursorPosition, out var worldPosition))
-				{
+		//private IEnumerator DrawLookDirection()
+		//{
+		//	while (_dragMode == DragMode.LookDirection)
+		//	{
+		//		if (GetWorldPosition(_cursorPosition, out var worldPosition))
+		//		{
 
-				}
+		//		}
 
-				yield return null;
-			}	
-		}
+		//		yield return null;
+		//	}	
+		//}
 
 		private static bool GetWorldPosition(Vector2 cursorPosition, out Vector3 worldPosition)
 		{

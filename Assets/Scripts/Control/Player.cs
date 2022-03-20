@@ -1,4 +1,5 @@
 using RedDust.Control.Actions;
+using System;
 using UnityEngine;
 
 namespace RedDust.Control
@@ -31,6 +32,11 @@ namespace RedDust.Control
 			}
 
 			return null;
+		}
+
+		public Type GetActionType()
+		{
+			return typeof(FollowAction);
 		}
 
 		#endregion	

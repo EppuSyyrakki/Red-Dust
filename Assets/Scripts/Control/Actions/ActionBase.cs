@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RedDust.Control.Actions
@@ -12,10 +10,13 @@ namespace RedDust.Control.Actions
 		Idle
 	}
 
+	/// <summary>
+	/// The base class for all Actions in the game.
+	/// </summary>
+	[System.Serializable]
 	public abstract class ActionBase
 	{
 		protected Character Character { get; private set; }
-		public string Name => GetType().Name;
 
 		protected ActionBase(Character character)
 		{
@@ -24,35 +25,47 @@ namespace RedDust.Control.Actions
 
 		public abstract ActionState Execute();
 
+		/// <summary>
+		/// Called by Character immediately before Execute() is called for the first time.
+		/// </summary>
 		public virtual void OnStart()
 		{
 			if (Character.LoggingEnabled)
 			{
-				Debug.Log(Character.gameObject.name + " started " + Name);
+				Debug.Log(Character.gameObject.name + " started " + GetType().Name);
 			}
 		}
 
+		/// <summary>
+		/// Called by Character immediately after Execute() returns ActionState.Success.
+		/// </summary>
 		public virtual void OnSuccess()
 		{
 			if (Character.LoggingEnabled)
 			{
-				Debug.Log(Character.gameObject.name + " succeeded in " + Name);
+				Debug.Log(Character.gameObject.name + " succeeded in " + GetType().Name);
 			}
 		}
 
+		/// <summary>
+		/// Called by Character immediately after Execute() returns ActionState.Failure.
+		/// </summary>
 		public virtual void OnFailure()
 		{
 			if (Character.LoggingEnabled)
 			{
-				Debug.Log(Character.gameObject.name + " failed in " + Name);
+				Debug.Log(Character.gameObject.name + " failed in " + GetType().Name);
 			}
 		}
 
+		/// <summary>
+		/// Called by Character when its Action Queue gets cancelled (cleared).
+		/// </summary>
 		public virtual void OnCancel()
 		{
 			if (Character.LoggingEnabled)
 			{
-				Debug.Log(Character.gameObject.name + " cancelled " + this);
+				Debug.Log(Character.gameObject.name + " cancelled " + GetType().Name);
 			}
 		}
 	}

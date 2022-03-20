@@ -6,12 +6,13 @@ namespace RedDust.Control.Actions
 	/// <summary>
 	/// Will only return a failure if there's no path to the follow target. Never returns a success.
 	/// </summary>
+	[System.Serializable]
 	public class FollowAction : ActionBase
 	{
 		private Transform _targetToFollow;
 		private NavMeshPath _pathToTarget;	
 		private float _updateTargetTimer;
-		private float _updateInterval = Config.AI.FollowUpdateInterval;
+		private float _updateInterval;
 
 		/// <summary>
 		/// Create a new Follow action.
@@ -23,6 +24,7 @@ namespace RedDust.Control.Actions
 		{
 			_targetToFollow = target;
 			_pathToTarget = path;
+			_updateInterval = Config.AI.FollowUpdateInterval;
 		}
 
 		public override void OnStart()
