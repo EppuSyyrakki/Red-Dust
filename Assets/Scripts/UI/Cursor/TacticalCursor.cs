@@ -9,27 +9,15 @@ namespace RedDust.UI.Cursor
 {
 	public class TacticalCursor : MonoBehaviour
 	{
-		[System.Serializable]
-		public class ActionIcon
-		{
-			public Texture2D icon;
-			public ActionBase action;
-		}
-
 		[SerializeField]
 		private Vector2 iconOffset;
 
-		[SerializeField]
-		private ActionIcon[] icons = null;
-
 		private TacticalControls _controls = null;
 		private Image _iconRenderer = null;
-		private Color _transparent = new Color(1, 1, 1, 0);
-		private Color _opaque = new Color(1, 1, 1, 1);
 
 		private void Awake()
 		{
-			var controlObj = GameObject.FindGameObjectWithTag(Config.Tags.PlayerSquad);
+			var controlObj = GameObject.FindGameObjectWithTag(Game.Tag.PlayerSquad);
 			_controls = controlObj.GetComponent<TacticalControls>();
 			_iconRenderer = GetComponentInChildren<Image>();
 			_iconRenderer.transform.localPosition = iconOffset;
@@ -37,14 +25,14 @@ namespace RedDust.UI.Cursor
 
 		private void OnEnable()
 		{
-			_controls.HideActionIcon += OnHideActionIcon;
-			_controls.ShowActionIcon += OnShowActionIcon;
+			_controls.InteractableNulled += OnActionNulled;
+			_controls.InteractableChanged += OnActionChanged;
 		}
 
 		private void OnDisable()
 		{
-			_controls.HideActionIcon -= OnHideActionIcon;
-			_controls.ShowActionIcon -= OnShowActionIcon;
+			_controls.InteractableNulled -= OnActionNulled;
+			_controls.InteractableChanged -= OnActionChanged;
 		}
 
 		private void Update()
@@ -52,15 +40,16 @@ namespace RedDust.UI.Cursor
 			transform.position = _controls.CursorPosition;
 		}
 
-		private void OnHideActionIcon()
+		private void OnActionNulled()
 		{
-			_iconRenderer.color = _transparent;
+			_iconRenderer.sprite = null;
+			_iconRenderer.color = Game.Colors.WhiteTransparent;
 		}
 
-		private void OnShowActionIcon(Sprite icon)
+		private void OnActionChanged(Sprite icon)
 		{
 			_iconRenderer.sprite = icon;
-			_iconRenderer.color = _opaque;
+			_iconRenderer.color = Game.Colors.WhiteOpaque;
 		}
 	}
 }

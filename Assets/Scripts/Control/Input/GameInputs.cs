@@ -82,6 +82,15 @@ namespace RedDust.Control.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Stop"",
+                    ""type"": ""Button"",
+                    ""id"": ""c1422cdb-1103-44cd-8087-a57ab7c47e7b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -124,7 +133,7 @@ namespace RedDust.Control.Input
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""MoveOrSelect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -146,8 +155,19 @@ namespace RedDust.Control.Input
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": ""Hold"",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Drag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""11680e32-c229-4931-b553-91e9e71e31b8"",
+                    ""path"": ""<Keyboard>/backspace"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Stop"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -417,6 +437,7 @@ namespace RedDust.Control.Input
             m_Tactical_AddModifier = m_Tactical.FindAction("AddModifier", throwIfNotFound: true);
             m_Tactical_ChainModifier = m_Tactical.FindAction("ChainModifier", throwIfNotFound: true);
             m_Tactical_Drag = m_Tactical.FindAction("Drag", throwIfNotFound: true);
+            m_Tactical_Stop = m_Tactical.FindAction("Stop", throwIfNotFound: true);
             // Menu
             m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
             m_Menu_Navigate = m_Menu.FindAction("Navigate", throwIfNotFound: true);
@@ -491,6 +512,7 @@ namespace RedDust.Control.Input
         private readonly InputAction m_Tactical_AddModifier;
         private readonly InputAction m_Tactical_ChainModifier;
         private readonly InputAction m_Tactical_Drag;
+        private readonly InputAction m_Tactical_Stop;
         public struct TacticalActions
         {
             private @GameInputs m_Wrapper;
@@ -501,6 +523,7 @@ namespace RedDust.Control.Input
             public InputAction @AddModifier => m_Wrapper.m_Tactical_AddModifier;
             public InputAction @ChainModifier => m_Wrapper.m_Tactical_ChainModifier;
             public InputAction @Drag => m_Wrapper.m_Tactical_Drag;
+            public InputAction @Stop => m_Wrapper.m_Tactical_Stop;
             public InputActionMap Get() { return m_Wrapper.m_Tactical; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -528,6 +551,9 @@ namespace RedDust.Control.Input
                     @Drag.started -= m_Wrapper.m_TacticalActionsCallbackInterface.OnDrag;
                     @Drag.performed -= m_Wrapper.m_TacticalActionsCallbackInterface.OnDrag;
                     @Drag.canceled -= m_Wrapper.m_TacticalActionsCallbackInterface.OnDrag;
+                    @Stop.started -= m_Wrapper.m_TacticalActionsCallbackInterface.OnStop;
+                    @Stop.performed -= m_Wrapper.m_TacticalActionsCallbackInterface.OnStop;
+                    @Stop.canceled -= m_Wrapper.m_TacticalActionsCallbackInterface.OnStop;
                 }
                 m_Wrapper.m_TacticalActionsCallbackInterface = instance;
                 if (instance != null)
@@ -550,6 +576,9 @@ namespace RedDust.Control.Input
                     @Drag.started += instance.OnDrag;
                     @Drag.performed += instance.OnDrag;
                     @Drag.canceled += instance.OnDrag;
+                    @Stop.started += instance.OnStop;
+                    @Stop.performed += instance.OnStop;
+                    @Stop.canceled += instance.OnStop;
                 }
             }
         }
@@ -652,6 +681,7 @@ namespace RedDust.Control.Input
             void OnAddModifier(InputAction.CallbackContext context);
             void OnChainModifier(InputAction.CallbackContext context);
             void OnDrag(InputAction.CallbackContext context);
+            void OnStop(InputAction.CallbackContext context);
         }
         public interface IMenuActions
         {

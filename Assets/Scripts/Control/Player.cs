@@ -27,8 +27,10 @@ namespace RedDust.Control
 
 		#region IPlayerInteractable implementation
 
-		public Type ActionType => typeof(FollowAction);
-		public Sprite ActionIcon => interactionIcon;
+		public Sprite GetIcon()
+		{
+			return interactionIcon;
+		}
 
 		public ActionBase GetAction(Player p)
 		{

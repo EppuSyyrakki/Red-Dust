@@ -22,7 +22,7 @@ namespace RedDust.Control.Actions
 		public FollowAction(Character c, Transform target) : base(c)
 		{
 			_target = target;
-			_updateInterval = Config.AI.FollowUpdateInterval;
+			_updateInterval =  Game.AI.FollowUpdateInterval;
 			_updateTargetTimer = Random.Range(0, _updateInterval);
 		}
 
@@ -38,7 +38,7 @@ namespace RedDust.Control.Actions
 
 			if (_updateTargetTimer > _updateInterval)
 			{
-				Vector3 follow = _target.position - _target.forward * Config.AI.FollowDistance;
+				Vector3 follow = _target.position - _target.forward * Game.AI.FollowDistance;
 
 				if (Character.Mover.IsPointOnNavMesh(follow, out NavMeshHit hit))
 				{
@@ -53,6 +53,12 @@ namespace RedDust.Control.Actions
 			}
 			
 			return ActionState.Running;
+		}
+
+		public override void OnCancel()
+		{
+			base.OnCancel();
+			Character.Mover.Stop();
 		}
 	}
 }

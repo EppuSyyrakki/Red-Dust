@@ -9,7 +9,7 @@ namespace RedDust.Movement
 	[RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent), typeof(Animator))]
 	public class Mover : MonoBehaviour
 	{		
-		[SerializeField, Range(2, Config.Navigation.MaxSpeed)]
+		[SerializeField, Range(2, Game.Navigation.MaxSpeed)]
 		float moveSpeed = 5f;
 
 		[SerializeField]
@@ -22,7 +22,7 @@ namespace RedDust.Movement
 
 		public float MoveSpeed => moveSpeed;
 		public bool IsSneaking => _isSneaking;
-		public bool IsMoving => _forwardSpeed > Config.Navigation.MovingThreshold;
+		public bool IsMoving => _forwardSpeed > Game.Navigation.MovingThreshold;
 
 		#region Unity messages
 
@@ -52,10 +52,10 @@ namespace RedDust.Movement
 		private void UpdateAnimator()
 		{
 			Vector3 local = transform.InverseTransformDirection(_navMeshAgent.velocity);
-			_forwardSpeed = local.z / Config.Navigation.MaxSpeed;
+			_forwardSpeed = local.z / Game.Navigation.MaxSpeed;
 			float turningSpeed = Mathf.Lerp(local.normalized.x, 0, 10f * Time.deltaTime);
-			_animator.SetFloat(Config.Animation.Velocity, _forwardSpeed);
-			_animator.SetFloat(Config.Animation.Turning, turningSpeed);
+			_animator.SetFloat(Game.Animation.Velocity, _forwardSpeed);
+			_animator.SetFloat(Game.Animation.Turning, turningSpeed);
 		}
 
 		private void SetSpeed(float speed)
@@ -71,7 +71,7 @@ namespace RedDust.Movement
 		{
 			int areas = NavMesh.AllAreas;
 
-			if (!NavMesh.SamplePosition(point, out hit, Config.Navigation.MaxNavMeshProjection, areas)) 
+			if (!NavMesh.SamplePosition(point, out hit, Game.Navigation.MaxNavMeshProjection, areas)) 
 			{
 				// No such point on the NavMesh within the MaxNavMeshProjection range
 				return false; 
@@ -92,10 +92,10 @@ namespace RedDust.Movement
 
 		public bool IsAtDestination()
 		{
-			return _navMeshAgent.remainingDistance < Config.Navigation.MoveTargetTreshold;
+			return _navMeshAgent.remainingDistance < Game.Navigation.MoveTargetTreshold;
 		}
 
-		public void TurnTowards(Vector3 position)
+		public bool TurnTowards(Vector3 position)
 		{
 			Vector3 direction = position - transform.position;
 			float dot = Vector3.Dot(transform.forward, direction);
@@ -105,12 +105,15 @@ namespace RedDust.Movement
 				float speed = Time.deltaTime * turningSpeed;
 				float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up) * speed;
 				transform.Rotate(Vector3.up, angle);
+				return false;
 			}
+
+			return true;
 		}
 
 		public void Walk()
 		{
-			SetSpeed(MoveSpeed * Config.Navigation.WalkMulti);
+			SetSpeed(MoveSpeed * Game.Navigation.WalkMulti);
 		}
 
 		public void Run()
@@ -122,7 +125,7 @@ namespace RedDust.Movement
 		{
 			if (!_isSneaking)
 			{
-				SetSpeed(MoveSpeed * Config.Navigation.CrouchMulti);
+				SetSpeed(MoveSpeed * Game.Navigation.CrouchMulti);
 				_isSneaking = true;
 			}
 			else
@@ -131,7 +134,7 @@ namespace RedDust.Movement
 				_isSneaking = false;
 			}
 
-			_animator.SetBool(Config.Animation.Crouched, _isSneaking);
+			_animator.SetBool(Game.Animation.Crouched, _isSneaking);
 		}
 
 		public void Warp(Vector3 position, Quaternion rotation)

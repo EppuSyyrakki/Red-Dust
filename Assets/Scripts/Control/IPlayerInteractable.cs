@@ -9,9 +9,7 @@ namespace RedDust.Control
 	/// </summary>
 	public interface IPlayerInteractable
 	{
-		Type ActionType { get; }
-
-		Sprite ActionIcon { get; }
+		Sprite GetIcon();
 
 		/// <summary>
 		/// Gets the action associated with this IInteractable. Should check if the action is possible.

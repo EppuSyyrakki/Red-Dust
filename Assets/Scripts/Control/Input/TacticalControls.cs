@@ -1,6 +1,5 @@
 ﻿using RedDust.Control.Actions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -32,13 +31,12 @@ namespace RedDust.Control.Input
 		private bool _addModifier = false;
 		private bool _chainModifier = false;
 		private DragMode _dragMode = DragMode.None;
-		private Type _raycastActionType = null;
 		private IPlayerInteractable _currentInteractable = null;
 
 		public Vector2 CursorPosition => _cursorPosition;
 		public event Action SelectionBox;
-		public event Action<Sprite> ShowActionIcon;
-		public event Action HideActionIcon;
+		public event Action<Sprite> InteractableChanged;
+		public event Action InteractableNulled;
 
 		#region Unity messages
 
@@ -77,127 +75,46 @@ namespace RedDust.Control.Input
 		private void Update()
 		{
 			// No selected players means no action can be added
-			if (_selected.Count == 0) { return; }  
+			if (_selected.Count == 0) { return; }
 
-			if (Physics.Raycast(GetCursorRay(_cursorPosition), out RaycastHit hit,
-				Config.Input.MouseCastRange, interactionLayers)
-				&& hit.collider.TryGetComponent(out _currentInteractable))
-			{
-				Type newActionType = _currentInteractable.ActionType;
+			Ray ray = GetCursorRay(_cursorPosition);
 
-				if (_raycastActionType == null || _raycastActionType != newActionType)
-				{
-					_raycastActionType = newActionType;
-					ShowActionIcon?.Invoke(_currentInteractable.ActionIcon);
-					return;
-				}
+			// 1. UI check - if true, (for safety, null _currentinteractable?) return
+			// 2. some activated ability check? Like first aid
+			// 3. Interactable check
+
+			if (TryGetInteractable(ray)) 
+			{ 
+				return; 
 			}
 			else
 			{
-				// No interactable from cursor ray found
-				HideActionIcon?.Invoke();
-				_raycastActionType = null;
+				InteractableNulled?.Invoke();
+				_currentInteractable = null;
 			}
 		}
 
 		#endregion
 
-		#region Input events and controls
+		#region Private methods
 
-		public void OnMoveCursor(InputAction.CallbackContext ctx)
+		private bool TryGetInteractable(Ray cursorRay)
 		{
-			if (ctx.performed)
+			if (Physics.Raycast(cursorRay, out RaycastHit hit, Game.Input.CursorCastRange, interactionLayers)
+				&& hit.collider.TryGetComponent(out IPlayerInteractable newInteractable))
 			{
-				_cursorPosition = ctx.ReadValue<Vector2>(); 
+				if (_currentInteractable == null || newInteractable != _currentInteractable)
+				{
+					_currentInteractable = newInteractable;
+					InteractableChanged?.Invoke(_currentInteractable.GetIcon());				
+				}
+
+				return true;
 			}
-		}
-
-		public void OnMoveOrSelect(InputAction.CallbackContext ctx)
-		{
-			if (ctx.phase != InputActionPhase.Canceled || _dragMode != DragMode.None) { return; }
-
-			var ray = GetCursorRay(_cursorPosition);
-		
-			if (!Physics.Raycast(ray, out RaycastHit hit, Config.Input.MouseCastRange, Config.Layers.Character)) 
-			{
-				// If we don't hit anything in the Character layer, it's supposed to be a move order
-				MoveSelectedToCursor(ray);
-				return;
-			}
-
-			if (hit.collider.TryGetComponent(out Player p))
-			{
-				ModifySelection(p);	
-			}
-		}
-
-		public void OnInteract(InputAction.CallbackContext ctx)
-		{
-			if (ctx.phase != InputActionPhase.Performed 
-				|| _selected.Count == 0
-				|| _raycastActionType == null) { return; }
 			
-			for (int i = 0; i < _selected.Count; i++)
-			{
-				var player = _selected[i];
-
-				if (!_chainModifier) { player.CancelActions(); }
-
-				player.AddAction(_currentInteractable.GetAction(player));
-			}			
+			// No interactable from cursor ray found				
+			return false;			
 		}
-
-		public void OnAddModifier(InputAction.CallbackContext ctx)
-		{
-			if (ctx.phase == InputActionPhase.Performed) { _addModifier = true; }
-			else if (ctx.phase == InputActionPhase.Canceled) { _addModifier = false; }
-
-			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log("Add button: " + _addModifier); }			
-		}
-
-		public void OnChainModifier(InputAction.CallbackContext ctx)
-		{
-			if (ctx.phase == InputActionPhase.Performed) { _chainModifier = true; }
-			else if (ctx.phase == InputActionPhase.Canceled) { _chainModifier = false; }
-
-			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log("Chain button: " + _chainModifier); }
-		}
-
-		public void OnDrag(InputAction.CallbackContext ctx)
-		{
-			//if (ctx.phase == InputActionPhase.Started) { return; }
-
-			//if (ctx.phase == InputActionPhase.Performed)
-			//{
-			//	if (_addModifier)
-			//	{
-			//		_dragMode = DragMode.Selection;
-			//		SelectionBox?.Invoke();
-			//	}
-
-			//	StartCoroutine(DrawLookDirection());
-			//	// start drawing a lookdirection
-			//}
-			//else	// ctx.phase.Canceled
-			//{
-				
-			//	// finish dragging
-			//}
-
-			//if (logInput) { Debug.Log("Dragging: " + ctx.phase); }
-		}
-
-		public void SwitchInputToMenu()
-		{
-			_playerInput.currentActionMap = _gameInputs.Menu.Get();
-		}
-
-		public void SwitchInputToTactical()
-		{
-			_playerInput.currentActionMap = _gameInputs.Tactical.Get();
-		}
-
-		#endregion
 
 		private bool MoveSelectedToCursor(Ray cursorRay)
 		{
@@ -208,7 +125,7 @@ namespace RedDust.Control.Input
 				if (!paths[i]) { continue; }    // The _selected[i] doesn't have a path 
 
 				if (!_chainModifier) { _selected[i].CancelActions(); }
-				
+
 				_selected[i].AddAction(new MoveToAction(_selected[i], navMeshHit.position));
 			}
 
@@ -224,7 +141,7 @@ namespace RedDust.Control.Input
 		{
 			bool[] havePaths = new bool[_selected.Count];
 
-			int layer = Config.Layers.Ground;
+			int layer = Game.Layer.Ground;
 			navMeshHit = new NavMeshHit();
 
 			if (!Physics.Raycast(mouseRay, out RaycastHit raycastHit, 200f, layer)) { return havePaths; }
@@ -278,12 +195,124 @@ namespace RedDust.Control.Input
 		//	}	
 		//}
 
+		#endregion
+
+		#region Input events and controls
+
+		public void OnMoveCursor(InputAction.CallbackContext ctx)
+		{
+			if (ctx.performed)
+			{
+				_cursorPosition = ctx.ReadValue<Vector2>(); 
+			}
+		}
+
+		public void OnMoveOrSelect(InputAction.CallbackContext ctx)
+		{
+			if (ctx.phase != InputActionPhase.Canceled || _dragMode != DragMode.None) { return; }
+
+			var ray = GetCursorRay(_cursorPosition);
+		
+			if (!Physics.Raycast(ray, out RaycastHit hit, Game.Input.CursorCastRange, Game.Layer.Character)) 
+			{
+				// If we don't hit anything in the Character layer, it's supposed to be a move order
+				MoveSelectedToCursor(ray);
+				return;
+			}
+
+			if (hit.collider.TryGetComponent(out Player p))
+			{
+				ModifySelection(p);	
+			}
+		}
+
+		public void OnInteract(InputAction.CallbackContext ctx)
+		{
+			if (ctx.phase != InputActionPhase.Performed 
+				|| _selected.Count == 0
+				|| _currentInteractable == null) { return; }
+			
+			for (int i = 0; i < _selected.Count; i++)
+			{
+				var player = _selected[i];
+
+				if (!_chainModifier) { player.CancelActions(); }
+
+				player.AddAction(_currentInteractable.GetAction(player));
+			}			
+		}
+
+		public void OnAddModifier(InputAction.CallbackContext ctx)
+		{
+			if (ctx.phase == InputActionPhase.Performed) { _addModifier = true; }
+			else if (ctx.phase == InputActionPhase.Canceled) { _addModifier = false; }
+
+			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log("Add button: " + _addModifier); }			
+		}
+
+		public void OnChainModifier(InputAction.CallbackContext ctx)
+		{
+			if (ctx.phase == InputActionPhase.Performed) { _chainModifier = true; }
+			else if (ctx.phase == InputActionPhase.Canceled) { _chainModifier = false; }
+
+			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log("Chain button: " + _chainModifier); }
+		}
+
+		public void OnDrag(InputAction.CallbackContext ctx)
+		{
+			//if (ctx.phase == InputActionPhase.Started) { return; }
+
+			//if (ctx.phase == InputActionPhase.Performed)
+			//{
+			//	if (_addModifier)
+			//	{
+			//		_dragMode = DragMode.Selection;
+			//		SelectionBox?.Invoke();
+			//	}
+
+			//	StartCoroutine(DrawLookDirection());
+			//	// start drawing a lookdirection
+			//}
+			//else	// ctx.phase.Canceled
+			//{
+				
+			//	// finish dragging
+			//}
+
+			//if (logInput) { Debug.Log("Dragging: " + ctx.phase); }
+		}
+
+		public void OnStop(InputAction.CallbackContext ctx)
+		{
+			if (ctx.phase == InputActionPhase.Performed)
+			{
+				foreach (var p in _selected)
+				{
+					p.Mover.Stop();
+				}
+			}
+		}
+
+		public void SwitchInputToMenu()
+		{
+			_playerInput.currentActionMap = _gameInputs.Menu.Get();
+		}
+
+		public void SwitchInputToTactical()
+		{
+			_playerInput.currentActionMap = _gameInputs.Tactical.Get();
+		}
+
+		#endregion
+
+		#region Static methods
+
 		private static bool GetWorldPosition(Vector2 cursorPosition, out Vector3 worldPosition)
 		{
 			Ray ray = GetCursorRay(cursorPosition);
 			worldPosition = new Vector3();
 			
-			if (Physics.Raycast(ray, out RaycastHit hit, Config.Input.MouseCastRange, Config.Layers.Ground))
+			if (Physics.Raycast(ray, out RaycastHit hit, Game.Input.CursorCastRange, Game.Layer.Ground))
 			{
 				worldPosition = hit.point;
 				return true;
@@ -296,5 +325,7 @@ namespace RedDust.Control.Input
 		{
 			return Camera.main.ScreenPointToRay(cursorPosition);
 		}
+
+		#endregion
 	}
 }
