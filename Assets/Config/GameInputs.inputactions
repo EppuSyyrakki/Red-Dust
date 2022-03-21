@@ -127,23 +127,23 @@
                 },
                 {
                     "name": "",
-                    "id": "d984523a-6c0b-4fe1-9058-52be6c584b0b",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "Hold",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Drag",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "11680e32-c229-4931-b553-91e9e71e31b8",
                     "path": "<Keyboard>/backspace",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Stop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d984523a-6c0b-4fe1-9058-52be6c584b0b",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Hold(duration=0.175)",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Drag",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

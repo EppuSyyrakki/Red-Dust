@@ -1,5 +1,6 @@
 ﻿using RedDust.Messages;
 using Messaging;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,9 +20,10 @@ namespace RedDust.Control
 		private List<Squad> _hostiles = new List<Squad>();
 		private List<Squad> _friendlies = new List<Squad>();
 
-		private bool _isPlayerSquad = false;		
+		private bool _isPlayerSquad = false;
 
 		public List<Character> Members => _members;
+		public Action<Character, bool> MembersModified;
 
 		#region Unity messages
 
@@ -62,14 +64,21 @@ namespace RedDust.Control
 		public bool AddMember(Character c)
 		{
 			if (_members.Contains(c)) { return false; }
-			
+
+			MembersModified?.Invoke(c, true);
 			_members.Add(c);
 			return true;
 		}
 
 		public bool RemoveMember(Character c)
 		{
-			return _members.Remove(c);
+			if (_members.Remove(c))
+			{
+				MembersModified?.Invoke(c, false);
+				return true;
+			}
+
+			return false;
 		}
 
 		public bool AddHostileSquad(Squad s)

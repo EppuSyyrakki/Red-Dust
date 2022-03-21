@@ -21,9 +21,9 @@ namespace RedDust.Control.Input
 		private LayerMask interactionLayers;
 
 		/// <summary>
-		/// Don't modify this directly, use the provided 
+		/// Don't modify this List directly, use the public methods in the "Selection modification" region.
+		/// They make sure the selection indicators follow along.
 		/// </summary>
-		[SerializeField]
 		private List<Player> _selected = new List<Player>();
 
 		private PlayerInput _playerInput;
@@ -32,11 +32,14 @@ namespace RedDust.Control.Input
 		private Vector2 _cursorPosition;
 		private bool _addModifier = false;
 		private bool _chainModifier = false;
-		private DragMode _dragMode = DragMode.None;
 		private IPlayerInteractable _currentInteractable = null;
+		private Vector2 _dragStartPos;
 
+		public DragMode Drag { get; private set; }
+		public Squad PlayerSquad { get; private set; }
 		public Vector2 CursorPosition => _cursorPosition;
-		public event Action SelectionBox;
+		public event Action SelectionBoxStarted;
+		public event Action SelectionBoxEnded;
 		public event Action<Sprite> InteractableChanged;
 		public event Action InteractableNulled;
 
@@ -44,6 +47,7 @@ namespace RedDust.Control.Input
 
 		private void Awake()
 		{
+			PlayerSquad = GetComponent<Squad>();
 			_playerInput = GetComponent<PlayerInput>();
 			_playerInput.camera = Camera.main;
 			// Construct the auto-generated wrapper
@@ -79,7 +83,7 @@ namespace RedDust.Control.Input
 			// No selected players means no action can be added
 			if (_selected.Count == 0) { return; }
 
-			Ray ray = GetCursorRay(_cursorPosition);
+			Ray ray = GetCameraRay(_cursorPosition);
 
 			// 1. UI check - if true, (for safety, null _currentinteractable?) return
 			// 2. some activated ability check? Like first aid
@@ -87,22 +91,17 @@ namespace RedDust.Control.Input
 
 			if (TryGetInteractable(ray, out IPlayerInteractable newInteractable)) 
 			{
-				if (_currentInteractable == null || newInteractable != _currentInteractable)
-				{
-					_currentInteractable = newInteractable;
-					InteractableChanged?.Invoke(_currentInteractable.GetIcon());
-				}
+				TryChangeInteractable(newInteractable);
 			}
 			else
 			{
-				InteractableNulled?.Invoke();
-				_currentInteractable = null;
+				NullInteractable();
 			}
 		}
 
 		#endregion
 
-		#region Private methods
+		#region General private methods
 
 		private bool TryGetInteractable(Ray cursorRay, out IPlayerInteractable newInteractable)
 		{
@@ -124,43 +123,38 @@ namespace RedDust.Control.Input
 			return false;			
 		}
 
+		private void TryChangeInteractable(IPlayerInteractable newInteractable)
+		{
+			if (_currentInteractable == null || newInteractable != _currentInteractable)
+			{
+				_currentInteractable = newInteractable;
+				InteractableChanged?.Invoke(_currentInteractable.GetIcon());
+			}
+		}
+
+		private void NullInteractable()
+		{
+			InteractableNulled?.Invoke();
+			_currentInteractable = null;
+		}
+
 		private bool MoveSelectedToCursor(Ray cursorRay)
 		{
-			var paths = RaycastNavMesh(cursorRay, out NavMeshHit navMeshHit);
-
 			for (int i = 0; i < _selected.Count; i++)
 			{
-				if (!paths[i]) { continue; }    // The _selected[i] doesn't have a path 
+				if (!RaycastNavMesh(cursorRay, out RaycastHit rHit)) { continue; }
 
-				if (!_chainModifier) { _selected[i].CancelActions(); }
+				if (!SampleNavMesh(rHit.point, out NavMeshHit nHit)) { continue; }		
 
-				_selected[i].AddAction(new MoveToAction(_selected[i], navMeshHit.position));
+				if (!_addModifier) { _selected[i].CancelActions(); }
+
+				_selected[i].AddAction(new MoveToAction(_selected[i], nHit.position));
 			}
 
 			return true;
 		}
 
-		/// <summary>
-		/// Finds paths to all Players in _selected to a point raycast with cursor position.
-		/// </summary>
-		/// <param name="paths">The NavMeshPaths for _selected with matching indices.</param>
-		/// <returns>Array of bools denoting if path was found for _selected with matching indices.</returns>
-		private bool[] RaycastNavMesh(Ray mouseRay, out NavMeshHit navMeshHit)
-		{
-			bool[] havePaths = new bool[_selected.Count];
-
-			int layer = Game.Layer.Ground;
-			navMeshHit = new NavMeshHit();
-
-			if (!Physics.Raycast(mouseRay, out RaycastHit raycastHit, 200f, layer)) { return havePaths; }
-
-			for (int i = 0; i < _selected.Count; i++)
-			{
-				havePaths[i] = _selected[i].Mover.IsPointOnNavMesh(raycastHit.point, out navMeshHit);
-			}
-
-			return havePaths;
-		}
+		#endregion
 
 		#region Selection modification
 
@@ -168,8 +162,7 @@ namespace RedDust.Control.Input
 		/// Depending on the state of _addModifier and if _selected contains p, adds p to selection,  
 		/// removes it, or clears the _selected and adds p.
 		/// </summary>
-		/// <param name="p"></param>
-		private void ModifySelection(Player p)
+		public void ModifySelection(Player p)
 		{
 			if (_addModifier)
 			{
@@ -187,6 +180,19 @@ namespace RedDust.Control.Input
 			AddToSelection(p);
 		}
 
+		public void ClearSelection()
+		{
+			foreach (var p in _selected) { p.SetIndicatorSelected(false); }
+			_selected.Clear();
+		}
+
+		public void SetSelection(List<Player> newSelection)
+		{
+			ClearSelection();
+			_selected = newSelection;
+			foreach (var p in _selected) { p.SetIndicatorSelected(true); }
+		}
+
 		private void AddToSelection(Player p)
 		{
 			_selected.Add(p);
@@ -197,35 +203,7 @@ namespace RedDust.Control.Input
 		{
 			_selected.Remove(p); 
 			p.SetIndicatorSelected(false);
-		}
-
-		private void ClearSelection()
-		{
-			foreach (var p in _selected) { p.SetIndicatorSelected(false); }
-			_selected.Clear();
-		}
-
-		private void SetSelection(List<Player> newSelection)
-		{
-			ClearSelection();
-			_selected = newSelection;
-			foreach (var p in _selected) { p.SetIndicatorSelected(true); }
-		}
-
-		#endregion
-
-		//private IEnumerator DrawLookDirection()
-		//{
-		//	while (_dragMode == DragMode.LookDirection)
-		//	{
-		//		if (GetWorldPosition(_cursorPosition, out var worldPosition))
-		//		{
-
-		//		}
-
-		//		yield return null;
-		//	}	
-		//}
+		}		
 
 		#endregion
 
@@ -241,9 +219,9 @@ namespace RedDust.Control.Input
 
 		public void OnMoveOrSelect(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase != InputActionPhase.Canceled || _dragMode != DragMode.None) { return; }
+			if (ctx.phase != InputActionPhase.Canceled || Drag != DragMode.None) { return; }
 
-			var ray = GetCursorRay(_cursorPosition);
+			var ray = GetCameraRay(_cursorPosition);
 		
 			if (!Physics.Raycast(ray, out RaycastHit hit, Game.Input.CursorCastRange, Game.Layer.Character)) 
 			{
@@ -260,7 +238,7 @@ namespace RedDust.Control.Input
 
 		public void OnInteract(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase != InputActionPhase.Performed 
+			if (ctx.phase != InputActionPhase.Canceled
 				|| _selected.Count == 0
 				|| _currentInteractable == null) { return; }
 			
@@ -268,7 +246,7 @@ namespace RedDust.Control.Input
 			{
 				var player = _selected[i];
 
-				if (!_chainModifier) { player.CancelActions(); }
+				if (!_addModifier) { player.CancelActions(); }
 
 				player.AddAction(_currentInteractable.GetAction(player));
 			}			
@@ -292,26 +270,26 @@ namespace RedDust.Control.Input
 
 		public void OnDrag(InputAction.CallbackContext ctx)
 		{
-			//if (ctx.phase == InputActionPhase.Started) { return; }
+			// TODO: Change drag functionality from	selection box to moving & looking towards dragged position
+			// depending on _addModifier
 
-			//if (ctx.phase == InputActionPhase.Performed)
-			//{
-			//	if (_addModifier)
-			//	{
-			//		_dragMode = DragMode.Selection;
-			//		SelectionBox?.Invoke();
-			//	}
+			if (ctx.phase == InputActionPhase.Started) { return; }
 
-			//	StartCoroutine(DrawLookDirection());
-			//	// start drawing a lookdirection
-			//}
-			//else	// ctx.phase.Canceled
-			//{
-				
-			//	// finish dragging
-			//}
+			if (ctx.phase == InputActionPhase.Performed)
+			{
+				SelectionBoxStarted?.Invoke();
+				Drag = DragMode.Selection;
+			}
+			else if (ctx.phase == InputActionPhase.Canceled	&& Drag != DragMode.None)
+			{
+				SelectionBoxEnded?.Invoke();
+				Invoke(nameof(ResetDrag), 0.1f);
+			}
+		}
 
-			//if (logInput) { Debug.Log("Dragging: " + ctx.phase); }
+		private void ResetDrag()
+		{
+			Drag = DragMode.None;
 		}
 
 		public void OnStop(InputAction.CallbackContext ctx)
@@ -339,12 +317,12 @@ namespace RedDust.Control.Input
 
 		#region Static methods
 
-		private static bool GetWorldPosition(Vector2 cursorPosition, out Vector3 worldPosition)
+		public static bool GetWorldPosition(Vector2 cursorPosition, int layerMask, out Vector3 worldPosition)
 		{
-			Ray ray = GetCursorRay(cursorPosition);
+			Ray ray = GetCameraRay(cursorPosition);
 			worldPosition = new Vector3();
 			
-			if (Physics.Raycast(ray, out RaycastHit hit, Game.Input.CursorCastRange, Game.Layer.Ground))
+			if (Physics.Raycast(ray, out RaycastHit hit, Game.Input.CursorCastRange, layerMask))
 			{
 				worldPosition = hit.point;
 				return true;
@@ -353,9 +331,29 @@ namespace RedDust.Control.Input
 			return false;
 		}
 
-		private static Ray GetCursorRay(Vector2 cursorPosition)
+		private static Ray GetCameraRay(Vector2 cursorPosition)
 		{
 			return Camera.main.ScreenPointToRay(cursorPosition);
+		}
+
+		private static bool RaycastNavMesh(Ray cursorRay, out RaycastHit hit)
+		{
+			float range = Game.Input.CursorCastRange;
+			int layer = Game.Layer.Ground;
+
+			if (Physics.Raycast(cursorRay, out hit, range, layer)) { return true; }
+
+			return false;
+		}
+
+		private static bool SampleNavMesh(Vector3 point, out NavMeshHit hit)
+		{
+			int areas = NavMesh.AllAreas;
+			float range = Game.Navigation.MaxNavMeshProjection;
+
+			if (NavMesh.SamplePosition(point, out hit, range, areas)) { return true; }
+
+			return false;
 		}
 
 		#endregion

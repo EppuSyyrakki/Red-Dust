@@ -67,19 +67,6 @@ namespace RedDust.Movement
 
 		#region Public API
 
-		public bool IsPointOnNavMesh(Vector3 point, out NavMeshHit hit)
-		{
-			int areas = NavMesh.AllAreas;
-
-			if (!NavMesh.SamplePosition(point, out hit, Game.Navigation.MaxNavMeshProjection, areas)) 
-			{
-				// No such point on the NavMesh within the MaxNavMeshProjection range
-				return false; 
-			}
-
-			return true;
-		}
-
 		public void Stop()
 		{
 			Vector3 stopPosition = transform.position + transform.forward * Game.Navigation.StopDistance;
@@ -136,6 +123,18 @@ namespace RedDust.Movement
 			}
 
 			_animator.SetBool(Game.Animation.Crouched, _isSneaking);
+		}
+
+		public void SetStoppingDistance(float stoppingDistance)
+		{
+			if (stoppingDistance < 0) { Debug.LogError(gameObject.name + " stopping distance less than zero."); }
+
+			_navMeshAgent.stoppingDistance = stoppingDistance;
+		}
+
+		public NavMeshPathStatus GetPathStatus()
+		{
+			return _navMeshAgent.path.status;
 		}
 
 		public void Warp(Vector3 position, Quaternion rotation)

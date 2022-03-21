@@ -44,6 +44,10 @@ namespace RedDust
 			public const float CrouchMulti = 0.5f;
 			public const float MaxSpeed = 10f;
 			public const float StopDistance = 0.75f;
+			public const float FollowUpdateInterval = 0.4f;
+			public const float AgentStoppingDistance = 0.4f;
+			public const float AgentStoppingDistanceFollow = 3.8f;
+			public const float GroupMoveRange = 1.2f;
 		}
 
 		public static class Animation
@@ -61,13 +65,6 @@ namespace RedDust
 			public const string ActionInteract = "Interact";
 			public const string ActionDrag = "Drag";
 			public const float CursorCastRange = 200f;
-		}
-
-		public static class AI
-		{
-			public const float FollowUpdateInterval = 1f;
-			public const float FollowDistance = 1.75f;
-			public const int RandomPositionTries = 3;
 		}
 
 		public static class Layer

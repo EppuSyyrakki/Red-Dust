@@ -48,14 +48,7 @@ namespace RedDust.Control
 
 		public ActionBase GetAction(Player p)
 		{
-			if (p == this) { return null; }
-
-			if (p.Mover.IsPointOnNavMesh(transform.position, out _))
-			{
-				return new FollowAction(p, transform);
-			}
-
-			return null;
+			return new FollowAction(p, transform);
 		}
 
 		#endregion	

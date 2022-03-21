@@ -22,13 +22,14 @@ namespace RedDust.Control.Actions
 		public FollowAction(Character c, Transform target) : base(c)
 		{
 			_target = target;
-			_updateInterval =  Game.AI.FollowUpdateInterval;
+			_updateInterval =  Game.Navigation.FollowUpdateInterval;
 			_updateTargetTimer = Random.Range(0, _updateInterval);
 		}
 
 		public override void OnStart()
 		{
-			base.OnStart();
+			base.OnStart();			
+			Character.Mover.SetStoppingDistance(Game.Navigation.AgentStoppingDistanceFollow);
 			Character.Mover.SetDestination(_target.position);
 		}
 
@@ -38,26 +39,29 @@ namespace RedDust.Control.Actions
 
 			if (_updateTargetTimer > _updateInterval)
 			{
-				Vector3 follow = _target.position - _target.forward * Game.AI.FollowDistance;
-
-				if (Character.Mover.IsPointOnNavMesh(follow, out NavMeshHit hit))
-				{
-					Character.Mover.SetDestination(hit.position);
-					_updateTargetTimer = 0;
-
-				}
-				else
+				if (Character.Mover.GetPathStatus() != NavMeshPathStatus.PathComplete)
 				{
 					return ActionState.Failure;
-				}			
+				}
+
+				Character.Mover.SetDestination(_target.position);
+				_updateTargetTimer = 0;
 			}
 			
 			return ActionState.Running;
 		}
 
+		public override void OnFailure()
+		{
+			base.OnFailure();
+			Character.Mover.SetStoppingDistance(Game.Navigation.AgentStoppingDistance);
+			Character.Mover.Stop();
+		}
+
 		public override void OnCancel()
 		{
 			base.OnCancel();
+			Character.Mover.SetStoppingDistance(Game.Navigation.AgentStoppingDistance);
 			Character.Mover.Stop();
 		}
 	}

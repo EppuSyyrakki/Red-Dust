@@ -1,12 +1,11 @@
 ﻿using Messaging;
 using RedDust.Messages;
-using System.Collections;
-using UnityEngine;
-
 namespace RedDust.Control
 {
 	public class Npc : Character
 	{
+		// The player Squad sends these messages when another Squad's status for it changes.
+		// This is done so any NPC can set their Indicator accordingly, independetly of their own squad.
 		private ISubscription<PlayerSquadMsg> _statusSub = null;
 
 		private void OnEnable()
