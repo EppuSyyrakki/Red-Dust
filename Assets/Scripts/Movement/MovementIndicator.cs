@@ -25,13 +25,13 @@ namespace RedDust.Movement
 
 		private void Awake()
 		{
-			_raycaster = GetComponent<RaycastForNormal>();
-			
+			_raycaster = GetComponent<RaycastForNormal>();		
 		}
 
 		private void OnEnable()
 		{
 			_raycaster.CastPerformed += OnCastPerformed;
+			transform.rotation = Quaternion.Euler(new Vector3(-90, 0 , 0));
 		}
 
 		private void OnDisable()

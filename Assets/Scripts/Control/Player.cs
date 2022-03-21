@@ -9,7 +9,7 @@ namespace RedDust.Control
 		[SerializeField]
 		private Sprite interactionIcon;
 
-		public Transform Transform => transform;
+		public int playerIndex = -1;
 
 		#region Unity messages
 

@@ -1,5 +1,4 @@
 ﻿using RedDust.Messages;
-using Messaging;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,9 +9,6 @@ namespace RedDust.Control
 
 	public class Squad : MonoBehaviour
 	{
-		[SerializeField]
-		private Transform formation = null;
-
 		[SerializeField]
 		private Squad[] initialHostileSquads = null;
 
@@ -32,19 +28,23 @@ namespace RedDust.Control
 
 		private void Awake()
 		{
+			// This feels hacky but affords the same component for Player and NPC squads.
 			_isPlayerSquad = gameObject.CompareTag(Game.Tag.PlayerSquad);
 
 			// Any Characters as child to this will get added as members
-			_members.AddRange(GetComponentsInChildren<Character>());
-
-			foreach (var c in _members)
+			foreach (Transform child in transform)
 			{
+				if (!child.TryGetComponent(out Character c)) { continue; }
+
+				_members.Add(c);
 				c.SetSquad(this);
 			}
 		}
 
 		private void Start()
 		{
+			// Do this in start so other squads are Awake and can listen to a message from
+			// PlayerSquad when it does this - it will change their hostility indicators.
 			foreach (var s in initialFriendlySquads) { AddFriendlySquad(s); }
 			foreach (var s in initialHostileSquads) { AddHostileSquad(s); }
 		}
@@ -58,6 +58,8 @@ namespace RedDust.Control
 			var msg = new PlayerSquadMsg(s, status);
 			Game.Instance.Bus.Send(msg);		
 		}
+
+		#region Public API
 
 		public bool HasMember(Character c)
 		{
@@ -75,10 +77,10 @@ namespace RedDust.Control
 
 		public bool RemoveMember(Character c)
 		{
-			if (_members.Remove(c))
+			if (_members.Remove(c)) 
 			{
 				MembersModified?.Invoke(c, false);
-				return true;
+				return true; 
 			}
 
 			return false;
@@ -145,7 +147,9 @@ namespace RedDust.Control
 
 			return false;
 		}
-	
+
+		#endregion
+
 		///// <summary>
 		///// Alert other group members to an enemy, adds enemy group to hostile groups if not already hostile.
 		///// </summary>

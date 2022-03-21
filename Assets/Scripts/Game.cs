@@ -83,6 +83,11 @@ namespace RedDust
 			public const float IndicatorUpdate = 0.5f;
 		}
 
+		public static class Path
+		{
+			public const string Formations = "Control/Formations";
+		}
+
 		public class Color
 		{
 			public static readonly UnityEngine.Color SelectionBox = new UnityEngine.Color(0.35f, 1f, 0.2f, 1f);

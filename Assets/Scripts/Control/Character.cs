@@ -33,6 +33,14 @@ namespace RedDust.Control
 			AddAction(new IdleAction(this));
 		}
 
+		private void Start()
+		{
+			if (Squad == null) 
+			{ 
+				Debug.LogError(gameObject.name + " has no Squad! Parent must have a Squad component."); 
+			}
+		}
+
 		#endregion
 
 		protected void ExecuteAction()

@@ -151,7 +151,7 @@ namespace RedDust.Movement
 
 		private void EnableMoveIndicator(bool enable)
 		{
-			Transform t = _indicator.transform;				
+			Transform t = _indicator.transform;		
 
 			if (enable) 
 			{ 

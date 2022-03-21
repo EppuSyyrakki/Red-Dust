@@ -25,6 +25,7 @@ namespace RedDust.Control.Input
 		/// They make sure the selection indicators follow along.
 		/// </summary>
 		private List<Player> _selected = new List<Player>();
+		private Player[] _players;
 
 		private PlayerInput _playerInput;
 		private GameInputs _gameInputs;
@@ -35,7 +36,7 @@ namespace RedDust.Control.Input
 		private IPlayerInteractable _interactable = null;
 
 		public DragMode Drag { get; private set; }
-		public Squad PlayerSquad { get; private set; }
+		public GameInputs GameInputs => _gameInputs;
 		public Vector2 CursorPosition => _cursorPosition;
 		public event Action SelectionBoxStarted;
 		public event Action SelectionBoxEnded;
@@ -46,19 +47,17 @@ namespace RedDust.Control.Input
 
 		private void Awake()
 		{
-			PlayerSquad = GetComponent<Squad>();
 			_playerInput = GetComponent<PlayerInput>();
 			_playerInput.camera = Camera.main;
 			// Construct the auto-generated wrapper
 			_gameInputs = new GameInputs();
-			// Set "menu" map as default for setting the UI
-			_playerInput.defaultActionMap = _gameInputs.Menu.Get().name;
+			_playerInput.defaultActionMap = _gameInputs.Tactical.Get().name;
 			_playerInput.actions = _gameInputs.asset;
-			// find the UI module and set the generated wrapper as its asset
+			// find the UI module and set the asset from the generated wrapper
 			var uiInputModule = EventSystem.current.gameObject.GetComponent<InputSystemUIInputModule>();
 			uiInputModule.actionsAsset = _gameInputs.asset;
 			// assign the UI input module to the PlayerInput component
-			_playerInput.uiInputModule = uiInputModule;			
+			_playerInput.uiInputModule = uiInputModule;	
 		}	
 
 		private void OnEnable()
@@ -74,7 +73,17 @@ namespace RedDust.Control.Input
 
 		private void Start()
 		{
-			SwitchInputToTactical();
+			var squad = GetComponent<Squad>();
+			_players = new Player[squad.Members.Count];
+
+			for (int i = 0; i < squad.Members.Count; i++)
+			{
+				if (squad.Members[i] is Player p)
+				{
+					p.playerIndex = i;
+					_players[i] = p;
+				}
+			}
 		}
 
 		private void Update()
@@ -100,7 +109,7 @@ namespace RedDust.Control.Input
 
 		#endregion
 
-		#region General private methods
+		#region Private functionality
 
 		private bool TryGetInteractable(Ray cursorRay, out IPlayerInteractable newInteractable)
 		{
@@ -141,20 +150,30 @@ namespace RedDust.Control.Input
 			if (logInput) { Debug.Log(name + " current interactable was nulled"); }
 		}
 
-		private bool MoveSelectedToCursor(Ray cursorRay)
+		private void MoveSelectedToCursor(Ray cursorRay)
 		{
+			NavMeshHit hit = new NavMeshHit();
+
 			for (int i = 0; i < _selected.Count; i++)
 			{
-				if (!RaycastNavMesh(cursorRay, out RaycastHit rHit)) { continue; }
-
-				if (!SampleNavMesh(rHit.point, out NavMeshHit nHit)) { continue; }		
-
 				if (!_addModifier) { _selected[i].CancelActions(); }
 
-				_selected[i].AddAction(new MoveToAction(_selected[i], nHit.position, true));
-			}
+				if (i == 0)
+				{
+					if (!RaycastNavMesh(cursorRay, out hit)) { return; }
 
-			return true;
+					_selected[i].AddAction(new MoveToAction(_selected[i], hit.position, true));
+					continue;
+				}
+
+				Transform t = _selected[i].transform;
+				Vector3 iDir = (t.position - hit.position).normalized * Game.Navigation.GroupMoveRange;
+				Vector3 iPos = hit.position + iDir;
+				
+				if (!RaycastNavMesh(iPos, out hit)) { continue; }
+
+				_selected[i].AddAction(new MoveToAction(_selected[i], iPos, true));
+			}
 		}
 
 		#endregion
@@ -189,8 +208,30 @@ namespace RedDust.Control.Input
 			_selected.Clear();
 		}
 
-		public void SetSelection(List<Player> newSelection)
+		/// <summary>
+		/// Divides a 4-point polygon into 2 triangles, checks if any Player is inside them and makes a new
+		/// selection.
+		/// </summary>
+		/// <param name="screenCorners">Array of Vector3's. Only 4 points counted.</param>
+		public void CheckPolygonSelection(Vector3[] screenCorners)
 		{
+			Vector3[] corners = new Vector3[4];
+			List<Player> newSelection = new List<Player>(_players.Length);
+
+			for (int i = 0; i < 4; i++)
+			{
+				GetWorldPosition(screenCorners[i], Game.Layer.Ground, out corners[i]);
+			}
+
+			foreach (Player p in _players)
+			{
+				if (PointInTriangle(p.transform.position, corners[0], corners[1], corners[2])
+					|| PointInTriangle(p.transform.position, corners[2], corners[3], corners[0]))
+				{
+					newSelection.Add(p);
+				}
+			}
+
 			ClearSelection();
 			_selected = newSelection;
 			foreach (var p in _selected) { p.SetIndicatorSelected(true); }
@@ -335,7 +376,7 @@ namespace RedDust.Control.Input
 
 		#region Static methods
 
-		public static bool GetWorldPosition(Vector2 cursorPosition, int layerMask, out Vector3 worldPosition)
+		private static bool GetWorldPosition(Vector2 cursorPosition, int layerMask, out Vector3 worldPosition)
 		{
 			Ray ray = GetCameraRay(cursorPosition);
 			worldPosition = new Vector3();
@@ -354,24 +395,46 @@ namespace RedDust.Control.Input
 			return Camera.main.ScreenPointToRay(cursorPosition);
 		}
 
-		private static bool RaycastNavMesh(Ray cursorRay, out RaycastHit hit)
+		private static bool RaycastNavMesh(Ray cursorRay, out NavMeshHit hit)
 		{
 			float range = Game.Input.CursorCastRange;
 			int layer = Game.Layer.Ground;
+			int areas = NavMesh.AllAreas;
+			float projection = Game.Navigation.MaxNavMeshProjection;
+			hit = new NavMeshHit();
 
-			if (Physics.Raycast(cursorRay, out hit, range, layer)) { return true; }
+			if (Physics.Raycast(cursorRay, out RaycastHit rHit, range, layer) 
+				&& NavMesh.SamplePosition(rHit.point, out hit, projection, areas)) { return true; }
 
 			return false;
 		}
 
-		private static bool SampleNavMesh(Vector3 point, out NavMeshHit hit)
+		private static bool RaycastNavMesh(Vector3 pos, out NavMeshHit hit)
 		{
+			float range = Game.Input.CursorCastRange * 0.1f;
+			int layer = Game.Layer.Ground;
 			int areas = NavMesh.AllAreas;
-			float range = Game.Navigation.MaxNavMeshProjection;
+			float projection = Game.Navigation.MaxNavMeshProjection;
+			hit = new NavMeshHit();
 
-			if (NavMesh.SamplePosition(point, out hit, range, areas)) { return true; }
+			if (Physics.Raycast(pos + Vector3.up, Vector3.down, out RaycastHit rHit, range, layer)
+				&& NavMesh.SamplePosition(rHit.point, out hit, projection, areas)) { return true; }
 
 			return false;
+		}
+
+		private static bool PointInTriangle(Vector3 p, Vector3 a, Vector3 b, Vector3 c)
+		{
+			Vector3 d, e;
+			double w1, w2;
+			d = b - a;
+			e = c - a;
+
+			if (Mathf.Approximately(e.z, 0)) { e.z = 0.0001f; }	// avoid division by 0
+
+			w1 = (e.x * (a.z - p.z) + e.z * (p.x - a.x)) / (d.x * e.z - d.z * e.x);
+			w2 = (p.z - a.z - w1 * d.z) / e.z;
+			return (w1 >= 0f) && (w2 >= 0.0) && ((w1 + w2) <= 1.0);
 		}
 
 		#endregion
