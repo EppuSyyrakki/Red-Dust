@@ -19,6 +19,8 @@ namespace RedDust.Movement
 		private Animator _animator;
 		private bool _isSneaking;
 		private float _forwardSpeed;
+		private MovementIndicator _indicator = null;
+		private bool _indicatorEnabled = false;
 
 		public float MoveSpeed => moveSpeed;
 		public bool IsSneaking => _isSneaking;
@@ -32,6 +34,7 @@ namespace RedDust.Movement
 			_navMeshAgent.SetDestination(transform.position);
 			_navMeshAgent.speed = moveSpeed;
 			_animator = GetComponent<Animator>();
+			_indicator = GetComponentInChildren<MovementIndicator>(true);	
 		}
 
 		private void OnDisable()
@@ -56,6 +59,8 @@ namespace RedDust.Movement
 			float turningSpeed = Mathf.Lerp(local.normalized.x, 0, 10f * Time.deltaTime);
 			_animator.SetFloat(Game.Animation.Velocity, _forwardSpeed);
 			_animator.SetFloat(Game.Animation.Turning, turningSpeed);
+
+			if (_indicatorEnabled && IsAtDestination()) { EnableMoveIndicator(false); }
 		}
 
 		private void SetSpeed(float speed)
@@ -69,13 +74,16 @@ namespace RedDust.Movement
 
 		public void Stop()
 		{
-			Vector3 stopPosition = transform.position + transform.forward * Game.Navigation.StopDistance;
-			_navMeshAgent.SetDestination(stopPosition);
+			Vector3 toTarget = (_navMeshAgent.destination - transform.position).normalized;
+			Vector3 stopPosition = transform.position + toTarget * Game.Navigation.StopDistance;
+			SetDestination(stopPosition);
 		}
 
-		public void SetDestination(Vector3 destination)
+		public void SetDestination(Vector3 destination, bool useIndicator = false)
 		{
 			_navMeshAgent.SetDestination(destination);
+			
+			if (useIndicator) { EnableMoveIndicator(true); }
 		}
 
 		public bool IsAtDestination()
@@ -127,9 +135,7 @@ namespace RedDust.Movement
 
 		public void SetStoppingDistance(float stoppingDistance)
 		{
-			if (stoppingDistance < 0) { Debug.LogError(gameObject.name + " stopping distance less than zero."); }
-
-			_navMeshAgent.stoppingDistance = stoppingDistance;
+			_navMeshAgent.stoppingDistance = Mathf.Clamp(stoppingDistance, 0, 10f);
 		}
 
 		public NavMeshPathStatus GetPathStatus()
@@ -141,6 +147,30 @@ namespace RedDust.Movement
 		{
 			_navMeshAgent.Warp(position);
 			transform.rotation = rotation;
+		}
+
+		private void EnableMoveIndicator(bool enable)
+		{
+			Transform t = _indicator.transform;				
+
+			if (enable) 
+			{ 
+				t.SetParent(null);
+				t.position = _navMeshAgent.destination;
+			}
+			else 
+			{
+				t.position = transform.position;
+				t.SetParent(transform); 
+			}
+
+			_indicatorEnabled = enable;
+			_indicator.gameObject.SetActive(enable);			
+		}
+
+		public void SetMoveIndicatorColor(Color color)
+		{
+			_indicator.Color = color;
 		}
 
 		#endregion Public API

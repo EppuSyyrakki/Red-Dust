@@ -31,9 +31,8 @@ namespace RedDust.Control.Input
 
 		private Vector2 _cursorPosition;
 		private bool _addModifier = false;
-		private bool _chainModifier = false;
-		private IPlayerInteractable _currentInteractable = null;
-		private Vector2 _dragStartPos;
+		private bool _forceAttack = false;
+		private IPlayerInteractable _interactable = null;
 
 		public DragMode Drag { get; private set; }
 		public Squad PlayerSquad { get; private set; }
@@ -125,17 +124,21 @@ namespace RedDust.Control.Input
 
 		private void TryChangeInteractable(IPlayerInteractable newInteractable)
 		{
-			if (_currentInteractable == null || newInteractable != _currentInteractable)
+			if (_interactable == null || newInteractable != _interactable)
 			{
-				_currentInteractable = newInteractable;
-				InteractableChanged?.Invoke(_currentInteractable.GetIcon());
+				_interactable = newInteractable;
+				InteractableChanged?.Invoke(_interactable.GetIcon());
+
+				if (logInput) { Debug.Log(name + " current interactable is: " + _interactable.GetType().Name); }
 			}
 		}
 
 		private void NullInteractable()
 		{
 			InteractableNulled?.Invoke();
-			_currentInteractable = null;
+			_interactable = null;
+
+			if (logInput) { Debug.Log(name + " current interactable was nulled"); }
 		}
 
 		private bool MoveSelectedToCursor(Ray cursorRay)
@@ -148,7 +151,7 @@ namespace RedDust.Control.Input
 
 				if (!_addModifier) { _selected[i].CancelActions(); }
 
-				_selected[i].AddAction(new MoveToAction(_selected[i], nHit.position));
+				_selected[i].AddAction(new MoveToAction(_selected[i], nHit.position, true));
 			}
 
 			return true;
@@ -227,12 +230,15 @@ namespace RedDust.Control.Input
 			{
 				// If we don't hit anything in the Character layer, it's supposed to be a move order
 				MoveSelectedToCursor(ray);
+
+				if (logInput) { Debug.Log(name + " MoveOrSelect released - Move"); }
 				return;
 			}
 
 			if (hit.collider.TryGetComponent(out Player p))
 			{
-				ModifySelection(p);	
+				ModifySelection(p);
+				if (logInput) { Debug.Log(name + " MoveOrSelect released - Select"); }
 			}
 		}
 
@@ -240,7 +246,7 @@ namespace RedDust.Control.Input
 		{
 			if (ctx.phase != InputActionPhase.Canceled
 				|| _selected.Count == 0
-				|| _currentInteractable == null) { return; }
+				|| _interactable == null) { return; }
 			
 			for (int i = 0; i < _selected.Count; i++)
 			{
@@ -248,8 +254,10 @@ namespace RedDust.Control.Input
 
 				if (!_addModifier) { player.CancelActions(); }
 
-				player.AddAction(_currentInteractable.GetAction(player));
-			}			
+				player.AddAction(_interactable.GetAction(player));
+
+				if (logInput) { Debug.Log(name + " Interact button released"); }
+			}		
 		}
 
 		public void OnAddModifier(InputAction.CallbackContext ctx)
@@ -257,15 +265,15 @@ namespace RedDust.Control.Input
 			if (ctx.phase == InputActionPhase.Performed) { _addModifier = true; }
 			else if (ctx.phase == InputActionPhase.Canceled) { _addModifier = false; }
 
-			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log("Add button: " + _addModifier); }			
+			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + " Add: " + _addModifier); }			
 		}
 
-		public void OnChainModifier(InputAction.CallbackContext ctx)
+		public void OnForceAttack(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase == InputActionPhase.Performed) { _chainModifier = true; }
-			else if (ctx.phase == InputActionPhase.Canceled) { _chainModifier = false; }
+			if (ctx.phase == InputActionPhase.Performed) { _forceAttack = true; }
+			else if (ctx.phase == InputActionPhase.Canceled) { _forceAttack = false; }
 
-			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log("Chain button: " + _chainModifier); }
+			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + "ForceAttack: " + _forceAttack); }
 		}
 
 		public void OnDrag(InputAction.CallbackContext ctx)
@@ -279,11 +287,15 @@ namespace RedDust.Control.Input
 			{
 				SelectionBoxStarted?.Invoke();
 				Drag = DragMode.Selection;
+
+				if (logInput) { Debug.Log(name + "Drag performing with mode " + Drag.ToString()); }
 			}
 			else if (ctx.phase == InputActionPhase.Canceled	&& Drag != DragMode.None)
 			{
 				SelectionBoxEnded?.Invoke();
 				Invoke(nameof(ResetDrag), 0.1f);
+
+				if (logInput) { Debug.Log(name + "Drag ended"); }
 			}
 		}
 
@@ -300,17 +312,23 @@ namespace RedDust.Control.Input
 				{
 					p.Mover.Stop();
 				}
+
+				if (logInput) { Debug.Log(name + " Stop pressed"); }
 			}
 		}
 
 		public void SwitchInputToMenu()
 		{
 			_playerInput.currentActionMap = _gameInputs.Menu.Get();
+
+			if (logInput) { Debug.Log(name + " Switched to Menu input map"); }
 		}
 
 		public void SwitchInputToTactical()
 		{
 			_playerInput.currentActionMap = _gameInputs.Tactical.Get();
+
+			if (logInput) { Debug.Log(name + " Switched to Tactical input map"); }
 		}
 
 		#endregion

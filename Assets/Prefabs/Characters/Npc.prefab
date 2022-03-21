@@ -5510,6 +5510,7 @@ GameObject:
   - component: {fileID: 4923790862919068976}
   - component: {fileID: 6449519925053659824}
   - component: {fileID: 6911976603660625748}
+  - component: {fileID: 961018975604548141}
   m_Layer: 6
   m_Name: HostilityIndicator
   m_TagString: Untagged
@@ -5568,9 +5569,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -843704449
+  m_SortingLayer: 1
+  m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: 9b342747840c89243bfe18793bb5b6d8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -5596,3 +5597,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedSprite: {fileID: 21300000, guid: fce81cd09eaa4304eb5246e6faf5d62e, type: 3}
   unselectedSprite: {fileID: 21300000, guid: 9b342747840c89243bfe18793bb5b6d8, type: 3}
+--- !u!114 &961018975604548141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7075274591988033564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afd7c27c131d4644993d055af53b0534, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 0, y: 0.25, z: 0}
+  direction: {x: 0, y: -1, z: 0}
+  range: 1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  debugRaycast: 1

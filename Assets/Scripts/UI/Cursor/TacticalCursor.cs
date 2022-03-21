@@ -30,7 +30,7 @@ namespace RedDust.UI.Cursor
 			var controlObj = GameObject.FindGameObjectWithTag(Game.Tag.PlayerSquad);
 			_controls = controlObj.GetComponent<TacticalControls>();
 			iconRenderer.transform.localPosition = iconOffset;
-			selectionBox.color = Game.Colors.SelectionBox;
+			selectionBox.color = Game.Color.SelectionBox;
 		}
 
 		private void OnEnable()
@@ -71,13 +71,13 @@ namespace RedDust.UI.Cursor
 		private void OnActionNulled()
 		{
 			iconRenderer.sprite = null;
-			iconRenderer.color = Game.Colors.WhiteTransparent;
+			iconRenderer.color = Game.Color.WhiteTransparent;
 		}
 
 		private void OnActionChanged(Sprite icon)
 		{
 			iconRenderer.sprite = icon;
-			iconRenderer.color = Game.Colors.WhiteOpaque;
+			iconRenderer.color = Game.Color.WhiteOpaque;
 		}
 
 		private void OnSelectionBoxStarted()

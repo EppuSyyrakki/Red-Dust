@@ -78,15 +78,20 @@ namespace RedDust
 			public const string PlayerSquad = "PlayerSquad";
 		}
 
-		public class Colors
+		public static class Timer
 		{
-			public static readonly Color SelectionBox = new Color(0.35f, 1f, 0.2f, 1f);
-			public static readonly Color Player = new Color(0.35f, 1f, 0.2f, 1f);
-			public static readonly Color Friendly = new Color(0.2f, 0.5f, 0.9f, 1f);
-			public static readonly Color Neutral = new Color(1f, 1f, 1f, 1f);
-			public static readonly Color Hostile = new Color(1f, 0.2f, 0.2f, 1f);
-			public static readonly Color WhiteTransparent = new Color(1f, 1f, 1f, 0);
-			public static readonly Color WhiteOpaque = new Color(1f, 1f, 1f, 1f);
+			public const float IndicatorUpdate = 0.5f;
+		}
+
+		public class Color
+		{
+			public static readonly UnityEngine.Color SelectionBox = new UnityEngine.Color(0.35f, 1f, 0.2f, 1f);
+			public static readonly UnityEngine.Color Player = new UnityEngine.Color(0.35f, 1f, 0.2f, 1f);
+			public static readonly UnityEngine.Color Friendly = new UnityEngine.Color(0.2f, 0.5f, 0.9f, 1f);
+			public static readonly UnityEngine.Color Neutral = new UnityEngine.Color(1f, 1f, 1f, 1f);
+			public static readonly UnityEngine.Color Hostile = new UnityEngine.Color(1f, 0.2f, 0.2f, 1f);
+			public static readonly UnityEngine.Color WhiteTransparent = new UnityEngine.Color(1f, 1f, 1f, 0);
+			public static readonly UnityEngine.Color WhiteOpaque = new UnityEngine.Color(1f, 1f, 1f, 1f);
 		}
 	}
 }

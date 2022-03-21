@@ -66,7 +66,7 @@ namespace RedDust.Control.Input
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ChainModifier"",
+                    ""name"": ""ForceAttack"",
                     ""type"": ""Button"",
                     ""id"": ""ddbd7977-25a5-45a7-9a3f-5efa9abba545"",
                     ""expectedControlType"": ""Button"",
@@ -123,7 +123,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""ChainModifier"",
+                    ""action"": ""ForceAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -435,7 +435,7 @@ namespace RedDust.Control.Input
             m_Tactical_MoveOrSelect = m_Tactical.FindAction("MoveOrSelect", throwIfNotFound: true);
             m_Tactical_Interact = m_Tactical.FindAction("Interact", throwIfNotFound: true);
             m_Tactical_AddModifier = m_Tactical.FindAction("AddModifier", throwIfNotFound: true);
-            m_Tactical_ChainModifier = m_Tactical.FindAction("ChainModifier", throwIfNotFound: true);
+            m_Tactical_ForceAttack = m_Tactical.FindAction("ForceAttack", throwIfNotFound: true);
             m_Tactical_Drag = m_Tactical.FindAction("Drag", throwIfNotFound: true);
             m_Tactical_Stop = m_Tactical.FindAction("Stop", throwIfNotFound: true);
             // Menu
@@ -510,7 +510,7 @@ namespace RedDust.Control.Input
         private readonly InputAction m_Tactical_MoveOrSelect;
         private readonly InputAction m_Tactical_Interact;
         private readonly InputAction m_Tactical_AddModifier;
-        private readonly InputAction m_Tactical_ChainModifier;
+        private readonly InputAction m_Tactical_ForceAttack;
         private readonly InputAction m_Tactical_Drag;
         private readonly InputAction m_Tactical_Stop;
         public struct TacticalActions
@@ -521,7 +521,7 @@ namespace RedDust.Control.Input
             public InputAction @MoveOrSelect => m_Wrapper.m_Tactical_MoveOrSelect;
             public InputAction @Interact => m_Wrapper.m_Tactical_Interact;
             public InputAction @AddModifier => m_Wrapper.m_Tactical_AddModifier;
-            public InputAction @ChainModifier => m_Wrapper.m_Tactical_ChainModifier;
+            public InputAction @ForceAttack => m_Wrapper.m_Tactical_ForceAttack;
             public InputAction @Drag => m_Wrapper.m_Tactical_Drag;
             public InputAction @Stop => m_Wrapper.m_Tactical_Stop;
             public InputActionMap Get() { return m_Wrapper.m_Tactical; }
@@ -545,9 +545,9 @@ namespace RedDust.Control.Input
                     @AddModifier.started -= m_Wrapper.m_TacticalActionsCallbackInterface.OnAddModifier;
                     @AddModifier.performed -= m_Wrapper.m_TacticalActionsCallbackInterface.OnAddModifier;
                     @AddModifier.canceled -= m_Wrapper.m_TacticalActionsCallbackInterface.OnAddModifier;
-                    @ChainModifier.started -= m_Wrapper.m_TacticalActionsCallbackInterface.OnChainModifier;
-                    @ChainModifier.performed -= m_Wrapper.m_TacticalActionsCallbackInterface.OnChainModifier;
-                    @ChainModifier.canceled -= m_Wrapper.m_TacticalActionsCallbackInterface.OnChainModifier;
+                    @ForceAttack.started -= m_Wrapper.m_TacticalActionsCallbackInterface.OnForceAttack;
+                    @ForceAttack.performed -= m_Wrapper.m_TacticalActionsCallbackInterface.OnForceAttack;
+                    @ForceAttack.canceled -= m_Wrapper.m_TacticalActionsCallbackInterface.OnForceAttack;
                     @Drag.started -= m_Wrapper.m_TacticalActionsCallbackInterface.OnDrag;
                     @Drag.performed -= m_Wrapper.m_TacticalActionsCallbackInterface.OnDrag;
                     @Drag.canceled -= m_Wrapper.m_TacticalActionsCallbackInterface.OnDrag;
@@ -570,9 +570,9 @@ namespace RedDust.Control.Input
                     @AddModifier.started += instance.OnAddModifier;
                     @AddModifier.performed += instance.OnAddModifier;
                     @AddModifier.canceled += instance.OnAddModifier;
-                    @ChainModifier.started += instance.OnChainModifier;
-                    @ChainModifier.performed += instance.OnChainModifier;
-                    @ChainModifier.canceled += instance.OnChainModifier;
+                    @ForceAttack.started += instance.OnForceAttack;
+                    @ForceAttack.performed += instance.OnForceAttack;
+                    @ForceAttack.canceled += instance.OnForceAttack;
                     @Drag.started += instance.OnDrag;
                     @Drag.performed += instance.OnDrag;
                     @Drag.canceled += instance.OnDrag;
@@ -679,7 +679,7 @@ namespace RedDust.Control.Input
             void OnMoveOrSelect(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
             void OnAddModifier(InputAction.CallbackContext context);
-            void OnChainModifier(InputAction.CallbackContext context);
+            void OnForceAttack(InputAction.CallbackContext context);
             void OnDrag(InputAction.CallbackContext context);
             void OnStop(InputAction.CallbackContext context);
         }

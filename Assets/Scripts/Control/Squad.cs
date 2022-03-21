@@ -11,6 +11,9 @@ namespace RedDust.Control
 	public class Squad : MonoBehaviour
 	{
 		[SerializeField]
+		private Transform formation = null;
+
+		[SerializeField]
 		private Squad[] initialHostileSquads = null;
 
 		[SerializeField]
