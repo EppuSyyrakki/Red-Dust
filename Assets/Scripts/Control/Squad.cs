@@ -29,7 +29,7 @@ namespace RedDust.Control
 		private void Awake()
 		{
 			// This feels hacky but affords the same component for Player and NPC squads.
-			_isPlayerSquad = gameObject.CompareTag(Game.Tag.PlayerSquad);
+			_isPlayerSquad = gameObject.CompareTag(Values.Tag.PlayerSquad);
 
 			// Any Characters as child to this will get added as members
 			foreach (Transform child in transform)

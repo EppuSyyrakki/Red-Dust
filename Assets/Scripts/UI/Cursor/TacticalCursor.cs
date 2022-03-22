@@ -17,7 +17,7 @@ namespace RedDust.UI.Cursor
 		[SerializeField]
 		private Image selectionBox = null;
 
-		private TacticalControls _controls = null;
+		private SquadControls _controls = null;
 		private bool _boxEnabled;
 		private Vector2 _dragStart;
 		private Vector2 _dragEnd;
@@ -26,10 +26,10 @@ namespace RedDust.UI.Cursor
 
 		private void Awake()
 		{
-			var controlObj = GameObject.FindGameObjectWithTag(Game.Tag.PlayerSquad);
-			_controls = controlObj.GetComponent<TacticalControls>();
+			var controlObj = GameObject.FindGameObjectWithTag(Values.Tag.PlayerSquad);
+			_controls = controlObj.GetComponent<SquadControls>();
 			iconRenderer.transform.localPosition = iconOffset;
-			selectionBox.color = Game.Color.SelectionBox;
+			selectionBox.color = Values.Color.SelectionBox;
 		}
 
 		private void OnEnable()
@@ -70,13 +70,13 @@ namespace RedDust.UI.Cursor
 		private void OnActionNulled()
 		{
 			iconRenderer.sprite = null;
-			iconRenderer.color = Game.Color.WhiteTransparent;
+			iconRenderer.color = Values.Color.WhiteTransparent;
 		}
 
 		private void OnActionChanged(Sprite icon)
 		{
 			iconRenderer.sprite = icon;
-			iconRenderer.color = Game.Color.WhiteOpaque;
+			iconRenderer.color = Values.Color.WhiteOpaque;
 		}
 
 		private void OnSelectionBoxStarted()

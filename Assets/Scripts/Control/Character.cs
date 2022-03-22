@@ -107,19 +107,19 @@ namespace RedDust.Control
 
 		public void SetIndicatorColor(SquadStatus status)
 		{
-			Color color = Game.Color.Neutral;
+			Color color = Values.Color.Neutral;
 
 			if (status == SquadStatus.Friendly)
 			{
-				color = Game.Color.Friendly;
+				color = Values.Color.Friendly;
 			}
 			else if (status == SquadStatus.Hostile)
 			{
-				color = Game.Color.Hostile;
+				color = Values.Color.Hostile;
 			}
 			else if (status == SquadStatus.Player)
 			{
-				color = Game.Color.Player;
+				color = Values.Color.Player;
 			}
 
 			Indicator.SetColor(color);

@@ -7,7 +7,7 @@ namespace RedDust.Movement
 	public class MovementIndicator : MonoBehaviour
 	{
 		private RaycastForNormal _raycaster = null;
-		private Color _color = Game.Color.Neutral;
+		private Color _color = Values.Color.Neutral;
 
 		public Color Color
 		{

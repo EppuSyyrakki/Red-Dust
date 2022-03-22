@@ -9,7 +9,7 @@ namespace RedDust.Movement
 	[RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent), typeof(Animator))]
 	public class Mover : MonoBehaviour
 	{		
-		[SerializeField, Range(2, Game.Navigation.MaxSpeed)]
+		[SerializeField, Range(2, Values.Navigation.MaxSpeed)]
 		float moveSpeed = 5f;
 
 		[SerializeField]
@@ -24,7 +24,7 @@ namespace RedDust.Movement
 
 		public float MoveSpeed => moveSpeed;
 		public bool IsSneaking => _isSneaking;
-		public bool IsMoving => _forwardSpeed > Game.Navigation.MovingThreshold;
+		public bool IsMoving => _forwardSpeed > Values.Navigation.MovingThreshold;
 
 		#region Unity messages
 
@@ -55,10 +55,10 @@ namespace RedDust.Movement
 		private void UpdateAnimator()
 		{
 			Vector3 local = transform.InverseTransformDirection(_navMeshAgent.velocity);
-			_forwardSpeed = local.z / Game.Navigation.MaxSpeed;
+			_forwardSpeed = local.z / Values.Navigation.MaxSpeed;
 			float turningSpeed = Mathf.Lerp(local.normalized.x, 0, 10f * Time.deltaTime);
-			_animator.SetFloat(Game.Animation.Velocity, _forwardSpeed);
-			_animator.SetFloat(Game.Animation.Turning, turningSpeed);
+			_animator.SetFloat(Values.Animation.Velocity, _forwardSpeed);
+			_animator.SetFloat(Values.Animation.Turning, turningSpeed);
 
 			if (_indicatorEnabled && IsAtDestination()) { EnableMoveIndicator(false); }
 		}
@@ -75,7 +75,7 @@ namespace RedDust.Movement
 		public void Stop()
 		{
 			Vector3 toTarget = (_navMeshAgent.destination - transform.position).normalized;
-			Vector3 stopPosition = transform.position + toTarget * Game.Navigation.StopDistance;
+			Vector3 stopPosition = transform.position + toTarget * Values.Navigation.StopDistance;
 			SetDestination(stopPosition);
 		}
 
@@ -88,7 +88,7 @@ namespace RedDust.Movement
 
 		public bool IsAtDestination()
 		{
-			return _navMeshAgent.remainingDistance < Game.Navigation.MoveTargetTreshold;
+			return _navMeshAgent.remainingDistance < Values.Navigation.MoveTargetTreshold;
 		}
 
 		public bool TurnTowards(Vector3 position)
@@ -109,7 +109,7 @@ namespace RedDust.Movement
 
 		public void Walk()
 		{
-			SetSpeed(MoveSpeed * Game.Navigation.WalkMulti);
+			SetSpeed(MoveSpeed * Values.Navigation.WalkMulti);
 		}
 
 		public void Run()
@@ -121,7 +121,7 @@ namespace RedDust.Movement
 		{
 			if (!_isSneaking)
 			{
-				SetSpeed(MoveSpeed * Game.Navigation.CrouchMulti);
+				SetSpeed(MoveSpeed * Values.Navigation.CrouchMulti);
 				_isSneaking = true;
 			}
 			else
@@ -130,7 +130,7 @@ namespace RedDust.Movement
 				_isSneaking = false;
 			}
 
-			_animator.SetBool(Game.Animation.Crouched, _isSneaking);
+			_animator.SetBool(Values.Animation.Crouched, _isSneaking);
 		}
 
 		public void SetStoppingDistance(float stoppingDistance)

@@ -3,14 +3,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
 using static RedDust.Control.Input.GameInputs;
 
 namespace RedDust.Control.Input
 {
-	public class TacticalControls : MonoBehaviour, ITacticalActions
+	public class SquadControls : Controls, ISquadActions
 	{
 		public enum DragMode { None, LookDirection, Selection, UI }
 
@@ -27,17 +25,14 @@ namespace RedDust.Control.Input
 		private List<Player> _selected = new List<Player>();
 		private Player[] _players;
 
-		private PlayerInput _playerInput;
-		private GameInputs _gameInputs;
-
 		private Vector2 _cursorPosition;
 		private bool _addModifier = false;
 		private bool _forceAttack = false;
 		private IPlayerInteractable _interactable = null;
 
 		public DragMode Drag { get; private set; }
-		public GameInputs GameInputs => _gameInputs;
 		public Vector2 CursorPosition => _cursorPosition;
+
 		public event Action SelectionBoxStarted;
 		public event Action SelectionBoxEnded;
 		public event Action<Sprite> InteractableChanged;
@@ -47,28 +42,8 @@ namespace RedDust.Control.Input
 
 		private void Awake()
 		{
-			_playerInput = GetComponent<PlayerInput>();
-			_playerInput.camera = Camera.main;
-			// Construct the auto-generated wrapper
-			_gameInputs = new GameInputs();
-			_playerInput.defaultActionMap = _gameInputs.Tactical.Get().name;
-			_playerInput.actions = _gameInputs.asset;
-			// find the UI module and set the asset from the generated wrapper
-			var uiInputModule = EventSystem.current.gameObject.GetComponent<InputSystemUIInputModule>();
-			uiInputModule.actionsAsset = _gameInputs.asset;
-			// assign the UI input module to the PlayerInput component
-			_playerInput.uiInputModule = uiInputModule;	
-		}	
-
-		private void OnEnable()
-		{
-			_playerInput.ActivateInput();
-			_gameInputs.Tactical.SetCallbacks(this);
-		}
-
-		private void OnDisable()
-		{
-			_playerInput.DeactivateInput();
+			Setup(Game.Instance.Inputs.Squad, true);
+			Game.Instance.Inputs.Squad.SetCallbacks(this);
 		}
 
 		private void Start()
@@ -101,7 +76,7 @@ namespace RedDust.Control.Input
 			{
 				TryChangeInteractable(newInteractable);
 			}
-			else
+			else if (_interactable != null)
 			{
 				NullInteractable();
 			}
@@ -115,7 +90,7 @@ namespace RedDust.Control.Input
 		{
 			newInteractable = null;
 
-			if (Physics.Raycast(cursorRay, out RaycastHit hit, Game.Input.CursorCastRange, interactionLayers)
+			if (Physics.Raycast(cursorRay, out RaycastHit hit, Values.Input.CursorCastRange, interactionLayers)
 				&& hit.collider.TryGetComponent(out newInteractable))
 			{
 				if (newInteractable is Player p && _selected.Contains(p)) 
@@ -167,7 +142,7 @@ namespace RedDust.Control.Input
 				}
 
 				Transform t = _selected[i].transform;
-				Vector3 iDir = (t.position - hit.position).normalized * Game.Navigation.GroupMoveRange;
+				Vector3 iDir = (t.position - hit.position).normalized * Values.Navigation.GroupMoveRange;
 				Vector3 iPos = hit.position + iDir;
 				
 				if (!RaycastNavMesh(iPos, out hit)) { continue; }
@@ -220,7 +195,7 @@ namespace RedDust.Control.Input
 
 			for (int i = 0; i < 4; i++)
 			{
-				GetWorldPosition(screenCorners[i], Game.Layer.Ground, out corners[i]);
+				GetWorldPosition(screenCorners[i], Values.Layer.Ground, out corners[i]);
 			}
 
 			foreach (Player p in _players)
@@ -251,14 +226,11 @@ namespace RedDust.Control.Input
 
 		#endregion
 
-		#region Input events and controls
+		#region ISquadAction implementation
 
-		public void OnMoveCursor(InputAction.CallbackContext ctx)
+		public void OnCursorChange(InputAction.CallbackContext ctx)
 		{
-			if (ctx.performed)
-			{
-				_cursorPosition = ctx.ReadValue<Vector2>(); 
-			}
+			if (ctx.performed) { _cursorPosition = ctx.ReadValue<Vector2>(); }
 		}
 
 		public void OnMoveOrSelect(InputAction.CallbackContext ctx)
@@ -267,7 +239,7 @@ namespace RedDust.Control.Input
 
 			var ray = GetCameraRay(_cursorPosition);
 		
-			if (!Physics.Raycast(ray, out RaycastHit hit, Game.Input.CursorCastRange, Game.Layer.Character)) 
+			if (!Physics.Raycast(ray, out RaycastHit hit, Values.Input.CursorCastRange, Values.Layer.Character)) 
 			{
 				// If we don't hit anything in the Character layer, it's supposed to be a move order
 				MoveSelectedToCursor(ray);
@@ -309,7 +281,7 @@ namespace RedDust.Control.Input
 			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + " Add: " + _addModifier); }			
 		}
 
-		public void OnForceAttack(InputAction.CallbackContext ctx)
+		public void OnForceAttackModifier(InputAction.CallbackContext ctx)
 		{
 			if (ctx.phase == InputActionPhase.Performed) { _forceAttack = true; }
 			else if (ctx.phase == InputActionPhase.Canceled) { _forceAttack = false; }
@@ -334,7 +306,7 @@ namespace RedDust.Control.Input
 			else if (ctx.phase == InputActionPhase.Canceled	&& Drag != DragMode.None)
 			{
 				SelectionBoxEnded?.Invoke();
-				Invoke(nameof(ResetDrag), 0.1f);
+				Invoke(nameof(ResetDrag), 0.1f);	// Hacky but works. This prevents 
 
 				if (logInput) { Debug.Log(name + "Drag ended"); }
 			}
@@ -356,51 +328,32 @@ namespace RedDust.Control.Input
 
 				if (logInput) { Debug.Log(name + " Stop pressed"); }
 			}
-		}
+		}		
 
-		public void SwitchInputToMenu()
-		{
-			_playerInput.currentActionMap = _gameInputs.Menu.Get();
+		//public void SwitchInputToMenu()
+		//{
+		//	_playerInput.currentActionMap = _gameInputs.Menu.Get();
 
-			if (logInput) { Debug.Log(name + " Switched to Menu input map"); }
-		}
+		//	if (logInput) { Debug.Log(name + " Switched to Menu input map"); }
+		//}
 
-		public void SwitchInputToTactical()
-		{
-			_playerInput.currentActionMap = _gameInputs.Tactical.Get();
+		//public void SwitchInputToTactical()
+		//{
+		//	_playerInput.currentActionMap = _gameInputs.Squad.Get();
 
-			if (logInput) { Debug.Log(name + " Switched to Tactical input map"); }
-		}
+		//	if (logInput) { Debug.Log(name + " Switched to Tactical input map"); }
+		//}
 
 		#endregion
 
 		#region Static methods
 
-		private static bool GetWorldPosition(Vector2 cursorPosition, int layerMask, out Vector3 worldPosition)
-		{
-			Ray ray = GetCameraRay(cursorPosition);
-			worldPosition = new Vector3();
-			
-			if (Physics.Raycast(ray, out RaycastHit hit, Game.Input.CursorCastRange, layerMask))
-			{
-				worldPosition = hit.point;
-				return true;
-			}
-
-			return false;
-		}
-
-		private static Ray GetCameraRay(Vector2 cursorPosition)
-		{
-			return Camera.main.ScreenPointToRay(cursorPosition);
-		}
-
 		private static bool RaycastNavMesh(Ray cursorRay, out NavMeshHit hit)
 		{
-			float range = Game.Input.CursorCastRange;
-			int layer = Game.Layer.Ground;
+			float range = Values.Input.CursorCastRange;
+			int layer = Values.Layer.Ground;
 			int areas = NavMesh.AllAreas;
-			float projection = Game.Navigation.MaxNavMeshProjection;
+			float projection = Values.Navigation.MaxNavMeshProjection;
 			hit = new NavMeshHit();
 
 			if (Physics.Raycast(cursorRay, out RaycastHit rHit, range, layer) 
@@ -411,10 +364,10 @@ namespace RedDust.Control.Input
 
 		private static bool RaycastNavMesh(Vector3 pos, out NavMeshHit hit)
 		{
-			float range = Game.Input.CursorCastRange * 0.1f;
-			int layer = Game.Layer.Ground;
+			float range = Values.Input.CursorCastRange * 0.1f;
+			int layer = Values.Layer.Ground;
 			int areas = NavMesh.AllAreas;
-			float projection = Game.Navigation.MaxNavMeshProjection;
+			float projection = Values.Navigation.MaxNavMeshProjection;
 			hit = new NavMeshHit();
 
 			if (Physics.Raycast(pos + Vector3.up, Vector3.down, out RaycastHit rHit, range, layer)

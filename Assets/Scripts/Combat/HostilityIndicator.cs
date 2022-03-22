@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Utils;
 
-namespace RedDust.Control
+namespace RedDust.Combat
 {
 	public class HostilityIndicator : MonoBehaviour
 	{
@@ -18,7 +18,7 @@ namespace RedDust.Control
 		{
 			_indicatorRenderer = GetComponent<SpriteRenderer>();
 			_raycaster = GetComponent<RaycastForNormal>();
-			_raycaster.SetTimer(Game.Timer.IndicatorUpdate);
+			_raycaster.SetTimer(Values.Timer.IndicatorUpdate);
 			SetSelected(false);
 		}
 

@@ -1,41 +1,11 @@
-﻿using Messaging;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace RedDust
 {
-	public class Game
+	public static class Values
 	{
-		private static Game _instance;
-
-		public static Game Instance
-		{
-			get
-			{
-				if (_instance == null)
-				{
-					_instance = new Game();
-				}
-
-				return _instance;
-			}
-		}
-
-		private Game()
-		{
-			Bus = new MessageBus();
-		}
-
-		/// <summary>
-		/// The class for relaying messages and managing their subscriptions.
-		/// </summary>
-		public MessageBus Bus { get; }
-
-
-		// The following are used in various places, like replacing string references in code or
-		// as default values.
-		//
 		// TODO: Make the relevant things (like Colors) user changeable via properties.
-		public static class Navigation
+		public class Navigation
 		{
 			public const float MoveTargetTreshold = 0.5f;
 			public const float MaxNavMeshProjection = 1.5f;
@@ -50,42 +20,59 @@ namespace RedDust
 			public const float GroupMoveRange = 1.2f;
 		}
 
-		public static class Animation
+		public class Animation
 		{
 			public const string Velocity = "velocity";
 			public const string Turning = "turning";
 			public const string Crouched = "crouched";
 		}
 
-		public static class Input
+		public class Input
 		{
-			public const string MapTactical = "Tactical";
+			public const string MapSquad = "Squad";
+			public const string MapCam = "Camera";
 			public const string MapMenu = "Menu";
-			public const string ActionMoveCursor = "MoveCursor";
-			public const string ActionInteract = "Interact";
-			public const string ActionDrag = "Drag";
 			public const float CursorCastRange = 200f;
 		}
 
-		public static class Layer
+		public class Layer
 		{
 			public const int Ground = 1 << 3;
 			public const int Character = 1 << 6;
 		}
 
-		public static class Tag
+		public class Tag
 		{
 			public const string PlayerSquad = "PlayerSquad";
+			public const string CamTarget = "CameraTarget";
+			public const string TacCamera = "TacticalCamera";
 		}
 
-		public static class Timer
+		public class Timer
 		{
 			public const float IndicatorUpdate = 0.5f;
 		}
 
-		public static class Path
+		public class Path
 		{
 			public const string Formations = "Control/Formations";
+		}
+
+		public class Camera
+		{
+			public const float AccelMove = 20f;
+			public const float AccelRot = 20f;
+			public const float AccelZoom = 20f;
+			public const float InputZoomResetDelay = 0.1f;
+			public const float LookAhead = 2f;
+			public const float RotationSpeed = 90f;
+			public const float MoveSpeed = 20f;
+			public const float ZoomSpeed = 300f;
+			public const float FovZoomOffset = 43f;
+			public const string TargetName = "Control Camera Target";
+			public const float MinZoom = 2f;
+			public const float MaxZoom = 15f;
+			public static readonly Vector3 DefaultOffset = new Vector3(0, 8, -7);
 		}
 
 		public class Color
@@ -99,4 +86,5 @@ namespace RedDust
 			public static readonly UnityEngine.Color WhiteOpaque = new UnityEngine.Color(1f, 1f, 1f, 1f);
 		}
 	}
+
 }

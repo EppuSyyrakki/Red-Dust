@@ -22,14 +22,14 @@ namespace RedDust.Control.Actions
 		public FollowAction(Character c, Transform target) : base(c)
 		{
 			_target = target;
-			_updateInterval =  Game.Navigation.FollowUpdateInterval;
+			_updateInterval =  Values.Navigation.FollowUpdateInterval;
 			_updateTargetTimer = Random.Range(0, _updateInterval);
 		}
 
 		public override void OnStart()
 		{
 			base.OnStart();			
-			Character.Mover.SetStoppingDistance(Game.Navigation.AgentStoppingDistanceFollow);
+			Character.Mover.SetStoppingDistance(Values.Navigation.AgentStoppingDistanceFollow);
 			Character.Mover.SetDestination(_target.position);
 		}
 
@@ -54,14 +54,14 @@ namespace RedDust.Control.Actions
 		public override void OnFailure()
 		{
 			base.OnFailure();
-			Character.Mover.SetStoppingDistance(Game.Navigation.AgentStoppingDistance);
+			Character.Mover.SetStoppingDistance(Values.Navigation.AgentStoppingDistance);
 			Character.Mover.Stop();
 		}
 
 		public override void OnCancel()
 		{
 			base.OnCancel();
-			Character.Mover.SetStoppingDistance(Game.Navigation.AgentStoppingDistance);
+			Character.Mover.SetStoppingDistance(Values.Navigation.AgentStoppingDistance);
 			Character.Mover.Stop();
 		}
 	}

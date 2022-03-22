@@ -21,7 +21,7 @@ namespace RedDust.Control
 		private void Start()
 		{
 			SetIndicatorColor(SquadStatus.Player);
-			Mover.SetMoveIndicatorColor(Game.Color.Player);
+			Mover.SetMoveIndicatorColor(Values.Color.Player);
 		}
 
 		private void Update()
