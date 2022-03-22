@@ -38,6 +38,11 @@ namespace RedDust.Control
 			Indicator.SetSelected(selected);
 		}
 
+		new public void CancelActions()
+		{
+			base.CancelActions();
+		}
+
 		#endregion
 
 		#region IPlayerInteractable implementation

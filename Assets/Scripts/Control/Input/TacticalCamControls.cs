@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Cinemachine;
 using UnityEngine.InputSystem;
 using static RedDust.Control.Input.GameInputs;
@@ -19,11 +20,14 @@ namespace RedDust.Control.Input
 		[SerializeField]
 		private Vector3 _locationOffset;
 
-		private Vector2 _cursorPosition = new Vector2();
+		private Vector2 _cursorPosition;
+		private Vector3 _dragOrigin;
+		private Vector3 _targetDragOrigin;
+		private Vector3 _dragCurrent;
+		private bool _dragging = false;
 		private CamInput _input;	// This is being lerped towards the target and used in cam motion
 		private CamInput _targetInput;	// This is what's being set by inputs.
 		private CinemachineVirtualCamera _camera;
-		private bool _dragging = false;
 
 		public Transform Target { get; private set; }
 
@@ -48,20 +52,15 @@ namespace RedDust.Control.Input
 		private void Update()
 		{
 			_input.LerpTo(_targetInput);
-
-			if (_dragging) 
-			{ 
-				DragTargetByInput();
-				return;
-			}
-
+			DragTargetByInput();
 			MoveTargetByInput();
 			RotateTargetByInput();
+			MoveCamera();
 		}
 
 		private void LateUpdate()
 		{
-			MoveCamera();
+			
 		}
 
 		private void OnDrawGizmos()
@@ -69,12 +68,17 @@ namespace RedDust.Control.Input
 			if (Target == null) { return; }
 
 			Gizmos.color = Color.blue;
-			Gizmos.DrawSphere(Target.position, 0.3f);
+			Gizmos.DrawSphere(Target.position, 0.1f);
 		}
 
 		private void DragTargetByInput()
 		{
+			if (!_dragging) { return; }
 
+			Vector3 drag = _dragOrigin - _dragCurrent;
+
+			if (drag.magnitude < 0.01f) { return; }
+			Target.position = _targetDragOrigin + drag;
 		}
 
 		private void MoveTargetByInput()
@@ -83,7 +87,7 @@ namespace RedDust.Control.Input
 			float y = RaycastTerrainHeight();
 			float z = _input.movement.y * Time.deltaTime * _moveSpeed;
 
-			Target.transform.Translate(new Vector3(x, y, z));
+			Target.Translate(new Vector3(x, y, z));
 		}
 
 		private void RotateTargetByInput()
@@ -106,11 +110,10 @@ namespace RedDust.Control.Input
 
 		private float RaycastTerrainHeight()
 		{
-			Vector3 pos = Target.position;
-			Vector3 origin = pos + Vector3.up * 50f;
-			Vector3 end = pos + Vector3.down * 100f;
+			var pos = Target.position + Vector3.up * 200f;
+			var layer = Values.Layer.Ground;
 
-			if (Physics.Linecast(origin, end, out var hit, Values.Layer.Ground))
+			if (Physics.Raycast(pos, Vector3.down, out var hit, 500f, layer))
 			{
 				float relativeY = Target.transform.InverseTransformPoint(hit.point).y;
 				return relativeY;
@@ -119,6 +122,7 @@ namespace RedDust.Control.Input
 			return 0;
 		}
 
+
 		#region ICameraActions implementation
 
 		public void OnCursorChange(InputAction.CallbackContext ctx)
@@ -126,7 +130,12 @@ namespace RedDust.Control.Input
 			if (ctx.phase == InputActionPhase.Performed)
 			{
 				_cursorPosition = ctx.ReadValue<Vector2>();
-			}
+
+				if (_dragging && GetWorldPosition(_cursorPosition, Values.Layer.Ground, out var world))
+				{
+					_dragCurrent = world;
+				}
+			}	
 		}
 
 		public void OnMove(InputAction.CallbackContext ctx)
@@ -156,8 +165,11 @@ namespace RedDust.Control.Input
 
 		public void OnDrag(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase == InputActionPhase.Performed)
+			if (ctx.phase == InputActionPhase.Performed
+				&& GetWorldPosition(_cursorPosition, Values.Layer.Ground, out _dragOrigin))
 			{
+				_dragCurrent = _dragOrigin;
+				_targetDragOrigin = Target.position;
 				_dragging = true;
 			}
 			else if (ctx.phase == InputActionPhase.Canceled)

@@ -60,16 +60,17 @@ namespace RedDust
 
 		public class Camera
 		{
-			public const float AccelMove = 20f;
-			public const float AccelRot = 20f;
-			public const float AccelZoom = 20f;
+			public const float DragLerp = 30f;
+			public const float AccelMove = 8f;
+			public const float AccelRot = 10f;
+			public const float AccelZoom = 12f;
 			public const float InputZoomResetDelay = 0.1f;
 			public const float LookAhead = 2f;
-			public const float RotationSpeed = 90f;
-			public const float MoveSpeed = 20f;
-			public const float ZoomSpeed = 300f;
+			public const float RotationSpeed = 60f;
+			public const float MoveSpeed = 30f;
+			public const float ZoomSpeed = 30f;
 			public const float FovZoomOffset = 43f;
-			public const string TargetName = "Control Camera Target";
+			public const string TargetName = "TacticalCam Target";
 			public const float MinZoom = 2f;
 			public const float MaxZoom = 15f;
 			public static readonly Vector3 DefaultOffset = new Vector3(0, 8, -7);

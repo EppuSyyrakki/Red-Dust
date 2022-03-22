@@ -8,7 +8,6 @@ namespace RedDust.Control.Input
 	public abstract class Controls : MonoBehaviour
 	{
 		protected PlayerInput PlayerInput { get; private set; }
-		// protected Vector2 CursorPosition
 
 		public bool InputsActive
 		{

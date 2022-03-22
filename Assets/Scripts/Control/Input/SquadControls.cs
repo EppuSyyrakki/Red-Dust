@@ -323,7 +323,7 @@ namespace RedDust.Control.Input
 			{
 				foreach (var p in _selected)
 				{
-					p.Mover.Stop();
+					p.CancelActions();
 				}
 
 				if (logInput) { Debug.Log(name + " Stop pressed"); }

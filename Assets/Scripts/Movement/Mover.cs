@@ -72,11 +72,16 @@ namespace RedDust.Movement
 
 		#region Public API
 
+		/// <summary>
+		/// Sets the current destination near the current position. Any queued Actions will get executed
+		/// after this. To cancel all actions, use Character.CancelActions().
+		/// </summary>
 		public void Stop()
 		{
 			Vector3 toTarget = (_navMeshAgent.destination - transform.position).normalized;
 			Vector3 stopPosition = transform.position + toTarget * Values.Navigation.StopDistance;
 			SetDestination(stopPosition);
+			EnableMoveIndicator(false);
 		}
 
 		public void SetDestination(Vector3 destination, bool useIndicator = false)
