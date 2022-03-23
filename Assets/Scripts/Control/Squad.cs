@@ -15,13 +15,13 @@ namespace RedDust.Control
 		[SerializeField]
 		private Squad[] initialFriendlySquads = null;
 
-		private List<Character> _members = new List<Character>();
-		private List<Squad> _hostiles = new List<Squad>();
-		private List<Squad> _friendlies = new List<Squad>();
+		private List<Character> members = new List<Character>();
+		private List<Squad> hostiles = new List<Squad>();
+		private List<Squad> friendlies = new List<Squad>();
 
-		private bool _isPlayerSquad = false;
+		private bool isPlayerSquad = false;
 
-		public List<Character> Members => _members;
+		public Character[] Members => members.ToArray();
 		public Action<Character, bool> MembersModified;
 
 		#region Unity messages
@@ -29,14 +29,14 @@ namespace RedDust.Control
 		private void Awake()
 		{
 			// This feels hacky but affords the same component for Player and NPC squads.
-			_isPlayerSquad = gameObject.CompareTag(Values.Tag.PlayerSquad);
+			isPlayerSquad = gameObject.CompareTag(Values.Tag.PlayerSquad);
 
 			// Any Characters as child to this will get added as members
 			foreach (Transform child in transform)
 			{
 				if (!child.TryGetComponent(out Character c)) { continue; }
 
-				_members.Add(c);
+				members.Add(c);
 				c.SetSquad(this);
 			}
 		}
@@ -53,7 +53,7 @@ namespace RedDust.Control
 
 		private void TrySendMsg(Squad s, SquadStatus status)
 		{
-			if (!_isPlayerSquad) { return; }
+			if (!isPlayerSquad) { return; }
 			
 			var msg = new PlayerSquadMsg(s, status);
 			Game.Instance.Bus.Send(msg);		
@@ -63,21 +63,21 @@ namespace RedDust.Control
 
 		public bool HasMember(Character c)
 		{
-			return _members.Contains(c);
+			return members.Contains(c);
 		}
 
 		public bool AddMember(Character c)
 		{
-			if (_members.Contains(c)) { return false; }
+			if (members.Contains(c)) { return false; }
 
 			MembersModified?.Invoke(c, true);
-			_members.Add(c);
+			members.Add(c);
 			return true;
 		}
 
 		public bool RemoveMember(Character c)
 		{
-			if (_members.Remove(c)) 
+			if (members.Remove(c)) 
 			{
 				MembersModified?.Invoke(c, false);
 				return true; 
@@ -88,10 +88,10 @@ namespace RedDust.Control
 
 		public bool AddHostileSquad(Squad s)
 		{
-			if (!_hostiles.Contains(s))
+			if (!hostiles.Contains(s))
 			{
-				_friendlies.Remove(s);
-				_hostiles.Add(s);
+				friendlies.Remove(s);
+				hostiles.Add(s);
 				TrySendMsg(s, SquadStatus.Hostile);
 				return true;
 			}
@@ -101,7 +101,7 @@ namespace RedDust.Control
 
 		public bool RemoveHostileSquad(Squad s)
 		{
-			if (!_hostiles.Remove(s)) { return false; }
+			if (!hostiles.Remove(s)) { return false; }
 
 			TrySendMsg(s, SquadStatus.Neutral);
 			return true;
@@ -109,10 +109,10 @@ namespace RedDust.Control
 
 		public bool AddFriendlySquad(Squad s)
 		{
-			if (!_friendlies.Contains(s))
+			if (!friendlies.Contains(s))
 			{
-				_hostiles.Remove(s);
-				_friendlies.Add(s);
+				hostiles.Remove(s);
+				friendlies.Add(s);
 				TrySendMsg(s, SquadStatus.Friendly);
 				return true;
 			}
@@ -122,15 +122,15 @@ namespace RedDust.Control
 
 		public bool RemoveFriendlySquad(Squad s)
 		{
-			if (!_friendlies.Remove(s)) { return false; }
+			if (!friendlies.Remove(s)) { return false; }
 
 			TrySendMsg(s, SquadStatus.Neutral);
-			return _friendlies.Remove(s);
+			return friendlies.Remove(s);
 		}
 
 		public bool IsHostileTo(Character c)
 		{
-			foreach (var hostileSquad in _hostiles)
+			foreach (var hostileSquad in hostiles)
 			{
 				if (hostileSquad.HasMember(c)) { return true; }
 			}
@@ -140,7 +140,7 @@ namespace RedDust.Control
 
 		public bool IsFriendlyTo(Character c)
 		{
-			foreach (var friendlySquad in _friendlies)
+			foreach (var friendlySquad in friendlies)
 			{
 				if (friendlySquad.HasMember(c)) { return true; }
 			}

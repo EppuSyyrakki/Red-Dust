@@ -187,7 +187,7 @@ namespace RedDust.Control.Input
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Move"",
+                    ""name"": ""Pan"",
                     ""type"": ""PassThrough"",
                     ""id"": ""68b183ab-7778-4086-bb4e-f8932975d9c8"",
                     ""expectedControlType"": ""Vector2"",
@@ -231,7 +231,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Move"",
+                    ""action"": ""Pan"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -242,7 +242,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""Pan"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -253,7 +253,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""Pan"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -264,7 +264,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""Pan"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -275,7 +275,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Move"",
+                    ""action"": ""Pan"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -348,11 +348,20 @@ namespace RedDust.Control.Input
             ]
         },
         {
-            ""name"": ""Menu"",
+            ""name"": ""UI"",
             ""id"": ""272f6d14-89ba-496f-b7ff-215263d3219f"",
             ""actions"": [
                 {
-                    ""name"": ""Navigate"",
+                    ""name"": ""Point"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""32b35790-4ed0-4e9a-aa41-69ac6d629449"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Move"",
                     ""type"": ""PassThrough"",
                     ""id"": ""c95b2375-e6d9-4b88-9c4c-c5e76515df4b"",
                     ""expectedControlType"": ""Vector2"",
@@ -377,15 +386,6 @@ namespace RedDust.Control.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Point"",
-                    ""type"": ""PassThrough"",
-                    ""id"": ""32b35790-4ed0-4e9a-aa41-69ac6d629449"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Click"",
@@ -423,7 +423,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -434,7 +434,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -445,7 +445,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -456,7 +456,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -467,7 +467,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -478,7 +478,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -489,7 +489,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -500,7 +500,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -511,7 +511,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Navigate"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -534,17 +534,6 @@ namespace RedDust.Control.Input
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Cancel"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c52c8e0b-8179-41d3-b8a1-d149033bbe86"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Point"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -578,6 +567,17 @@ namespace RedDust.Control.Input
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""RightClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c52c8e0b-8179-41d3-b8a1-d149033bbe86"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Point"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -615,19 +615,19 @@ namespace RedDust.Control.Input
             // Camera
             m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
             m_Camera_CursorChange = m_Camera.FindAction("CursorChange", throwIfNotFound: true);
-            m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
+            m_Camera_Pan = m_Camera.FindAction("Pan", throwIfNotFound: true);
             m_Camera_Rotate = m_Camera.FindAction("Rotate", throwIfNotFound: true);
             m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
             m_Camera_Drag = m_Camera.FindAction("Drag", throwIfNotFound: true);
-            // Menu
-            m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
-            m_Menu_Navigate = m_Menu.FindAction("Navigate", throwIfNotFound: true);
-            m_Menu_Submit = m_Menu.FindAction("Submit", throwIfNotFound: true);
-            m_Menu_Cancel = m_Menu.FindAction("Cancel", throwIfNotFound: true);
-            m_Menu_Point = m_Menu.FindAction("Point", throwIfNotFound: true);
-            m_Menu_Click = m_Menu.FindAction("Click", throwIfNotFound: true);
-            m_Menu_ScrollWheel = m_Menu.FindAction("ScrollWheel", throwIfNotFound: true);
-            m_Menu_RightClick = m_Menu.FindAction("RightClick", throwIfNotFound: true);
+            // UI
+            m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+            m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
+            m_UI_Move = m_UI.FindAction("Move", throwIfNotFound: true);
+            m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
+            m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
+            m_UI_Click = m_UI.FindAction("Click", throwIfNotFound: true);
+            m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
+            m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -769,7 +769,7 @@ namespace RedDust.Control.Input
         private readonly InputActionMap m_Camera;
         private ICameraActions m_CameraActionsCallbackInterface;
         private readonly InputAction m_Camera_CursorChange;
-        private readonly InputAction m_Camera_Move;
+        private readonly InputAction m_Camera_Pan;
         private readonly InputAction m_Camera_Rotate;
         private readonly InputAction m_Camera_Zoom;
         private readonly InputAction m_Camera_Drag;
@@ -778,7 +778,7 @@ namespace RedDust.Control.Input
             private @GameInputs m_Wrapper;
             public CameraActions(@GameInputs wrapper) { m_Wrapper = wrapper; }
             public InputAction @CursorChange => m_Wrapper.m_Camera_CursorChange;
-            public InputAction @Move => m_Wrapper.m_Camera_Move;
+            public InputAction @Pan => m_Wrapper.m_Camera_Pan;
             public InputAction @Rotate => m_Wrapper.m_Camera_Rotate;
             public InputAction @Zoom => m_Wrapper.m_Camera_Zoom;
             public InputAction @Drag => m_Wrapper.m_Camera_Drag;
@@ -794,9 +794,9 @@ namespace RedDust.Control.Input
                     @CursorChange.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnCursorChange;
                     @CursorChange.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnCursorChange;
                     @CursorChange.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnCursorChange;
-                    @Move.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnMove;
-                    @Move.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnMove;
-                    @Move.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnMove;
+                    @Pan.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnPan;
+                    @Pan.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnPan;
+                    @Pan.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnPan;
                     @Rotate.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotate;
                     @Rotate.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotate;
                     @Rotate.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotate;
@@ -813,9 +813,9 @@ namespace RedDust.Control.Input
                     @CursorChange.started += instance.OnCursorChange;
                     @CursorChange.performed += instance.OnCursorChange;
                     @CursorChange.canceled += instance.OnCursorChange;
-                    @Move.started += instance.OnMove;
-                    @Move.performed += instance.OnMove;
-                    @Move.canceled += instance.OnMove;
+                    @Pan.started += instance.OnPan;
+                    @Pan.performed += instance.OnPan;
+                    @Pan.canceled += instance.OnPan;
                     @Rotate.started += instance.OnRotate;
                     @Rotate.performed += instance.OnRotate;
                     @Rotate.canceled += instance.OnRotate;
@@ -830,73 +830,73 @@ namespace RedDust.Control.Input
         }
         public CameraActions @Camera => new CameraActions(this);
 
-        // Menu
-        private readonly InputActionMap m_Menu;
-        private IMenuActions m_MenuActionsCallbackInterface;
-        private readonly InputAction m_Menu_Navigate;
-        private readonly InputAction m_Menu_Submit;
-        private readonly InputAction m_Menu_Cancel;
-        private readonly InputAction m_Menu_Point;
-        private readonly InputAction m_Menu_Click;
-        private readonly InputAction m_Menu_ScrollWheel;
-        private readonly InputAction m_Menu_RightClick;
-        public struct MenuActions
+        // UI
+        private readonly InputActionMap m_UI;
+        private IUIActions m_UIActionsCallbackInterface;
+        private readonly InputAction m_UI_Point;
+        private readonly InputAction m_UI_Move;
+        private readonly InputAction m_UI_Submit;
+        private readonly InputAction m_UI_Cancel;
+        private readonly InputAction m_UI_Click;
+        private readonly InputAction m_UI_ScrollWheel;
+        private readonly InputAction m_UI_RightClick;
+        public struct UIActions
         {
             private @GameInputs m_Wrapper;
-            public MenuActions(@GameInputs wrapper) { m_Wrapper = wrapper; }
-            public InputAction @Navigate => m_Wrapper.m_Menu_Navigate;
-            public InputAction @Submit => m_Wrapper.m_Menu_Submit;
-            public InputAction @Cancel => m_Wrapper.m_Menu_Cancel;
-            public InputAction @Point => m_Wrapper.m_Menu_Point;
-            public InputAction @Click => m_Wrapper.m_Menu_Click;
-            public InputAction @ScrollWheel => m_Wrapper.m_Menu_ScrollWheel;
-            public InputAction @RightClick => m_Wrapper.m_Menu_RightClick;
-            public InputActionMap Get() { return m_Wrapper.m_Menu; }
+            public UIActions(@GameInputs wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Point => m_Wrapper.m_UI_Point;
+            public InputAction @Move => m_Wrapper.m_UI_Move;
+            public InputAction @Submit => m_Wrapper.m_UI_Submit;
+            public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
+            public InputAction @Click => m_Wrapper.m_UI_Click;
+            public InputAction @ScrollWheel => m_Wrapper.m_UI_ScrollWheel;
+            public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
+            public InputActionMap Get() { return m_Wrapper.m_UI; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
-            public void SetCallbacks(IMenuActions instance)
+            public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+            public void SetCallbacks(IUIActions instance)
             {
-                if (m_Wrapper.m_MenuActionsCallbackInterface != null)
+                if (m_Wrapper.m_UIActionsCallbackInterface != null)
                 {
-                    @Navigate.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnNavigate;
-                    @Navigate.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnNavigate;
-                    @Navigate.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnNavigate;
-                    @Submit.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnSubmit;
-                    @Submit.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnSubmit;
-                    @Submit.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnSubmit;
-                    @Cancel.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnCancel;
-                    @Cancel.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnCancel;
-                    @Cancel.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnCancel;
-                    @Point.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
-                    @Point.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
-                    @Point.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
-                    @Click.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
-                    @Click.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
-                    @Click.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
-                    @ScrollWheel.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnScrollWheel;
-                    @ScrollWheel.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnScrollWheel;
-                    @ScrollWheel.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnScrollWheel;
-                    @RightClick.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnRightClick;
-                    @RightClick.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnRightClick;
-                    @RightClick.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnRightClick;
+                    @Point.started -= m_Wrapper.m_UIActionsCallbackInterface.OnPoint;
+                    @Point.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnPoint;
+                    @Point.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnPoint;
+                    @Move.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMove;
+                    @Move.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMove;
+                    @Move.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMove;
+                    @Submit.started -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
+                    @Submit.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
+                    @Submit.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
+                    @Cancel.started -= m_Wrapper.m_UIActionsCallbackInterface.OnCancel;
+                    @Cancel.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnCancel;
+                    @Cancel.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnCancel;
+                    @Click.started -= m_Wrapper.m_UIActionsCallbackInterface.OnClick;
+                    @Click.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnClick;
+                    @Click.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnClick;
+                    @ScrollWheel.started -= m_Wrapper.m_UIActionsCallbackInterface.OnScrollWheel;
+                    @ScrollWheel.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnScrollWheel;
+                    @ScrollWheel.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnScrollWheel;
+                    @RightClick.started -= m_Wrapper.m_UIActionsCallbackInterface.OnRightClick;
+                    @RightClick.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnRightClick;
+                    @RightClick.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnRightClick;
                 }
-                m_Wrapper.m_MenuActionsCallbackInterface = instance;
+                m_Wrapper.m_UIActionsCallbackInterface = instance;
                 if (instance != null)
                 {
-                    @Navigate.started += instance.OnNavigate;
-                    @Navigate.performed += instance.OnNavigate;
-                    @Navigate.canceled += instance.OnNavigate;
+                    @Point.started += instance.OnPoint;
+                    @Point.performed += instance.OnPoint;
+                    @Point.canceled += instance.OnPoint;
+                    @Move.started += instance.OnMove;
+                    @Move.performed += instance.OnMove;
+                    @Move.canceled += instance.OnMove;
                     @Submit.started += instance.OnSubmit;
                     @Submit.performed += instance.OnSubmit;
                     @Submit.canceled += instance.OnSubmit;
                     @Cancel.started += instance.OnCancel;
                     @Cancel.performed += instance.OnCancel;
                     @Cancel.canceled += instance.OnCancel;
-                    @Point.started += instance.OnPoint;
-                    @Point.performed += instance.OnPoint;
-                    @Point.canceled += instance.OnPoint;
                     @Click.started += instance.OnClick;
                     @Click.performed += instance.OnClick;
                     @Click.canceled += instance.OnClick;
@@ -909,7 +909,7 @@ namespace RedDust.Control.Input
                 }
             }
         }
-        public MenuActions @Menu => new MenuActions(this);
+        public UIActions @UI => new UIActions(this);
         private int m_KeyboardMouseSchemeIndex = -1;
         public InputControlScheme KeyboardMouseScheme
         {
@@ -932,17 +932,17 @@ namespace RedDust.Control.Input
         public interface ICameraActions
         {
             void OnCursorChange(InputAction.CallbackContext context);
-            void OnMove(InputAction.CallbackContext context);
+            void OnPan(InputAction.CallbackContext context);
             void OnRotate(InputAction.CallbackContext context);
             void OnZoom(InputAction.CallbackContext context);
             void OnDrag(InputAction.CallbackContext context);
         }
-        public interface IMenuActions
+        public interface IUIActions
         {
-            void OnNavigate(InputAction.CallbackContext context);
+            void OnPoint(InputAction.CallbackContext context);
+            void OnMove(InputAction.CallbackContext context);
             void OnSubmit(InputAction.CallbackContext context);
             void OnCancel(InputAction.CallbackContext context);
-            void OnPoint(InputAction.CallbackContext context);
             void OnClick(InputAction.CallbackContext context);
             void OnScrollWheel(InputAction.CallbackContext context);
             void OnRightClick(InputAction.CallbackContext context);

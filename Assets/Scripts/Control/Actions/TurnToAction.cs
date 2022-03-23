@@ -5,16 +5,16 @@ namespace RedDust.Control.Actions
 {
 	public class TurnToAction : ActionBase
 	{
-		Vector3 _target;
+		Vector3 target;
 
 		public TurnToAction(Character c, Vector3 target) : base(c)
 		{
-			_target = target;
+			this.target = target;
 		}
 
 		public override ActionState Execute()
 		{
-			if (Character.Mover.TurnTowards(_target))
+			if (Character.Mover.TurnTowards(target))
 			{
 				return ActionState.Success;
 			}

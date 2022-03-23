@@ -22,16 +22,14 @@ namespace RedDust.Control.Input
 		/// Don't modify this List directly, use the public methods in the "Selection modification" region.
 		/// They make sure the selection indicators follow along.
 		/// </summary>
-		private List<Player> _selected = new List<Player>();
-		private Player[] _players;
+		private List<Player> selected = new List<Player>();
+		private Player[] players;
 
-		private Vector2 _cursorPosition;
 		private bool _addModifier = false;
 		private bool _forceAttack = false;
 		private IPlayerInteractable _interactable = null;
 
 		public DragMode Drag { get; private set; }
-		public Vector2 CursorPosition => _cursorPosition;
 
 		public event Action SelectionBoxStarted;
 		public event Action SelectionBoxEnded;
@@ -49,14 +47,15 @@ namespace RedDust.Control.Input
 		private void Start()
 		{
 			var squad = GetComponent<Squad>();
-			_players = new Player[squad.Members.Count];
+			var characters = squad.Members;
+			players = new Player[characters.Length];
 
-			for (int i = 0; i < squad.Members.Count; i++)
+			for (int i = 0; i < characters.Length; i++)
 			{
-				if (squad.Members[i] is Player p)
+				if (characters[i] is Player p)
 				{
-					p.playerIndex = i;
-					_players[i] = p;
+					players[i] = p;
+					p.PlayerIndex = i;
 				}
 			}
 		}
@@ -64,9 +63,9 @@ namespace RedDust.Control.Input
 		private void Update()
 		{
 			// No selected players means no action can be added
-			if (_selected.Count == 0) { return; }
+			if (selected.Count == 0) { return; }
 
-			Ray ray = GetCameraRay(_cursorPosition);
+			Ray ray = GetCameraRay(CursorPosition);
 
 			// 1. UI check - if true, (for safety, null _currentinteractable?) return
 			// 2. some activated ability check? Like first aid
@@ -93,7 +92,7 @@ namespace RedDust.Control.Input
 			if (Physics.Raycast(cursorRay, out RaycastHit hit, Values.Input.CursorCastRange, interactionLayers)
 				&& hit.collider.TryGetComponent(out newInteractable))
 			{
-				if (newInteractable is Player p && _selected.Contains(p)) 
+				if (newInteractable is Player p && selected.Contains(p)) 
 				{
 					// Don't allow player to interact with itself
 					return false; 
@@ -129,25 +128,25 @@ namespace RedDust.Control.Input
 		{
 			NavMeshHit hit = new NavMeshHit();
 
-			for (int i = 0; i < _selected.Count; i++)
+			for (int i = 0; i < selected.Count; i++)
 			{
-				if (!_addModifier) { _selected[i].CancelActions(); }
+				if (!_addModifier) { selected[i].CancelActions(); }
 
 				if (i == 0)
 				{
 					if (!RaycastNavMesh(cursorRay, out hit)) { return; }
 
-					_selected[i].AddAction(new MoveToAction(_selected[i], hit.position, true));
+					selected[i].AddAction(new MoveToAction(selected[i], hit.position, true));
 					continue;
 				}
 
-				Transform t = _selected[i].transform;
+				Transform t = selected[i].transform;
 				Vector3 iDir = (t.position - hit.position).normalized * Values.Navigation.GroupMoveRange;
 				Vector3 iPos = hit.position + iDir;
 				
 				if (!RaycastNavMesh(iPos, out hit)) { continue; }
 
-				_selected[i].AddAction(new MoveToAction(_selected[i], iPos, true));
+				selected[i].AddAction(new MoveToAction(selected[i], iPos, true));
 			}
 		}
 
@@ -163,7 +162,7 @@ namespace RedDust.Control.Input
 		{
 			if (_addModifier)
 			{
-				if (_selected.Contains(p))
+				if (selected.Contains(p))
 				{
 					RemoveFromSelection(p);
 					return;
@@ -179,8 +178,8 @@ namespace RedDust.Control.Input
 
 		public void ClearSelection()
 		{
-			foreach (var p in _selected) { p.SetIndicatorSelected(false); }
-			_selected.Clear();
+			foreach (var p in selected) { p.SetIndicatorSelected(false); }
+			selected.Clear();
 		}
 
 		/// <summary>
@@ -191,14 +190,14 @@ namespace RedDust.Control.Input
 		public void CheckPolygonSelection(Vector3[] screenCorners)
 		{
 			Vector3[] corners = new Vector3[4];
-			List<Player> newSelection = new List<Player>(_players.Length);
+			List<Player> newSelection = new List<Player>(players.Length);
 
 			for (int i = 0; i < 4; i++)
 			{
 				GetWorldPosition(screenCorners[i], Values.Layer.Ground, out corners[i]);
 			}
 
-			foreach (Player p in _players)
+			foreach (Player p in players)
 			{
 				if (PointInTriangle(p.transform.position, corners[0], corners[1], corners[2])
 					|| PointInTriangle(p.transform.position, corners[2], corners[3], corners[0]))
@@ -208,19 +207,19 @@ namespace RedDust.Control.Input
 			}
 
 			ClearSelection();
-			_selected = newSelection;
-			foreach (var p in _selected) { p.SetIndicatorSelected(true); }
+			selected = newSelection;
+			foreach (var p in selected) { p.SetIndicatorSelected(true); }
 		}
 
 		private void AddToSelection(Player p)
 		{
-			_selected.Add(p);
+			selected.Add(p);
 			p.SetIndicatorSelected(true);
 		}
 
 		private void RemoveFromSelection(Player p)
 		{
-			_selected.Remove(p); 
+			selected.Remove(p); 
 			p.SetIndicatorSelected(false);
 		}		
 
@@ -230,14 +229,14 @@ namespace RedDust.Control.Input
 
 		public void OnCursorChange(InputAction.CallbackContext ctx)
 		{
-			if (ctx.performed) { _cursorPosition = ctx.ReadValue<Vector2>(); }
+			if (ctx.performed) { CursorPosition = ctx.ReadValue<Vector2>(); }
 		}
 
 		public void OnMoveOrSelect(InputAction.CallbackContext ctx)
 		{
 			if (ctx.phase != InputActionPhase.Canceled || Drag != DragMode.None) { return; }
 
-			var ray = GetCameraRay(_cursorPosition);
+			var ray = GetCameraRay(CursorPosition);
 		
 			if (!Physics.Raycast(ray, out RaycastHit hit, Values.Input.CursorCastRange, Values.Layer.Character)) 
 			{
@@ -258,12 +257,12 @@ namespace RedDust.Control.Input
 		public void OnInteract(InputAction.CallbackContext ctx)
 		{
 			if (ctx.phase != InputActionPhase.Canceled
-				|| _selected.Count == 0
+				|| selected.Count == 0
 				|| _interactable == null) { return; }
 			
-			for (int i = 0; i < _selected.Count; i++)
+			for (int i = 0; i < selected.Count; i++)
 			{
-				var player = _selected[i];
+				var player = selected[i];
 
 				if (!_addModifier) { player.CancelActions(); }
 
@@ -321,7 +320,7 @@ namespace RedDust.Control.Input
 		{
 			if (ctx.phase == InputActionPhase.Performed)
 			{
-				foreach (var p in _selected)
+				foreach (var p in selected)
 				{
 					p.CancelActions();
 				}

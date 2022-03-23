@@ -8,8 +8,8 @@ namespace RedDust.Control.Actions
 	/// </summary>
 	public class MoveToAction : ActionBase
 	{
-		private Vector3 _destination;
-		private bool _useIndicator;
+		private Vector3 destination;
+		private bool useIndicator;
 
 		/// <summary>
 		/// Create a new Move action.
@@ -19,14 +19,14 @@ namespace RedDust.Control.Actions
 		/// <param name="useIndicator">Player characters can true this to show their movement indicator.</param>
 		public MoveToAction(Character c, Vector3 destination, bool useIndicator = false) : base(c)
 		{
-			_destination = destination;
-			_useIndicator = useIndicator;
+			this.destination = destination;
+			this.useIndicator = useIndicator;
 		}
 
 		public override void OnStart()
 		{
 			base.OnStart();
-			Character.Mover.SetDestination(_destination, _useIndicator);			
+			Character.Mover.SetDestination(destination, useIndicator);			
 		}
 
 		public override ActionState Execute()

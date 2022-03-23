@@ -6,10 +6,7 @@ namespace RedDust.Control
 {
 	public class Player : Character, IPlayerInteractable
 	{
-		[SerializeField]
-		private Sprite interactionIcon;
-
-		public int playerIndex = -1;
+		public int PlayerIndex { get; set; } = -1;
 
 		#region Unity messages
 
@@ -46,6 +43,9 @@ namespace RedDust.Control
 		#endregion
 
 		#region IPlayerInteractable implementation
+
+		[SerializeField]
+		private Sprite interactionIcon;
 
 		public Sprite GetIcon()
 		{

@@ -20,7 +20,6 @@ namespace RedDust.Control.Input
 		[SerializeField]
 		private Vector3 _locationOffset;
 
-		private Vector2 _cursorPosition;
 		private Vector3 _dragOrigin;
 		private Vector3 _targetDragOrigin;
 		private Vector3 _dragCurrent;
@@ -58,11 +57,6 @@ namespace RedDust.Control.Input
 			MoveCamera();
 		}
 
-		private void LateUpdate()
-		{
-			
-		}
-
 		private void OnDrawGizmos()
 		{
 			if (Target == null) { return; }
@@ -83,9 +77,9 @@ namespace RedDust.Control.Input
 
 		private void MoveTargetByInput()
 		{
-			float x = _input.movement.x * Time.deltaTime * _moveSpeed;
+			float x = _input.pan.x * Time.deltaTime * _moveSpeed;
 			float y = RaycastTerrainHeight();
-			float z = _input.movement.y * Time.deltaTime * _moveSpeed;
+			float z = _input.pan.y * Time.deltaTime * _moveSpeed;
 
 			Target.Translate(new Vector3(x, y, z));
 		}
@@ -129,18 +123,18 @@ namespace RedDust.Control.Input
 		{
 			if (ctx.phase == InputActionPhase.Performed)
 			{
-				_cursorPosition = ctx.ReadValue<Vector2>();
+				CursorPosition = ctx.ReadValue<Vector2>();
 
-				if (_dragging && GetWorldPosition(_cursorPosition, Values.Layer.Ground, out var world))
+				if (_dragging && GetWorldPosition(CursorPosition, Values.Layer.Ground, out var world))
 				{
 					_dragCurrent = world;
 				}
 			}	
 		}
 
-		public void OnMove(InputAction.CallbackContext ctx)
+		public void OnPan(InputAction.CallbackContext ctx)
 		{
-			_targetInput.movement = ctx.ReadValue<Vector2>();
+			_targetInput.pan = ctx.ReadValue<Vector2>();
 		}
 
 		public void OnRotate(InputAction.CallbackContext ctx)
@@ -166,7 +160,7 @@ namespace RedDust.Control.Input
 		public void OnDrag(InputAction.CallbackContext ctx)
 		{
 			if (ctx.phase == InputActionPhase.Performed
-				&& GetWorldPosition(_cursorPosition, Values.Layer.Ground, out _dragOrigin))
+				&& GetWorldPosition(CursorPosition, Values.Layer.Ground, out _dragOrigin))
 			{
 				_dragCurrent = _dragOrigin;
 				_targetDragOrigin = Target.position;

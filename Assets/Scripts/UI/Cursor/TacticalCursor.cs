@@ -17,50 +17,50 @@ namespace RedDust.UI.Cursor
 		[SerializeField]
 		private Image selectionBox = null;
 
-		private SquadControls _controls = null;
-		private bool _boxEnabled;
-		private Vector2 _dragStart;
-		private Vector2 _dragEnd;
+		private SquadControls controls = null;
+		private bool boxEnabled;
+		private Vector2 dragStart;
+		private Vector2 dragEnd;
 
 		#region Unity messages
 
 		private void Awake()
 		{
 			var controlObj = GameObject.FindGameObjectWithTag(Values.Tag.PlayerSquad);
-			_controls = controlObj.GetComponent<SquadControls>();
+			controls = controlObj.GetComponent<SquadControls>();
 			iconRenderer.transform.localPosition = iconOffset;
 			selectionBox.color = Values.Color.SelectionBox;
 		}
 
 		private void OnEnable()
 		{
-			_controls.InteractableNulled += OnActionNulled;
-			_controls.InteractableChanged += OnActionChanged;
-			_controls.SelectionBoxStarted += OnSelectionBoxStarted;
-			_controls.SelectionBoxEnded += OnSelectionBoxEnded;
+			controls.InteractableNulled += OnActionNulled;
+			controls.InteractableChanged += OnActionChanged;
+			controls.SelectionBoxStarted += OnSelectionBoxStarted;
+			controls.SelectionBoxEnded += OnSelectionBoxEnded;
 		}
 
 		private void OnDisable()
 		{
-			_controls.InteractableNulled -= OnActionNulled;
-			_controls.InteractableChanged -= OnActionChanged;
-			_controls.SelectionBoxStarted -= OnSelectionBoxStarted;
-			_controls.SelectionBoxEnded -= OnSelectionBoxEnded;
+			controls.InteractableNulled -= OnActionNulled;
+			controls.InteractableChanged -= OnActionChanged;
+			controls.SelectionBoxStarted -= OnSelectionBoxStarted;
+			controls.SelectionBoxEnded -= OnSelectionBoxEnded;
 		}
 
 		private void Update()
 		{
-			transform.position = _controls.CursorPosition;
+			transform.position = controls.CursorPosition;
 
-			if (!_boxEnabled) { return; }
+			if (!boxEnabled) { return; }
 
 			Vector3 pos = transform.position;
-			_dragEnd = new Vector2(Mathf.Clamp(pos.x, 0, Screen.width), Mathf.Clamp(pos.y, 0, Screen.height));
-			Vector2 dragMiddle = (_dragStart + _dragEnd) * 0.5f;
+			dragEnd = new Vector2(Mathf.Clamp(pos.x, 0, Screen.width), Mathf.Clamp(pos.y, 0, Screen.height));
+			Vector2 dragMiddle = (dragStart + dragEnd) * 0.5f;
 			RectTransform box = selectionBox.rectTransform;
 			box.position = dragMiddle;
 			// Set the size as the difference between start and end
-			box.sizeDelta = new Vector2(Mathf.Abs(_dragStart.x - _dragEnd.x), Mathf.Abs(_dragStart.y - _dragEnd.y));
+			box.sizeDelta = new Vector2(Mathf.Abs(dragStart.x - dragEnd.x), Mathf.Abs(dragStart.y - dragEnd.y));
 		}
 
 		#endregion
@@ -81,18 +81,18 @@ namespace RedDust.UI.Cursor
 
 		private void OnSelectionBoxStarted()
 		{
-			_boxEnabled = true;
-			selectionBox.enabled = _boxEnabled;
-			_dragStart = transform.position;
+			boxEnabled = true;
+			selectionBox.enabled = boxEnabled;
+			dragStart = transform.position;
 		}
 
 		private void OnSelectionBoxEnded()
 		{
-			_boxEnabled = false;
-			selectionBox.enabled = _boxEnabled;
+			boxEnabled = false;
+			selectionBox.enabled = boxEnabled;
 			Vector3[] screenCorners = new Vector3[4];
 			selectionBox.rectTransform.GetWorldCorners(screenCorners);
-			_controls.CheckPolygonSelection(screenCorners);
+			controls.CheckPolygonSelection(screenCorners);
 		}
 
 		#endregion

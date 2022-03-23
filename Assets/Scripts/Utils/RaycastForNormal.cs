@@ -25,28 +25,28 @@ namespace Utils
 		[SerializeField]
 		private bool debugRaycast;
 
-		private Timer _timer = null;
+		private Timer timer = null;
 
 		public event Action<Vector3> CastPerformed;
 
 		private void Awake()
 		{
-			_timer = new Timer(1f);
+			timer = new Timer(1f);
 		}
 
 		private void OnEnable()
 		{
-			_timer.Alarm += RaycastGroundNormal;
+			timer.Alarm += RaycastGroundNormal;
 		}
 
 		private void OnDisable()
 		{
-			_timer.Alarm -= RaycastGroundNormal;
+			timer.Alarm -= RaycastGroundNormal;
 		}
 
 		private void Update()
 		{
-			_timer.Tick();
+			timer.Tick();
 		}
 
 		private void RaycastGroundNormal()
@@ -55,7 +55,7 @@ namespace Utils
 
 			if (debugRaycast) 
 			{ 
-				Debug.DrawLine(position, position + direction.normalized * range, Color.red, _timer.AlarmTime); 
+				Debug.DrawLine(position, position + direction.normalized * range, Color.red, timer.AlarmTime); 
 			}
 			
 			if (!Physics.Raycast(position, direction.normalized, out RaycastHit hit, range, layerMask)) { return; }
@@ -65,9 +65,9 @@ namespace Utils
 
 		public void SetTimer(float time, bool reset = true)
 		{
-			_timer.SetAlarm(time);
+			timer.SetAlarm(time);
 
-			if (reset) { _timer.Reset(); }
+			if (reset) { timer.Reset(); }
 		}
 
 		public void SetDirection(Vector3 direction)

@@ -6,37 +6,37 @@ namespace RedDust.Movement
 {
 	public class MovementIndicator : MonoBehaviour
 	{
-		private RaycastForNormal _raycaster = null;
-		private Color _color = Values.Color.Neutral;
+		private RaycastForNormal raycaster = null;
+		private Color color = Values.Color.Neutral;
 
 		public Color Color
 		{
 			get
 			{
-				return _color;
+				return color;
 			}
 			set
 			{
-				_color = value;
+				color = value;
 				var renderers = GetComponentsInChildren<SpriteRenderer>();
-				foreach (var r in renderers) { r.color = _color; }
+				foreach (var r in renderers) { r.color = color; }
 			}
 		}
 
 		private void Awake()
 		{
-			_raycaster = GetComponent<RaycastForNormal>();		
+			raycaster = GetComponent<RaycastForNormal>();		
 		}
 
 		private void OnEnable()
 		{
-			_raycaster.CastPerformed += OnCastPerformed;
+			raycaster.CastPerformed += OnCastPerformed;
 			transform.rotation = Quaternion.Euler(new Vector3(-90, 0 , 0));
 		}
 
 		private void OnDisable()
 		{
-			_raycaster.CastPerformed -= OnCastPerformed;
+			raycaster.CastPerformed -= OnCastPerformed;
 		}
 
 		private void OnCastPerformed(Vector3 normal)

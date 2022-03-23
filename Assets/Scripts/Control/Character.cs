@@ -12,9 +12,9 @@ namespace RedDust.Control
 		[SerializeField]
 		private bool logActions = false;
 
-		private Queue<ActionBase> _actionQueue = new Queue<ActionBase>();
-		private ActionBase _currentAction;
-		private ActionState _actionState;
+		private Queue<ActionBase> actionQueue = new Queue<ActionBase>();
+		private ActionBase currentAction;
+		private ActionState actionState;
 
 		protected HostilityIndicator Indicator { get; private set; }
 
@@ -45,36 +45,36 @@ namespace RedDust.Control
 
 		protected void ExecuteAction()
 		{
-			if (_currentAction == null) 
+			if (currentAction == null) 
 			{ 
-				_currentAction = GetNextAction();
-				_currentAction.OnStart();
+				currentAction = GetNextAction();
+				currentAction.OnStart();
 				return;	// TODO: Is this return necessary? Written as a safety measure.
 			}
 
-			_actionState = _currentAction.Execute();
+			actionState = currentAction.Execute();
 
-			if (_actionState == ActionState.Success)
+			if (actionState == ActionState.Success)
 			{
-				_currentAction.OnSuccess();
-				_currentAction = null;
+				currentAction.OnSuccess();
+				currentAction = null;
 			}
-			else if (_actionState == ActionState.Failure)
+			else if (actionState == ActionState.Failure)
 			{
-				_currentAction.OnFailure();
-				_currentAction = null;
+				currentAction.OnFailure();
+				currentAction = null;
 			}
 		}
 
 		private ActionBase GetNextAction()
 		{
-			if (_actionQueue.Count == 0)
+			if (actionQueue.Count == 0)
 			{
 				return new IdleAction(this);
 			}
 			else
 			{
-				return _actionQueue.Dequeue();
+				return actionQueue.Dequeue();
 			}
 		}
 
@@ -84,20 +84,20 @@ namespace RedDust.Control
 		{
 			if (action != null)
 			{
-				_actionQueue.Enqueue(action);
+				actionQueue.Enqueue(action);
 			}		
 
-			if (_actionState == ActionState.Idle)
+			if (actionState == ActionState.Idle)
 			{
-				_currentAction = null;
+				currentAction = null;
 			}
 		}
 
 		public void CancelActions()
 		{
-			_currentAction.OnCancel();
-			_currentAction = null;
-			_actionQueue.Clear();
+			currentAction.OnCancel();
+			currentAction = null;
+			actionQueue.Clear();
 		}
 
 		public void SetSquad(Squad s)

@@ -8,9 +8,9 @@ namespace Utils
 	/// </summary>
 	public class Timer
 		{
-		private readonly bool _resetOnAlarm;
-		private float _alarmTime;
-		private bool _alarmRaised;
+		private readonly bool resetOnAlarm;
+		private float alarmTime;
+		private bool alarmRaised;
 		
 		/// <summary>
 		/// Event that will be called when the timer reaches the alarm time.
@@ -19,7 +19,7 @@ namespace Utils
 
 		public float TimeElapsed { get; set; }
 
-		public float AlarmTime => _alarmTime;
+		public float AlarmTime => alarmTime;
 
 		/// <summary>
 		/// Creates a timer. By default resets when Alarm raised.
@@ -34,8 +34,8 @@ namespace Utils
 				throw new ArgumentOutOfRangeException();
 			}
 
-			_alarmTime = alarmTime;
-			_resetOnAlarm = resetOnAlarm;
+			this.alarmTime = alarmTime;
+			this.resetOnAlarm = resetOnAlarm;
 			TimeElapsed = initialTime;
 		}
 
@@ -46,7 +46,7 @@ namespace Utils
 		{
 			TimeElapsed += Time.deltaTime;
 
-			if (TimeElapsed >= _alarmTime && !_alarmRaised)
+			if (TimeElapsed >= alarmTime && !alarmRaised)
 			{
 				RaiseAlarm();
 			}
@@ -57,9 +57,9 @@ namespace Utils
 			if (Alarm != null)
 			{
 				Alarm();
-				_alarmRaised = true;
+				alarmRaised = true;
 
-				if (_resetOnAlarm)
+				if (resetOnAlarm)
 				{
 					Reset();
 				}
@@ -72,7 +72,7 @@ namespace Utils
 		public void Reset()
 		{
 			TimeElapsed = 0;
-			_alarmRaised = false;
+			alarmRaised = false;
 		}
 
 		/// <summary>
@@ -81,7 +81,7 @@ namespace Utils
 		/// <param name="time"></param>
 		public void SetAlarm(float time)
 		{
-			_alarmTime = time;
+			alarmTime = time;
 		}
 	}
 }

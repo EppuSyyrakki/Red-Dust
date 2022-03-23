@@ -15,32 +15,32 @@ namespace RedDust.Movement
 		[SerializeField]
 		private float turningSpeed = 2f;
 
-		private NavMeshAgent _navMeshAgent;
-		private Animator _animator;
-		private bool _isSneaking;
-		private float _forwardSpeed;
-		private MovementIndicator _indicator = null;
-		private bool _indicatorEnabled = false;
+		private NavMeshAgent navMeshAgent;
+		private Animator animator;
+		private bool isSneaking;
+		private float forwardSpeed;
+		private MovementIndicator indicator = null;
+		private bool indicatorEnabled = false;
 
 		public float MoveSpeed => moveSpeed;
-		public bool IsSneaking => _isSneaking;
-		public bool IsMoving => _forwardSpeed > Values.Navigation.MovingThreshold;
+		public bool IsSneaking => isSneaking;
+		public bool IsMoving => forwardSpeed > Values.Navigation.MovingThreshold;
 
 		#region Unity messages
 
 		private void Awake()
 		{
-			_navMeshAgent = GetComponent<NavMeshAgent>();
-			_navMeshAgent.SetDestination(transform.position);
-			_navMeshAgent.speed = moveSpeed;
-			_animator = GetComponent<Animator>();
-			_indicator = GetComponentInChildren<MovementIndicator>(true);	
+			navMeshAgent = GetComponent<NavMeshAgent>();
+			navMeshAgent.SetDestination(transform.position);
+			navMeshAgent.speed = moveSpeed;
+			animator = GetComponent<Animator>();
+			indicator = GetComponentInChildren<MovementIndicator>(true);	
 		}
 
 		private void OnDisable()
 		{
-			_animator.enabled = false;
-			_navMeshAgent.enabled = false;
+			animator.enabled = false;
+			navMeshAgent.enabled = false;
 		}
 
 		private void Update()
@@ -54,18 +54,18 @@ namespace RedDust.Movement
 
 		private void UpdateAnimator()
 		{
-			Vector3 local = transform.InverseTransformDirection(_navMeshAgent.velocity);
-			_forwardSpeed = local.z / Values.Navigation.MaxSpeed;
+			Vector3 local = transform.InverseTransformDirection(navMeshAgent.velocity);
+			forwardSpeed = local.z / Values.Navigation.MaxSpeed;
 			float turningSpeed = Mathf.Lerp(local.normalized.x, 0, 10f * Time.deltaTime);
-			_animator.SetFloat(Values.Animation.Velocity, _forwardSpeed);
-			_animator.SetFloat(Values.Animation.Turning, turningSpeed);
+			animator.SetFloat(Values.Animation.Velocity, forwardSpeed);
+			animator.SetFloat(Values.Animation.Turning, turningSpeed);
 
-			if (_indicatorEnabled && IsAtDestination()) { EnableMoveIndicator(false); }
+			if (indicatorEnabled && IsAtDestination()) { EnableMoveIndicator(false); }
 		}
 
 		private void SetSpeed(float speed)
 		{
-			_navMeshAgent.speed = speed;
+			navMeshAgent.speed = speed;
 		}
 
 		#endregion Private methods
@@ -78,7 +78,7 @@ namespace RedDust.Movement
 		/// </summary>
 		public void Stop()
 		{
-			Vector3 toTarget = (_navMeshAgent.destination - transform.position).normalized;
+			Vector3 toTarget = (navMeshAgent.destination - transform.position).normalized;
 			Vector3 stopPosition = transform.position + toTarget * Values.Navigation.StopDistance;
 			SetDestination(stopPosition);
 			EnableMoveIndicator(false);
@@ -86,14 +86,14 @@ namespace RedDust.Movement
 
 		public void SetDestination(Vector3 destination, bool useIndicator = false)
 		{
-			_navMeshAgent.SetDestination(destination);
+			navMeshAgent.SetDestination(destination);
 			
 			if (useIndicator) { EnableMoveIndicator(true); }
 		}
 
 		public bool IsAtDestination()
 		{
-			return _navMeshAgent.remainingDistance < Values.Navigation.MoveTargetTreshold;
+			return navMeshAgent.remainingDistance < Values.Navigation.MoveTargetTreshold;
 		}
 
 		public bool TurnTowards(Vector3 position)
@@ -124,44 +124,44 @@ namespace RedDust.Movement
 
 		public void ToggleSneak()
 		{
-			if (!_isSneaking)
+			if (!isSneaking)
 			{
 				SetSpeed(MoveSpeed * Values.Navigation.CrouchMulti);
-				_isSneaking = true;
+				isSneaking = true;
 			}
 			else
 			{
 				SetSpeed(MoveSpeed);
-				_isSneaking = false;
+				isSneaking = false;
 			}
 
-			_animator.SetBool(Values.Animation.Crouched, _isSneaking);
+			animator.SetBool(Values.Animation.Crouched, isSneaking);
 		}
 
 		public void SetStoppingDistance(float stoppingDistance)
 		{
-			_navMeshAgent.stoppingDistance = Mathf.Clamp(stoppingDistance, 0, 10f);
+			navMeshAgent.stoppingDistance = Mathf.Clamp(stoppingDistance, 0, 10f);
 		}
 
 		public NavMeshPathStatus GetPathStatus()
 		{
-			return _navMeshAgent.path.status;
+			return navMeshAgent.path.status;
 		}
 
 		public void Warp(Vector3 position, Quaternion rotation)
 		{
-			_navMeshAgent.Warp(position);
+			navMeshAgent.Warp(position);
 			transform.rotation = rotation;
 		}
 
 		private void EnableMoveIndicator(bool enable)
 		{
-			Transform t = _indicator.transform;		
+			Transform t = indicator.transform;		
 
 			if (enable) 
 			{ 
 				t.SetParent(null);
-				t.position = _navMeshAgent.destination;
+				t.position = navMeshAgent.destination;
 			}
 			else 
 			{
@@ -169,13 +169,13 @@ namespace RedDust.Movement
 				t.SetParent(transform); 
 			}
 
-			_indicatorEnabled = enable;
-			_indicator.gameObject.SetActive(enable);			
+			indicatorEnabled = enable;
+			indicator.gameObject.SetActive(enable);			
 		}
 
 		public void SetMoveIndicatorColor(Color color)
 		{
-			_indicator.Color = color;
+			indicator.Color = color;
 		}
 
 		#endregion Public API

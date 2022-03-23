@@ -9,9 +9,9 @@ namespace RedDust.Control.Actions
 	[System.Serializable]
 	public class FollowAction : ActionBase
 	{
-		private Transform _target;
-		private float _updateTargetTimer;
-		private float _updateInterval;
+		private Transform target;
+		private float updateTargetTimer;
+		private float updateInterval;
 
 		/// <summary>
 		/// Create a new Follow action.
@@ -21,31 +21,31 @@ namespace RedDust.Control.Actions
 		/// <param name="path">The path to the target. Will be updated at specific intervals.</param>
 		public FollowAction(Character c, Transform target) : base(c)
 		{
-			_target = target;
-			_updateInterval =  Values.Navigation.FollowUpdateInterval;
-			_updateTargetTimer = Random.Range(0, _updateInterval);
+			this.target = target;
+			updateInterval =  Values.Navigation.FollowUpdateInterval;
+			updateTargetTimer = Random.Range(0, updateInterval);
 		}
 
 		public override void OnStart()
 		{
 			base.OnStart();			
 			Character.Mover.SetStoppingDistance(Values.Navigation.AgentStoppingDistanceFollow);
-			Character.Mover.SetDestination(_target.position);
+			Character.Mover.SetDestination(target.position);
 		}
 
 		public override ActionState Execute()
 		{
-			_updateTargetTimer += Time.deltaTime;
+			updateTargetTimer += Time.deltaTime;
 
-			if (_updateTargetTimer > _updateInterval)
+			if (updateTargetTimer > updateInterval)
 			{
 				if (Character.Mover.GetPathStatus() != NavMeshPathStatus.PathComplete)
 				{
 					return ActionState.Failure;
 				}
 
-				Character.Mover.SetDestination(_target.position);
-				_updateTargetTimer = 0;
+				Character.Mover.SetDestination(target.position);
+				updateTargetTimer = 0;
 			}
 			
 			return ActionState.Running;

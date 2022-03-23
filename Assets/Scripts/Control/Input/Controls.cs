@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace RedDust.Control.Input
@@ -8,6 +7,8 @@ namespace RedDust.Control.Input
 	public abstract class Controls : MonoBehaviour
 	{
 		protected PlayerInput PlayerInput { get; private set; }
+		
+		public Vector2 CursorPosition { get; protected set; }
 
 		public bool InputsActive
 		{
