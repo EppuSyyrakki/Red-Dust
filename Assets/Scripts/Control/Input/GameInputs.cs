@@ -66,7 +66,7 @@ namespace RedDust.Control.Input
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""MoveOrSelect"",
+                    ""name"": ""Select"",
                     ""type"": ""Button"",
                     ""id"": ""88d9bfc9-7545-41a0-9224-f2523dbd6cf4"",
                     ""expectedControlType"": ""Button"",
@@ -110,7 +110,7 @@ namespace RedDust.Control.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""MoveOrSelect"",
+                    ""action"": ""Select"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -673,7 +673,7 @@ namespace RedDust.Control.Input
             m_Squad_ForceAttackModifier = m_Squad.FindAction("ForceAttackModifier", throwIfNotFound: true);
             m_Squad_AddModifier = m_Squad.FindAction("AddModifier", throwIfNotFound: true);
             m_Squad_Interact = m_Squad.FindAction("Interact", throwIfNotFound: true);
-            m_Squad_MoveOrSelect = m_Squad.FindAction("MoveOrSelect", throwIfNotFound: true);
+            m_Squad_Select = m_Squad.FindAction("Select", throwIfNotFound: true);
             m_Squad_Drag = m_Squad.FindAction("Drag", throwIfNotFound: true);
             m_Squad_Stop = m_Squad.FindAction("Stop", throwIfNotFound: true);
             m_Squad_SelectDirect = m_Squad.FindAction("SelectDirect", throwIfNotFound: true);
@@ -756,7 +756,7 @@ namespace RedDust.Control.Input
         private readonly InputAction m_Squad_ForceAttackModifier;
         private readonly InputAction m_Squad_AddModifier;
         private readonly InputAction m_Squad_Interact;
-        private readonly InputAction m_Squad_MoveOrSelect;
+        private readonly InputAction m_Squad_Select;
         private readonly InputAction m_Squad_Drag;
         private readonly InputAction m_Squad_Stop;
         private readonly InputAction m_Squad_SelectDirect;
@@ -768,7 +768,7 @@ namespace RedDust.Control.Input
             public InputAction @ForceAttackModifier => m_Wrapper.m_Squad_ForceAttackModifier;
             public InputAction @AddModifier => m_Wrapper.m_Squad_AddModifier;
             public InputAction @Interact => m_Wrapper.m_Squad_Interact;
-            public InputAction @MoveOrSelect => m_Wrapper.m_Squad_MoveOrSelect;
+            public InputAction @Select => m_Wrapper.m_Squad_Select;
             public InputAction @Drag => m_Wrapper.m_Squad_Drag;
             public InputAction @Stop => m_Wrapper.m_Squad_Stop;
             public InputAction @SelectDirect => m_Wrapper.m_Squad_SelectDirect;
@@ -793,9 +793,9 @@ namespace RedDust.Control.Input
                     @Interact.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
                     @Interact.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
                     @Interact.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
-                    @MoveOrSelect.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
-                    @MoveOrSelect.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
-                    @MoveOrSelect.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
+                    @Select.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnSelect;
+                    @Select.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnSelect;
+                    @Select.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnSelect;
                     @Drag.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnDrag;
                     @Drag.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnDrag;
                     @Drag.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnDrag;
@@ -821,9 +821,9 @@ namespace RedDust.Control.Input
                     @Interact.started += instance.OnInteract;
                     @Interact.performed += instance.OnInteract;
                     @Interact.canceled += instance.OnInteract;
-                    @MoveOrSelect.started += instance.OnMoveOrSelect;
-                    @MoveOrSelect.performed += instance.OnMoveOrSelect;
-                    @MoveOrSelect.canceled += instance.OnMoveOrSelect;
+                    @Select.started += instance.OnSelect;
+                    @Select.performed += instance.OnSelect;
+                    @Select.canceled += instance.OnSelect;
                     @Drag.started += instance.OnDrag;
                     @Drag.performed += instance.OnDrag;
                     @Drag.canceled += instance.OnDrag;
@@ -998,7 +998,7 @@ namespace RedDust.Control.Input
             void OnForceAttackModifier(InputAction.CallbackContext context);
             void OnAddModifier(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
-            void OnMoveOrSelect(InputAction.CallbackContext context);
+            void OnSelect(InputAction.CallbackContext context);
             void OnDrag(InputAction.CallbackContext context);
             void OnStop(InputAction.CallbackContext context);
             void OnSelectDirect(InputAction.CallbackContext context);

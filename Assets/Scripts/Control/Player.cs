@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace RedDust.Control
 {
+	/// <summary>
+	/// No other characters should be Players except those in Squad with PlayerSquad tag.
+	/// </summary>
 	public class Player : Character, IPlayerInteractable
 	{
 		public int PlayerIndex { get; set; } = -1;

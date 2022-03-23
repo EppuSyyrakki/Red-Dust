@@ -19,7 +19,7 @@ namespace RedDust.UI.Cursor
 
 		private SquadControls controls = null;
 		private bool boxEnabled;
-		private Vector2 dragStart;
+		private Vector2 dragOrigin;
 		private Vector2 dragEnd;
 
 		#region Unity messages
@@ -56,11 +56,11 @@ namespace RedDust.UI.Cursor
 
 			Vector3 pos = transform.position;
 			dragEnd = new Vector2(Mathf.Clamp(pos.x, 0, Screen.width), Mathf.Clamp(pos.y, 0, Screen.height));
-			Vector2 dragMiddle = (dragStart + dragEnd) * 0.5f;
+			Vector2 dragMiddle = (dragOrigin + dragEnd) * 0.5f;
 			RectTransform box = selectionBox.rectTransform;
 			box.position = dragMiddle;
 			// Set the size as the difference between start and end
-			box.sizeDelta = new Vector2(Mathf.Abs(dragStart.x - dragEnd.x), Mathf.Abs(dragStart.y - dragEnd.y));
+			box.sizeDelta = new Vector2(Mathf.Abs(dragOrigin.x - dragEnd.x), Mathf.Abs(dragOrigin.y - dragEnd.y));
 		}
 
 		#endregion
@@ -79,11 +79,11 @@ namespace RedDust.UI.Cursor
 			iconRenderer.color = Values.Color.WhiteOpaque;
 		}
 
-		private void OnSelectionBoxStarted()
+		private void OnSelectionBoxStarted(Vector2 origin)
 		{
 			boxEnabled = true;
 			selectionBox.enabled = boxEnabled;
-			dragStart = transform.position;
+			dragOrigin = origin;
 		}
 
 		private void OnSelectionBoxEnded()

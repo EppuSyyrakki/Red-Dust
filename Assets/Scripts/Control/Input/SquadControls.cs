@@ -26,13 +26,14 @@ namespace RedDust.Control.Input
 		private List<Player> selected = new List<Player>();
 		private Player[] players;
 
-		private bool _addModifier = false;
-		private bool _forceAttack = false;
-		private IPlayerInteractable _interactable = null;
+		private Vector2 dragOrigin;
+		private bool addModifier = false;
+		private bool forceAttack = false;
+		private IPlayerInteractable interactable = null;
 
 		public DragMode Drag { get; private set; }
 
-		public event Action SelectionBoxStarted;
+		public event Action<Vector2> SelectionBoxStarted;
 		public event Action SelectionBoxEnded;
 		public event Action<Sprite> InteractableChanged;
 		public event Action InteractableNulled;
@@ -76,7 +77,7 @@ namespace RedDust.Control.Input
 			{
 				TryChangeInteractable(newInteractable);
 			}
-			else if (_interactable != null)
+			else if (interactable != null)
 			{
 				NullInteractable();
 			}
@@ -108,19 +109,19 @@ namespace RedDust.Control.Input
 
 		private void TryChangeInteractable(IPlayerInteractable newInteractable)
 		{
-			if (_interactable == null || newInteractable != _interactable)
+			if (interactable == null || newInteractable != interactable)
 			{
-				_interactable = newInteractable;
-				InteractableChanged?.Invoke(_interactable.GetIcon(selected[0]));
+				interactable = newInteractable;
+				InteractableChanged?.Invoke(interactable.GetIcon(selected[0]));
 
-				if (logInput) { Debug.Log(name + " current interactable is: " + _interactable.GetType().Name); }
+				if (logInput) { Debug.Log(name + " current interactable is: " + interactable.GetType().Name); }
 			}
 		}
 
 		private void NullInteractable()
 		{
 			InteractableNulled?.Invoke();
-			_interactable = null;
+			interactable = null;
 
 			if (logInput) { Debug.Log(name + " current interactable was nulled"); }
 		}
@@ -131,7 +132,7 @@ namespace RedDust.Control.Input
 
 			for (int i = 0; i < selected.Count; i++)
 			{
-				if (!_addModifier) { selected[i].CancelActions(); }
+				if (!addModifier) { selected[i].CancelActions(); }
 
 				if (i == 0)
 				{
@@ -161,7 +162,7 @@ namespace RedDust.Control.Input
 		/// </summary>
 		public void ModifySelection(Player p)
 		{
-			if (_addModifier)
+			if (addModifier)
 			{
 				if (selected.Contains(p))
 				{
@@ -238,60 +239,64 @@ namespace RedDust.Control.Input
 			if (ctx.performed) { CursorPosition = ctx.ReadValue<Vector2>(); }
 		}
 
-		public void OnMoveOrSelect(InputAction.CallbackContext ctx)
+		public void OnSelect(InputAction.CallbackContext ctx)
 		{
+			// Save the cursor position in case this will be a drag later
+			if (ctx.phase == InputActionPhase.Performed) { dragOrigin = CursorPosition; }
+
 			if (ctx.phase != InputActionPhase.Canceled || Drag != DragMode.None) { return; }
 
 			var ray = GetCameraRay(CursorPosition);
+			var range = Values.Input.CursorCastRange;
+			var layers = Values.Layer.Character;
 		
-			if (!Physics.Raycast(ray, out RaycastHit hit, Values.Input.CursorCastRange, Values.Layer.Character)) 
-			{
-				// If we don't hit anything in the Character layer, it's supposed to be a move order
-				MoveSelectedToCursor(ray);
-
-				if (logInput) { Debug.Log(name + " MoveOrSelect released - Move"); }
-				return;
-			}
-
-			if (hit.collider.TryGetComponent(out Player p))
+			if (Physics.Raycast(ray, out RaycastHit hit, range, layers)
+				&& hit.collider.TryGetComponent(out Player p)
+				&& players.Contains(p))
 			{
 				ModifySelection(p);
-				if (logInput) { Debug.Log(name + " MoveOrSelect released - Select"); }
+				
+				if (logInput) { Debug.Log(name + " Select released"); }
 			}
 		}
 
 		public void OnInteract(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase != InputActionPhase.Canceled
-				|| selected.Count == 0
-				|| _interactable == null) { return; }
+			if (ctx.phase != InputActionPhase.Canceled || selected.Count == 0) { return; }
 			
-			for (int i = 0; i < selected.Count; i++)
+			if (interactable != null)
 			{
-				var player = selected[i];
+				for (int i = 0; i < selected.Count; i++)
+				{
+					var player = selected[i];
 
-				if (!_addModifier) { player.CancelActions(); }
+					if (!addModifier) { player.CancelActions(); }
 
-				player.AddAction(_interactable.GetAction(player));
+					player.AddAction(interactable.GetAction(player));
 
-				if (logInput) { Debug.Log(name + " Interact button released"); }
-			}		
+					if (logInput) { Debug.Log(name + " Interact button released"); }
+				}
+
+				return;
+			}
+
+			MoveSelectedToCursor(GetCameraRay(CursorPosition));
 		}
 
 		public void OnAddModifier(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase == InputActionPhase.Performed) { _addModifier = true; }
-			else if (ctx.phase == InputActionPhase.Canceled) { _addModifier = false; }
+			if (ctx.phase == InputActionPhase.Performed) { addModifier = true; }
+			else if (ctx.phase == InputActionPhase.Canceled) { addModifier = false; }
 
-			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + " Add: " + _addModifier); }			
+			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + " Add: " + addModifier); }			
 		}
 
 		public void OnForceAttackModifier(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase == InputActionPhase.Performed) { _forceAttack = true; }
-			else if (ctx.phase == InputActionPhase.Canceled) { _forceAttack = false; }
+			if (ctx.phase == InputActionPhase.Performed) { forceAttack = true; }
+			else if (ctx.phase == InputActionPhase.Canceled) { forceAttack = false; }
 
-			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + "ForceAttack: " + _forceAttack); }
+			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + "ForceAttack: " + forceAttack); }
 		}
 
 		public void OnDrag(InputAction.CallbackContext ctx)
@@ -303,7 +308,7 @@ namespace RedDust.Control.Input
 
 			if (ctx.phase == InputActionPhase.Performed)
 			{
-				SelectionBoxStarted?.Invoke();
+				SelectionBoxStarted?.Invoke(dragOrigin);
 				Drag = DragMode.Selection;
 
 				if (logInput) { Debug.Log(name + "Drag performing with mode " + Drag.ToString()); }
