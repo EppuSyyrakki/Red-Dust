@@ -21,6 +21,7 @@ namespace RedDust.Control.Actions
 		{
 			this.destination = destination;
 			this.useIndicator = useIndicator;
+			MakesCharacterBusy = false;
 		}
 
 		public override void OnStart()

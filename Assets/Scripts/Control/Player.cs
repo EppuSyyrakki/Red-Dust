@@ -44,17 +44,19 @@ namespace RedDust.Control
 
 		#region IPlayerInteractable implementation
 
-		[SerializeField]
-		private Sprite interactionIcon;
-
-		public Sprite GetIcon()
+		public Sprite GetIcon(Player p)
 		{
-			return interactionIcon;
+			return ActionBase.LoadIcon(nameof(FollowAction));
 		}
 
 		public ActionBase GetAction(Player p)
 		{
 			return new FollowAction(p, transform);
+		}
+
+		public bool IsAvailableForInteraction()
+		{
+			return true;
 		}
 
 		#endregion	

@@ -24,6 +24,7 @@ namespace RedDust.Control.Actions
 			this.target = target;
 			updateInterval =  Values.Navigation.FollowUpdateInterval;
 			updateTargetTimer = Random.Range(0, updateInterval);
+			MakesCharacterBusy = false;
 		}
 
 		public override void OnStart()

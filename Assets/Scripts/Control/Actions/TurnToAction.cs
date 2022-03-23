@@ -10,6 +10,7 @@ namespace RedDust.Control.Actions
 		public TurnToAction(Character c, Vector3 target) : base(c)
 		{
 			this.target = target;
+			MakesCharacterBusy = false;
 		}
 
 		public override ActionState Execute()

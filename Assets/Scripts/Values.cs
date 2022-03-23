@@ -55,7 +55,7 @@ namespace RedDust
 
 		public class Path
 		{
-			public const string Formations = "Control/Formations";
+			public const string ActionIcons = "UI/ActionIcons/";
 		}
 
 		public class Camera

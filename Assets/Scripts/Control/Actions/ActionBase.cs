@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RedDust.Control.Actions
@@ -11,16 +12,40 @@ namespace RedDust.Control.Actions
 	}
 
 	/// <summary>
-	/// The base class for all Actions in the game.
+	/// The base class for all Actions in the game. No action should be checking its own viability
+	/// before construction, this should be done by Character before assigning the action to them.
 	/// </summary>
 	[System.Serializable]
 	public abstract class ActionBase
 	{
-		protected Character Character { get; private set; }
-
 		protected ActionBase(Character character)
 		{
 			Character = character;
+		}		
+
+		private static Dictionary<string, Sprite> iconLookup;
+
+		protected Character Character { get; private set; }
+
+		public bool MakesCharacterBusy { get; protected set; } = true;
+
+		/// <summary>
+		/// Tries to lookup a Sprite for the given action name. If not found, tries to Load the icon
+		/// from resources to the lookup.
+		/// </summary>
+		public static Sprite LoadIcon(string actionName)
+		{
+			if (iconLookup == null) { iconLookup = new Dictionary<string, Sprite>(); }
+
+			if (iconLookup.TryGetValue(actionName, out Sprite icon)) { return icon; }
+
+			var path = Values.Path.ActionIcons + actionName;
+			var loadedIcon = Resources.Load(path, typeof(Sprite)) as Sprite;
+
+			if (loadedIcon == null) { Debug.LogWarning("No Sprite icon found at " + path); }
+
+			iconLookup.Add(actionName, loadedIcon);
+			return loadedIcon;
 		}
 
 		public abstract ActionState Execute();

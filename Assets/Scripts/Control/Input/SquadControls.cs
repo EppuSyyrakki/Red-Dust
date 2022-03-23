@@ -1,4 +1,5 @@
 ﻿using RedDust.Control.Actions;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -110,7 +111,7 @@ namespace RedDust.Control.Input
 			if (_interactable == null || newInteractable != _interactable)
 			{
 				_interactable = newInteractable;
-				InteractableChanged?.Invoke(_interactable.GetIcon());
+				InteractableChanged?.Invoke(_interactable.GetIcon(selected[0]));
 
 				if (logInput) { Debug.Log(name + " current interactable is: " + _interactable.GetType().Name); }
 			}
@@ -221,7 +222,12 @@ namespace RedDust.Control.Input
 		{
 			selected.Remove(p); 
 			p.SetIndicatorSelected(false);
-		}		
+		}
+
+		private void SortSelection()
+		{
+			selected = selected.OrderBy(s => s.PlayerIndex).ToList();
+		}
 
 		#endregion
 
@@ -327,7 +333,29 @@ namespace RedDust.Control.Input
 
 				if (logInput) { Debug.Log(name + " Stop pressed"); }
 			}
-		}		
+		}
+		
+		public void OnSelectDirect(InputAction.CallbackContext ctx)
+		{
+			if (ctx.phase != InputActionPhase.Performed) { return; }
+
+			if (SelectionAxisToIndex(ctx.ReadValue<Vector2>(), out int i))
+			{
+				ModifySelection(players[i]);
+			}	
+		}
+
+		private bool SelectionAxisToIndex(Vector2 value, out int i)
+		{
+			i = -1;
+
+			if (value == Vector2.up) { i = 0; }
+			else if (value == Vector2.right) { i = 1; }
+			else if (value == Vector2.down) { i = 2; }
+			else if (value == Vector2.left) { i = 3; }
+
+			return i > -1 && i < players.Length;
+		}
 
 		//public void SwitchInputToMenu()
 		//{

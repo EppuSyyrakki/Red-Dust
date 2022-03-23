@@ -39,18 +39,9 @@ namespace RedDust.Control.Input
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""MoveOrSelect"",
+                    ""name"": ""ForceAttackModifier"",
                     ""type"": ""Button"",
-                    ""id"": ""88d9bfc9-7545-41a0-9224-f2523dbd6cf4"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Interact"",
-                    ""type"": ""Button"",
-                    ""id"": ""6c2ab1b8-8984-453a-af3d-a3c78ae1679a"",
+                    ""id"": ""ddbd7977-25a5-45a7-9a3f-5efa9abba545"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -66,9 +57,18 @@ namespace RedDust.Control.Input
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ForceAttackModifier"",
+                    ""name"": ""Interact"",
                     ""type"": ""Button"",
-                    ""id"": ""ddbd7977-25a5-45a7-9a3f-5efa9abba545"",
+                    ""id"": ""6c2ab1b8-8984-453a-af3d-a3c78ae1679a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MoveOrSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""88d9bfc9-7545-41a0-9224-f2523dbd6cf4"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -91,42 +91,18 @@ namespace RedDust.Control.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectDirect"",
+                    ""type"": ""Value"",
+                    ""id"": ""eef2e374-b360-4ca3-a685-e8891b4cc797"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""ce5cd7f3-729c-497a-a8af-6f5736f0c13a"",
-                    ""path"": ""<Mouse>/rightButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Interact"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e259ae8f-ae81-4106-9cad-efd48f51d958"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""AddModifier"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""843981c9-0d2f-425f-8626-d44fc8981479"",
-                    ""path"": ""<Keyboard>/ctrl"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""ForceAttackModifier"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": """",
                     ""id"": ""1e7af28e-632d-414c-8d27-b5ee38637bab"",
@@ -168,6 +144,94 @@ namespace RedDust.Control.Input
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Drag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Selection"",
+                    ""id"": ""0cada0e9-519a-4cfa-9335-c71296b0338b"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectDirect"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""c6348d5f-ad41-4022-a9da-629492cacee9"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectDirect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""66a5dcd8-9a0d-4fd4-8fd0-efc423f41599"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectDirect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""3ff1ed66-fe88-4ca4-aeec-8883f69b9fcc"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectDirect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""6cef1000-af59-4fb0-aafd-ba5cbc32f2d0"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectDirect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e259ae8f-ae81-4106-9cad-efd48f51d958"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""AddModifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""843981c9-0d2f-425f-8626-d44fc8981479"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ForceAttackModifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce5cd7f3-729c-497a-a8af-6f5736f0c13a"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -606,12 +670,13 @@ namespace RedDust.Control.Input
             // Squad
             m_Squad = asset.FindActionMap("Squad", throwIfNotFound: true);
             m_Squad_CursorChange = m_Squad.FindAction("CursorChange", throwIfNotFound: true);
-            m_Squad_MoveOrSelect = m_Squad.FindAction("MoveOrSelect", throwIfNotFound: true);
-            m_Squad_Interact = m_Squad.FindAction("Interact", throwIfNotFound: true);
-            m_Squad_AddModifier = m_Squad.FindAction("AddModifier", throwIfNotFound: true);
             m_Squad_ForceAttackModifier = m_Squad.FindAction("ForceAttackModifier", throwIfNotFound: true);
+            m_Squad_AddModifier = m_Squad.FindAction("AddModifier", throwIfNotFound: true);
+            m_Squad_Interact = m_Squad.FindAction("Interact", throwIfNotFound: true);
+            m_Squad_MoveOrSelect = m_Squad.FindAction("MoveOrSelect", throwIfNotFound: true);
             m_Squad_Drag = m_Squad.FindAction("Drag", throwIfNotFound: true);
             m_Squad_Stop = m_Squad.FindAction("Stop", throwIfNotFound: true);
+            m_Squad_SelectDirect = m_Squad.FindAction("SelectDirect", throwIfNotFound: true);
             // Camera
             m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
             m_Camera_CursorChange = m_Camera.FindAction("CursorChange", throwIfNotFound: true);
@@ -688,23 +753,25 @@ namespace RedDust.Control.Input
         private readonly InputActionMap m_Squad;
         private ISquadActions m_SquadActionsCallbackInterface;
         private readonly InputAction m_Squad_CursorChange;
-        private readonly InputAction m_Squad_MoveOrSelect;
-        private readonly InputAction m_Squad_Interact;
-        private readonly InputAction m_Squad_AddModifier;
         private readonly InputAction m_Squad_ForceAttackModifier;
+        private readonly InputAction m_Squad_AddModifier;
+        private readonly InputAction m_Squad_Interact;
+        private readonly InputAction m_Squad_MoveOrSelect;
         private readonly InputAction m_Squad_Drag;
         private readonly InputAction m_Squad_Stop;
+        private readonly InputAction m_Squad_SelectDirect;
         public struct SquadActions
         {
             private @GameInputs m_Wrapper;
             public SquadActions(@GameInputs wrapper) { m_Wrapper = wrapper; }
             public InputAction @CursorChange => m_Wrapper.m_Squad_CursorChange;
-            public InputAction @MoveOrSelect => m_Wrapper.m_Squad_MoveOrSelect;
-            public InputAction @Interact => m_Wrapper.m_Squad_Interact;
-            public InputAction @AddModifier => m_Wrapper.m_Squad_AddModifier;
             public InputAction @ForceAttackModifier => m_Wrapper.m_Squad_ForceAttackModifier;
+            public InputAction @AddModifier => m_Wrapper.m_Squad_AddModifier;
+            public InputAction @Interact => m_Wrapper.m_Squad_Interact;
+            public InputAction @MoveOrSelect => m_Wrapper.m_Squad_MoveOrSelect;
             public InputAction @Drag => m_Wrapper.m_Squad_Drag;
             public InputAction @Stop => m_Wrapper.m_Squad_Stop;
+            public InputAction @SelectDirect => m_Wrapper.m_Squad_SelectDirect;
             public InputActionMap Get() { return m_Wrapper.m_Squad; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -717,24 +784,27 @@ namespace RedDust.Control.Input
                     @CursorChange.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnCursorChange;
                     @CursorChange.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnCursorChange;
                     @CursorChange.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnCursorChange;
-                    @MoveOrSelect.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
-                    @MoveOrSelect.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
-                    @MoveOrSelect.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
-                    @Interact.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
-                    @Interact.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
-                    @Interact.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
-                    @AddModifier.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnAddModifier;
-                    @AddModifier.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnAddModifier;
-                    @AddModifier.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnAddModifier;
                     @ForceAttackModifier.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnForceAttackModifier;
                     @ForceAttackModifier.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnForceAttackModifier;
                     @ForceAttackModifier.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnForceAttackModifier;
+                    @AddModifier.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnAddModifier;
+                    @AddModifier.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnAddModifier;
+                    @AddModifier.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnAddModifier;
+                    @Interact.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
+                    @Interact.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
+                    @Interact.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnInteract;
+                    @MoveOrSelect.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
+                    @MoveOrSelect.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
+                    @MoveOrSelect.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnMoveOrSelect;
                     @Drag.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnDrag;
                     @Drag.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnDrag;
                     @Drag.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnDrag;
                     @Stop.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnStop;
                     @Stop.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnStop;
                     @Stop.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnStop;
+                    @SelectDirect.started -= m_Wrapper.m_SquadActionsCallbackInterface.OnSelectDirect;
+                    @SelectDirect.performed -= m_Wrapper.m_SquadActionsCallbackInterface.OnSelectDirect;
+                    @SelectDirect.canceled -= m_Wrapper.m_SquadActionsCallbackInterface.OnSelectDirect;
                 }
                 m_Wrapper.m_SquadActionsCallbackInterface = instance;
                 if (instance != null)
@@ -742,24 +812,27 @@ namespace RedDust.Control.Input
                     @CursorChange.started += instance.OnCursorChange;
                     @CursorChange.performed += instance.OnCursorChange;
                     @CursorChange.canceled += instance.OnCursorChange;
-                    @MoveOrSelect.started += instance.OnMoveOrSelect;
-                    @MoveOrSelect.performed += instance.OnMoveOrSelect;
-                    @MoveOrSelect.canceled += instance.OnMoveOrSelect;
-                    @Interact.started += instance.OnInteract;
-                    @Interact.performed += instance.OnInteract;
-                    @Interact.canceled += instance.OnInteract;
-                    @AddModifier.started += instance.OnAddModifier;
-                    @AddModifier.performed += instance.OnAddModifier;
-                    @AddModifier.canceled += instance.OnAddModifier;
                     @ForceAttackModifier.started += instance.OnForceAttackModifier;
                     @ForceAttackModifier.performed += instance.OnForceAttackModifier;
                     @ForceAttackModifier.canceled += instance.OnForceAttackModifier;
+                    @AddModifier.started += instance.OnAddModifier;
+                    @AddModifier.performed += instance.OnAddModifier;
+                    @AddModifier.canceled += instance.OnAddModifier;
+                    @Interact.started += instance.OnInteract;
+                    @Interact.performed += instance.OnInteract;
+                    @Interact.canceled += instance.OnInteract;
+                    @MoveOrSelect.started += instance.OnMoveOrSelect;
+                    @MoveOrSelect.performed += instance.OnMoveOrSelect;
+                    @MoveOrSelect.canceled += instance.OnMoveOrSelect;
                     @Drag.started += instance.OnDrag;
                     @Drag.performed += instance.OnDrag;
                     @Drag.canceled += instance.OnDrag;
                     @Stop.started += instance.OnStop;
                     @Stop.performed += instance.OnStop;
                     @Stop.canceled += instance.OnStop;
+                    @SelectDirect.started += instance.OnSelectDirect;
+                    @SelectDirect.performed += instance.OnSelectDirect;
+                    @SelectDirect.canceled += instance.OnSelectDirect;
                 }
             }
         }
@@ -922,12 +995,13 @@ namespace RedDust.Control.Input
         public interface ISquadActions
         {
             void OnCursorChange(InputAction.CallbackContext context);
-            void OnMoveOrSelect(InputAction.CallbackContext context);
-            void OnInteract(InputAction.CallbackContext context);
-            void OnAddModifier(InputAction.CallbackContext context);
             void OnForceAttackModifier(InputAction.CallbackContext context);
+            void OnAddModifier(InputAction.CallbackContext context);
+            void OnInteract(InputAction.CallbackContext context);
+            void OnMoveOrSelect(InputAction.CallbackContext context);
             void OnDrag(InputAction.CallbackContext context);
             void OnStop(InputAction.CallbackContext context);
+            void OnSelectDirect(InputAction.CallbackContext context);
         }
         public interface ICameraActions
         {

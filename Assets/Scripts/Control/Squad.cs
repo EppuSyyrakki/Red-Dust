@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RedDust.Control
 {
-	public enum SquadStatus { Neutral, Friendly, Hostile, Player }
+	public enum SquadStatus { Neutral, Allied, Hostile, Player }
 
 	public class Squad : MonoBehaviour
 	{
@@ -17,7 +17,7 @@ namespace RedDust.Control
 
 		private List<Character> members = new List<Character>();
 		private List<Squad> hostiles = new List<Squad>();
-		private List<Squad> friendlies = new List<Squad>();
+		private List<Squad> allies = new List<Squad>();
 
 		private bool isPlayerSquad = false;
 
@@ -45,7 +45,7 @@ namespace RedDust.Control
 		{
 			// Do this in start so other squads are Awake and can listen to a message from
 			// PlayerSquad when it does this - it will change their hostility indicators.
-			foreach (var s in initialFriendlySquads) { AddFriendlySquad(s); }
+			foreach (var s in initialFriendlySquads) { AddAlliedSquad(s); }
 			foreach (var s in initialHostileSquads) { AddHostileSquad(s); }
 		}
 
@@ -90,7 +90,7 @@ namespace RedDust.Control
 		{
 			if (!hostiles.Contains(s))
 			{
-				friendlies.Remove(s);
+				allies.Remove(s);
 				hostiles.Add(s);
 				TrySendMsg(s, SquadStatus.Hostile);
 				return true;
@@ -107,25 +107,25 @@ namespace RedDust.Control
 			return true;
 		}
 
-		public bool AddFriendlySquad(Squad s)
+		public bool AddAlliedSquad(Squad s)
 		{
-			if (!friendlies.Contains(s))
+			if (!allies.Contains(s))
 			{
 				hostiles.Remove(s);
-				friendlies.Add(s);
-				TrySendMsg(s, SquadStatus.Friendly);
+				allies.Add(s);
+				TrySendMsg(s, SquadStatus.Allied);
 				return true;
 			}
 
 			return false;
 		}
 
-		public bool RemoveFriendlySquad(Squad s)
+		public bool RemoveAlliedSquad(Squad s)
 		{
-			if (!friendlies.Remove(s)) { return false; }
+			if (!allies.Remove(s)) { return false; }
 
 			TrySendMsg(s, SquadStatus.Neutral);
-			return friendlies.Remove(s);
+			return allies.Remove(s);
 		}
 
 		public bool IsHostileTo(Character c)
@@ -138,14 +138,24 @@ namespace RedDust.Control
 			return false;
 		}
 
-		public bool IsFriendlyTo(Character c)
+		public bool IsHostileTo(Squad s)
 		{
-			foreach (var friendlySquad in friendlies)
+			return hostiles.Contains(s);
+		}
+
+		public bool IsAlliedTo(Character c)
+		{
+			foreach (var friendlySquad in allies)
 			{
 				if (friendlySquad.HasMember(c)) { return true; }
 			}
 
 			return false;
+		}
+
+		public bool IsAlliedTo(Squad s)
+		{
+			return allies.Contains(s);
 		}
 
 		#endregion

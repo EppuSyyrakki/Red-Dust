@@ -17,11 +17,19 @@ namespace RedDust.Control
 		private ActionState actionState;
 
 		protected HostilityIndicator Indicator { get; private set; }
-
+	
 		public bool LoggingEnabled => logActions;
 		public Mover Mover { get; private set; }
 		public Fighter Fighter { get; private set; }
 		public Squad Squad { get; private set; }
+		public bool IsBusy
+		{
+			get 
+			{ 
+				if (currentAction != null) { return currentAction.MakesCharacterBusy; }
+				return false;
+			}
+		}
 
 		#region Unity messages
 
@@ -109,7 +117,7 @@ namespace RedDust.Control
 		{
 			Color color = Values.Color.Neutral;
 
-			if (status == SquadStatus.Friendly)
+			if (status == SquadStatus.Allied)
 			{
 				color = Values.Color.Friendly;
 			}
