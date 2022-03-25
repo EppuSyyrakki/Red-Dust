@@ -33,7 +33,7 @@ namespace RedDust
 			public const int MaxProjectileQueue = 64;
 			public const int MaxProjectilesPerFrame = 32;
 			public const int MaxRaycastHits = 4;
-			public const float MaxProjectileTravel = 500f;
+			public const float MaxProjectileTravel = 100f;
 		}
 
 		public class Input

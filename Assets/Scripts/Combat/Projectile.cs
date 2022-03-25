@@ -14,11 +14,11 @@ namespace RedDust.Combat
 		[SerializeField]
 		private float damage;
 
-		private float maxTravel;
+		private float maxTravel = Values.Combat.MaxProjectileTravel;
 		private readonly int maxRaycastHits = Values.Combat.MaxRaycastHits;
 		private readonly int projectilesLayer = Values.Layer.Projectiles;
 
-		public event Action<Projectile> ProjectileFinished;
+		public event Action<Projectile> Finished;
 
 		public int Penetration { get; private set; }
 		public float Travelled { get; private set; }
@@ -31,29 +31,28 @@ namespace RedDust.Combat
 
 		public void Init(Vector3 origin, Vector3 direction, int senderId)
 		{
+			transform.forward = direction;
 			var vel = velocity * Time.deltaTime;
 			Info = new RaycastCommand(origin, direction, vel, projectilesLayer, maxRaycastHits);
 			SenderId = senderId;
 			Penetration = penetration;
-			maxTravel = Values.Combat.MaxProjectileTravel;
 		}
 
 		/// <summary>
 		/// Call after the job in AttackScheduler is complete.
 		/// </summary>
-		/// <param name="position"></param>
 		/// <param name="penetration"></param>
-		public void Set(RaycastCommand info, int penetration, float travelled)
+		public void Set(RaycastCommand result, int penetration, float travelled)
 		{
-			Info = new RaycastCommand(info.from, info.direction, velocity * Time.deltaTime,
-				info.layerMask, info.maxHits);
-			transform.position = Info.from + Info.direction;
+			Info = new RaycastCommand(result.from, result.direction, velocity * Time.deltaTime,
+				result.layerMask, result.maxHits);
 			Penetration = penetration;
 			Travelled = travelled;
+			transform.position = Info.from;
 
 			if (Travelled > maxTravel)
 			{
-				ProjectileFinished?.Invoke(this);
+				Finished?.Invoke(this);
 			}
 		}
 	}

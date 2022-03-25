@@ -12,13 +12,17 @@ namespace RedDust.Combat
 {
 	/// <summary>
 	/// Hosting all Projectiles and other attacks in the game and calculating them via Jobs.
+	/// 
+	/// // TODO: Change projectileQueue to drawing from an object pool
 	/// </summary>
 	public class ProjectileScheduler
 	{
 		public ProjectileScheduler()
 		{
 			projectiles = new List<Projectile>(totalMax);
-			spawnQueue = new Queue<ProjectileMsg>(queueMax);
+			spawnQueue = new Queue<ProjectileMsg>(totalMax);
+			deSpawnQueue = new Queue<Projectile>(totalMax);
+
 			spawnSub = Game.Instance.Bus.Subscribe<ProjectileMsg>(OnSpawnProjectile);
 		}
 
@@ -28,16 +32,15 @@ namespace RedDust.Combat
 		}
 
 		private readonly int totalMax = Values.Combat.MaxProjectiles;
-		private readonly int perFrameMax = Values.Combat.MaxProjectilesPerFrame;
-		private readonly int queueMax = Values.Combat.MaxProjectileQueue;
 		private readonly int raycastsMax = Values.Combat.MaxRaycastHits;
 		private List<Projectile> projectiles;
 		private Queue<ProjectileMsg> spawnQueue;
-		private int spawnedThisFrame = 0;
+		private Queue<Projectile> deSpawnQueue;
 		private ISubscription<ProjectileMsg> spawnSub;
 		private ProjectileJob projectileJob;
 		private JobHandle raycastHandle;
 		private JobHandle moveHandle;
+
 		private NativeArray<RaycastCommand> info;
 		private NativeArray<RaycastCommand> result;
 		private NativeArray<RaycastHit> hits;		
@@ -45,26 +48,47 @@ namespace RedDust.Combat
 		private NativeArray<int> penetration;
 
 		public bool HasJobs => projectiles.Count > 0;
-		public bool HasQueue => spawnQueue.Count > 0;
 
-		public void RunSpawnQueue()
+		public bool HasSpawnQueue => spawnQueue.Count > 0;
+		public bool HasDeSpawnQueue => deSpawnQueue.Count > 0;
+
+		public void RunSpawn()
 		{
 			for (int i = 0; i < spawnQueue.Count; i++)
 			{
 				var msg = spawnQueue.Dequeue();
-				Projectile p = Object.Instantiate(msg.Prefab);
-				p.ProjectileFinished += OnProjectileFinished;
+				Projectile p = Object.Instantiate(msg.Prefab);				
 				p.Init(msg.Origin, msg.Dir, msg.SenderId);
-				projectiles.Add(p);				
-				spawnedThisFrame++;
+				projectiles.Add(p);
+				p.Finished += OnProjectileFinished;
+			}
+		}
 
-				if (spawnedThisFrame > perFrameMax) 
-				{ 					
-					break;
-				}
+		public void RunDeSpawn()
+		{
+			for (int i = 0; i < deSpawnQueue.Count; i++)
+			{
+				var p = deSpawnQueue.Dequeue();
+				projectiles.Remove(p);
+				Object.Destroy(p.gameObject);
+			}
+		}
+
+		private void OnSpawnProjectile(ProjectileMsg msg)
+		{
+			if (projectiles.Count >= totalMax)
+			{
+				Debug.Log("ProjectileScheduler: max projectile count reached: " + totalMax);
+				return;
 			}
 
-			spawnedThisFrame = 0;
+			spawnQueue.Enqueue(msg);
+		}
+
+		private void OnProjectileFinished(Projectile p)
+		{
+			p.Finished -= OnProjectileFinished;
+			deSpawnQueue.Enqueue(p);
 		}
 
 		/// <summary>
@@ -115,30 +139,7 @@ namespace RedDust.Combat
 			result.Dispose();
 			travelled.Dispose();
 			penetration.Dispose();
-		}
-	
-		public void OnSpawnProjectile(ProjectileMsg msg)
-		{
-			if (projectiles.Count >= totalMax) 
-			{
-				Debug.Log("ProjectileScheduler: max projectile count reached: " + totalMax);
-			}
-
-			if (spawnQueue.Count >= queueMax)
-			{
-				Debug.Log("ProjectileScheduler: max queue size reached, discarding message" + queueMax);
-				return;
-			}
-
-			spawnQueue.Enqueue(msg);		
-		}
-
-		private void OnProjectileFinished(Projectile p)
-		{
-			projectiles.Remove(p);
-			Object.Destroy(p.gameObject, Time.deltaTime);
-			p.ProjectileFinished -= OnProjectileFinished;
-		}
+		}		
 	}
 
 	[BurstCompile]
