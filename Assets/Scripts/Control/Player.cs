@@ -57,11 +57,6 @@ namespace RedDust.Control
 			return new FollowAction(p, transform);
 		}
 
-		public bool IsAvailableForInteraction()
-		{
-			return true;
-		}
-
 		#endregion	
 	}
 }

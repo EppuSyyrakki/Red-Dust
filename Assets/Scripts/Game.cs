@@ -1,4 +1,5 @@
 ﻿using Messaging;
+using RedDust.Combat;
 using RedDust.Control.Input;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,42 +8,56 @@ using UnityEngine.InputSystem.UI;
 
 namespace RedDust
 {
-	public class Game
+	/// <summary>
+	/// Ensure that this is script's execution order is before any other character-related script.
+	/// </summary>
+	public class Game : MonoBehaviour
 	{
-		private Game()
-		{
-			Bus = new MessageBus();
-			Inputs = new GameInputs();
-		}
-
-		private static Game _instance;
-
-		public static Game Instance
-		{
-			get
-			{
-				if (_instance == null) { _instance = new Game(); }
-
-				return _instance;
-			}
-		}
+		public static Game Instance { get; private set; }
 
 		/// <summary>
 		/// The class for relaying messages and managing their subscriptions.
 		/// </summary>
-		public MessageBus Bus { get; }
+		public MessageBus Bus { get; private set; }
 
 		/// <summary>
 		/// The auto-generated Input wrapper.
 		/// </summary>
-		public GameInputs Inputs { get; }
+		public GameInputs Inputs { get; private set; }
+
+		/// <summary>
+		/// The host for all projectiles and other attacks in the game. Handles 
+		/// </summary>
+		private ProjectileScheduler Projectiles { get; set; }
+
+		public void Awake()
+		{
+			if (Instance != null && Instance != this) { Destroy(this); }
+			else { Instance = this; }			
+
+			Bus = new MessageBus();
+			Inputs = new GameInputs();
+			Projectiles = new ProjectileScheduler();
+		}
+
+		private void Update()
+		{
+			if (Projectiles.HasQueue) { Projectiles.RunSpawnQueue(); }
+
+			if (Projectiles.HasJobs) { Projectiles.ScheduleJobs(); }			
+		}
+
+		private void LateUpdate()
+		{
+			if (Projectiles.HasJobs) { Projectiles.CompleteJobs(); }
+		}
 
 		/// <summary>
 		/// A convenience method to set up a PlayerInput component and the EventSystem UI Module.
 		/// </summary>
-		/// <param name="playerInput"></param>
-		/// <param name="map"></param>
-		/// <param name="setUiModule"></param>
+		/// <param name="playerInput">The component to set.</param>
+		/// <param name="map">The mapping to set to the component.</param>
+		/// <param name="setUiModule">Connect the component parameter to the UI Module.</param>
 		public void SetInputComponent(PlayerInput playerInput, InputActionMap map, bool setUiModule)
 		{
 			playerInput.actions = Inputs.asset;

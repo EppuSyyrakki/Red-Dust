@@ -27,6 +27,15 @@ namespace RedDust
 			public const string Crouched = "crouched";
 		}
 
+		public class Combat
+		{
+			public const int MaxProjectiles = 512;
+			public const int MaxProjectileQueue = 64;
+			public const int MaxProjectilesPerFrame = 32;
+			public const int MaxRaycastHits = 4;
+			public const float MaxProjectileTravel = 500f;
+		}
+
 		public class Input
 		{
 			public const string MapSquad = "Squad";
@@ -39,6 +48,10 @@ namespace RedDust
 		{
 			public const int Ground = 1 << 3;
 			public const int Character = 1 << 6;
+			public const int SoftCover = 1 << 7;
+			public const int HardCover = 1 << 8;
+			public const int Destroyable = 1 << 9;
+			public const int Projectiles = 1 << 6 | 1 << 7 | 1 << 8 | 1 << 9;
 		}
 
 		public class Tag

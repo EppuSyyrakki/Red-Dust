@@ -13,10 +13,12 @@ namespace RedDust.Control
 		private Squad[] initialHostileSquads = null;
 
 		[SerializeField]
-		private Squad[] initialFriendlySquads = null;
+		private Squad[] initialAlliedSquads = null;
 
 		private List<Character> members = new List<Character>();
+		[SerializeField]
 		private List<Squad> hostiles = new List<Squad>();
+		[SerializeField]
 		private List<Squad> allies = new List<Squad>();
 
 		private bool isPlayerSquad = false;
@@ -45,7 +47,7 @@ namespace RedDust.Control
 		{
 			// Do this in start so other squads are Awake and can listen to a message from
 			// PlayerSquad when it does this - it will change their hostility indicators.
-			foreach (var s in initialFriendlySquads) { AddAlliedSquad(s); }
+			foreach (var s in initialAlliedSquads) { AddAlliedSquad(s); }
 			foreach (var s in initialHostileSquads) { AddHostileSquad(s); }
 		}
 
@@ -56,7 +58,7 @@ namespace RedDust.Control
 			if (!isPlayerSquad) { return; }
 			
 			var msg = new PlayerSquadMsg(s, status);
-			Game.Instance.Bus.Send(msg);		
+			Game.Instance.Bus.Send(msg);
 		}
 
 		#region Public API
@@ -93,6 +95,7 @@ namespace RedDust.Control
 				allies.Remove(s);
 				hostiles.Add(s);
 				TrySendMsg(s, SquadStatus.Hostile);
+				s.AddHostileSquad(this);
 				return true;
 			}
 
@@ -104,6 +107,7 @@ namespace RedDust.Control
 			if (!hostiles.Remove(s)) { return false; }
 
 			TrySendMsg(s, SquadStatus.Neutral);
+			s.RemoveHostileSquad(this);
 			return true;
 		}
 
@@ -114,6 +118,7 @@ namespace RedDust.Control
 				hostiles.Remove(s);
 				allies.Add(s);
 				TrySendMsg(s, SquadStatus.Allied);
+				s.AddAlliedSquad(this);
 				return true;
 			}
 
@@ -125,6 +130,7 @@ namespace RedDust.Control
 			if (!allies.Remove(s)) { return false; }
 
 			TrySendMsg(s, SquadStatus.Neutral);
+			s.RemoveAlliedSquad(this);
 			return allies.Remove(s);
 		}
 
