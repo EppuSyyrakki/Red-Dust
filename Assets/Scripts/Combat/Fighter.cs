@@ -1,28 +1,31 @@
+using RedDust.Messages;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace RedDust.Combat
 {
+    [RequireComponent(typeof(Health), typeof(Animator))]
     public class Fighter : MonoBehaviour
     {
         [Tooltip("Character data")]
         [SerializeField]
-        private float weaponSkill;
+        private float weaponSkill = 1;
 
         [SerializeField]
-        private float attackSpeed;
+        private float attackFreq = 5;
 
         [Tooltip("Weapon data")]
-        [SerializeField]
-        private float weaponRange;
 
         [SerializeField]
-        private float weaponAccuracy;
+        private Projectile projectile;
+
+        [SerializeField]
+        private Transform muzzle;
 
         private Animator animator;
 
-        public float AttackSpeed => attackSpeed;
+        public float AttackFrequency => attackFreq;
 
 		private void Awake()
 		{
@@ -31,19 +34,15 @@ namespace RedDust.Combat
 
 		public void Attack(Vector3 target)
 		{
-            Debug.Log(gameObject.name + " attacked " + GetGameObjectAtPosition(target));
+            var direction = GetProjectileDirection();
+            var msg = new ProjectileMsg(muzzle.position, direction, GetInstanceID(), projectile);
+            Game.Instance.Bus.Send(msg);
 		}
 
-        private GameObject GetGameObjectAtPosition(Vector3 pos)
+        private Vector3 GetProjectileDirection()
 		{
-            Collider[] cols = Physics.OverlapBox(pos, Vector3.one * 0.2f);
-
-            if (cols != null)
-			{
-                return cols[0].gameObject;
-			}
-
-            return null;
+            // Calculate the actual direction here from skill & weapon accuracy.
+            return muzzle.forward;
 		}
     }
 }

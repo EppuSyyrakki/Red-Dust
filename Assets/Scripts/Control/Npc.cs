@@ -43,7 +43,7 @@ namespace RedDust.Control
 		{
 			if (p.Squad.IsHostileTo(this))
 			{
-				return new ShootAction(p, transform.position + Vector3.up, p.Fighter.AttackSpeed);
+				return new ShootAction(p, transform.position + Vector3.up, p.Fighter.AttackFrequency);
 			}
 
 			return new TalkToAction(p, this);

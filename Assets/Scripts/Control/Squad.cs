@@ -56,7 +56,7 @@ namespace RedDust.Control
 			if (!isPlayerSquad) { return; }
 			
 			var msg = new PlayerSquadMsg(s, status);
-			Game.Instance.Bus.Send(msg);		
+			Game.Instance.Bus.Send(msg);
 		}
 
 		#region Public API
