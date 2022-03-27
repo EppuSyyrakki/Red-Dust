@@ -7,6 +7,11 @@ TagManager:
   - PlayerSquad
   - CameraTarget
   - TacticalCamera
+  - CharacterTarget
+  - Muzzle
+  - Weapon
+  - RightHandSlot
+  - LeftHandSlot
   layers:
   - Default
   - TransparentFX
@@ -17,8 +22,8 @@ TagManager:
   - Character
   - SoftCover
   - HardCover
-  - Destroyable
-  - 
+  - Destructible
+  - Indestructible
   - 
   - 
   - 

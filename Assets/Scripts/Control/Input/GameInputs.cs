@@ -264,7 +264,7 @@ namespace RedDust.Control.Input
                     ""type"": ""PassThrough"",
                     ""id"": ""3d53dbb9-0c6b-4eac-8b61-e1e1ed5e5d2f"",
                     ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
+                    ""processors"": ""Invert"",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },

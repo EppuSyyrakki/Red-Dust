@@ -19,13 +19,14 @@ namespace RedDust.Control.Input
 		[SerializeField]
 		private LayerMask interactionLayers;
 
+		private const float castRange = Values.Input.CursorCastRange;
+
 		/// <summary>
 		/// Don't modify this List directly, use the public methods in the "Selection modification" region.
 		/// They make sure the selection indicators follow along.
 		/// </summary>
 		private List<Player> selected = new List<Player>();
 		private Player[] players;
-
 		private Vector2 dragOrigin;
 		private bool addModifier = false;
 		private bool forceAttack = false;
@@ -37,6 +38,7 @@ namespace RedDust.Control.Input
 		public event Action SelectionBoxEnded;
 		public event Action<Sprite> InteractableChanged;
 		public event Action InteractableNulled;
+		public event Action<bool> ForceAttack;
 
 		#region Unity messages
 
@@ -91,7 +93,7 @@ namespace RedDust.Control.Input
 		{
 			newInteractable = null;
 
-			if (Physics.Raycast(cursorRay, out RaycastHit hit, Values.Input.CursorCastRange, interactionLayers)
+			if (Physics.Raycast(cursorRay, out RaycastHit hit, castRange, interactionLayers)
 				&& hit.collider.TryGetComponent(out newInteractable))
 			{
 				if (newInteractable is Player p && selected.Contains(p)) 
@@ -114,7 +116,7 @@ namespace RedDust.Control.Input
 				interactable = newInteractable;
 				InteractableChanged?.Invoke(interactable.GetIcon(selected[0]));
 
-				if (logInput) { Debug.Log(name + " current interactable is: " + interactable.GetType().Name); }
+				if (logInput) { Debug.Log($"{name}'s current interactable is: {interactable.GetType().Name}"); }
 			}
 		}
 
@@ -123,7 +125,7 @@ namespace RedDust.Control.Input
 			InteractableNulled?.Invoke();
 			interactable = null;
 
-			if (logInput) { Debug.Log(name + " current interactable was nulled"); }
+			if (logInput) { Debug.Log($"{name}'s current interactable was nulled"); }
 		}
 
 		private void MoveSelectedToCursor(Ray cursorRay)
@@ -149,6 +151,19 @@ namespace RedDust.Control.Input
 				if (!RaycastNavMesh(iPos, out hit)) { continue; }
 
 				selected[i].AddAction(new MoveToAction(selected[i], iPos, true));
+			}
+		}
+
+		private void AttackSelectedOnCursor(Ray cursorRay)
+		{
+			if (Physics.Raycast(cursorRay, out RaycastHit hit, castRange, Values.Layer.ProjectileHits))
+			{
+				for (int i = 0; i < selected.Count; i++)
+				{
+					if (!addModifier) { selected[i].CancelActions(); }
+
+					selected[i].AddAction(new ShootAction(selected[i], hit.point));
+				}
 			}
 		}
 
@@ -247,7 +262,7 @@ namespace RedDust.Control.Input
 			if (ctx.phase != InputActionPhase.Canceled || Drag != DragMode.None) { return; }
 
 			var ray = GetCameraRay(CursorPosition);
-			var range = Values.Input.CursorCastRange;
+			var range = castRange;
 			var layers = Values.Layer.Character;
 		
 			if (Physics.Raycast(ray, out RaycastHit hit, range, layers)
@@ -271,12 +286,18 @@ namespace RedDust.Control.Input
 					var player = selected[i];
 
 					if (!addModifier) { player.CancelActions(); }
-
+					
 					player.AddAction(interactable.GetAction(player));
 
 					if (logInput) { Debug.Log(name + " Interact button released"); }
 				}
 
+				return;
+			}
+
+			if (forceAttack)
+			{
+				AttackSelectedOnCursor(GetCameraRay(CursorPosition));
 				return;
 			}
 
@@ -293,8 +314,10 @@ namespace RedDust.Control.Input
 
 		public void OnForceAttackModifier(InputAction.CallbackContext ctx)
 		{
-			if (ctx.phase == InputActionPhase.Performed) { forceAttack = true; }
-			else if (ctx.phase == InputActionPhase.Canceled) { forceAttack = false; }
+			if (ctx.phase == InputActionPhase.Started) { return; }
+
+			forceAttack = ctx.phase == InputActionPhase.Performed ? true : false;
+			ForceAttack?.Invoke(forceAttack);
 
 			if (logInput && ctx.phase != InputActionPhase.Started) { Debug.Log(name + "ForceAttack: " + forceAttack); }
 		}
@@ -382,13 +405,12 @@ namespace RedDust.Control.Input
 
 		private static bool RaycastNavMesh(Ray cursorRay, out NavMeshHit hit)
 		{
-			float range = Values.Input.CursorCastRange;
 			int layer = Values.Layer.Ground;
 			int areas = NavMesh.AllAreas;
 			float projection = Values.Navigation.MaxNavMeshProjection;
 			hit = new NavMeshHit();
 
-			if (Physics.Raycast(cursorRay, out RaycastHit rHit, range, layer) 
+			if (Physics.Raycast(cursorRay, out RaycastHit rHit, castRange, layer) 
 				&& NavMesh.SamplePosition(rHit.point, out hit, projection, areas)) { return true; }
 
 			return false;
@@ -396,13 +418,12 @@ namespace RedDust.Control.Input
 
 		private static bool RaycastNavMesh(Vector3 pos, out NavMeshHit hit)
 		{
-			float range = Values.Input.CursorCastRange * 0.1f;
 			int layer = Values.Layer.Ground;
 			int areas = NavMesh.AllAreas;
 			float projection = Values.Navigation.MaxNavMeshProjection;
 			hit = new NavMeshHit();
 
-			if (Physics.Raycast(pos + Vector3.up, Vector3.down, out RaycastHit rHit, range, layer)
+			if (Physics.Raycast(pos + Vector3.up, Vector3.down, out RaycastHit rHit, castRange * 0.1f, layer)
 				&& NavMesh.SamplePosition(rHit.point, out hit, projection, areas)) { return true; }
 
 			return false;

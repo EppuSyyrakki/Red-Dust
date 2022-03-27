@@ -1,4 +1,5 @@
 ﻿using RedDust.Control;
+using RedDust.Control.Actions;
 using RedDust.Control.Input;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace RedDust.UI.Cursor
 		private bool boxEnabled;
 		private Vector2 dragOrigin;
 		private Vector2 dragEnd;
+		private Sprite storedIcon = null;
 
 		#region Unity messages
 
@@ -38,6 +40,7 @@ namespace RedDust.UI.Cursor
 			controls.InteractableChanged += OnActionChanged;
 			controls.SelectionBoxStarted += OnSelectionBoxStarted;
 			controls.SelectionBoxEnded += OnSelectionBoxEnded;
+			controls.ForceAttack += OnForceAttack;
 		}
 
 		private void OnDisable()
@@ -46,6 +49,7 @@ namespace RedDust.UI.Cursor
 			controls.InteractableChanged -= OnActionChanged;
 			controls.SelectionBoxStarted -= OnSelectionBoxStarted;
 			controls.SelectionBoxEnded -= OnSelectionBoxEnded;
+			controls.ForceAttack -= OnForceAttack;
 		}
 
 		private void Update()
@@ -93,6 +97,18 @@ namespace RedDust.UI.Cursor
 			Vector3[] screenCorners = new Vector3[4];
 			selectionBox.rectTransform.GetWorldCorners(screenCorners);
 			controls.CheckPolygonSelection(screenCorners);
+		}
+
+		private void OnForceAttack(bool forceAttack)
+		{
+			if (forceAttack)
+			{
+				storedIcon = iconRenderer.sprite;
+				iconRenderer.sprite = ActionBase.LoadIcon(nameof(ShootAction));
+				return;
+			}
+
+			iconRenderer.sprite = storedIcon;
 		}
 
 		#endregion

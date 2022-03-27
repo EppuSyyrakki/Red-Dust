@@ -3,10 +3,11 @@ using RedDust.Control.Actions;
 using RedDust.Movement;
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
 namespace RedDust.Control
 {
-	[RequireComponent(typeof(Mover))]
+	[RequireComponent(typeof(Mover), typeof(Fighter), typeof(CharacterHealth))]
 	public abstract class Character : MonoBehaviour
 	{
 		[SerializeField]
@@ -21,7 +22,11 @@ namespace RedDust.Control
 		public bool LoggingEnabled => logActions;
 		public Mover Mover { get; private set; }
 		public Fighter Fighter { get; private set; }
-		public Squad Squad { get; private set; }
+		public Squad Squad { get; private set; }		
+		public Transform TargetingTransform { get; private set; }
+		public Transform RightHand { get; private set; }
+		public Transform LeftHand { get; private set; }
+
 		public bool IsBusy
 		{
 			get 
@@ -36,17 +41,22 @@ namespace RedDust.Control
 		public virtual void Awake()
 		{
 			Mover = GetComponent<Mover>();
-			Fighter = GetComponent<Fighter>();
+			Fighter = GetComponent<Fighter>();			
 			Indicator = GetComponentInChildren<HostilityIndicator>();
+			TargetingTransform = transform.FindObjectWithTag(Values.Tag.CharTarget).transform;
+			RightHand = transform.FindObjectWithTag(Values.Tag.RHandSlot).transform;
+			LeftHand = transform.FindObjectWithTag(Values.Tag.LHandSlot).transform;
 			AddAction(new IdleAction(this));
 		}
 
-		private void Start()
+		public virtual void Start()
 		{
 			if (Squad == null) 
 			{ 
 				Debug.LogError(gameObject.name + " has no Squad! Parent must have a Squad component."); 
 			}
+
+			Fighter.CreateDefaultWeapon(RightHand, LeftHand);
 		}
 
 		#endregion

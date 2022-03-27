@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb9434649943fe47a827c1af0aaa76d, type: 3}
+  m_Name: AncientRifleConfig
+  m_EditorClassIdentifier: 
+  Name: 
+  damage: 2
+  range: 50
+  penetration: 1
+  projectilePrefab: {fileID: 1128916607346370950, guid: e83bdd09973be61438be8fd0236134dd, type: 3}
+  effects: []
+  weaponPrefab: {fileID: 1111944693018380077, guid: f8179cff3ce8de647b569f1f9f134767, type: 3}

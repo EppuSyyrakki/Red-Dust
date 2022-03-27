@@ -96,20 +96,23 @@ namespace RedDust.Movement
 			return navMeshAgent.remainingDistance < Values.Navigation.MoveTargetTreshold;
 		}
 
-		public bool TurnTowards(Vector3 position)
+		/// <summary>
+		/// Make the character turn towards a position.
+		/// </summary>
+		/// <param name="target">The target position</param>
+		/// <returns>True if facing target, false if still turning</returns>
+		public bool TurnTowards(Vector3 target)
 		{
-			Vector3 direction = position - transform.position;
+			target.y = transform.position.y;	// eliminate getting the dot wrong from height difference.
+			Vector3 direction = target - transform.position;
 			float dot = Vector3.Dot(transform.forward, direction);
 
-			if (!Mathf.Approximately(dot, 1))
-			{
-				float speed = Time.deltaTime * turningSpeed;
-				float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up) * speed;
-				transform.Rotate(Vector3.up, angle);
-				return false;
-			}
+			if (Mathf.Approximately(dot, 1)) { return true; }
 
-			return true;
+			float speed = Time.deltaTime * turningSpeed;
+			float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up) * speed;
+			transform.Rotate(Vector3.up, angle);
+			return false;
 		}
 
 		public void Walk()

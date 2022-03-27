@@ -42,16 +42,17 @@ namespace RedDust
 
 		private void Update()
 		{
-			if (Projectiles.HasSpawnQueue) { Projectiles.RunSpawn(); }
-
-			if (Projectiles.HasJobs) { Projectiles.ScheduleJobs(); }		
+			Projectiles.RunUpdate();
 		}
 
 		private void LateUpdate()
 		{
-			if (Projectiles.HasJobs) { Projectiles.CompleteJobs(); }
+			Projectiles.RunLateUpdate();
+		}
 
-			if (Projectiles.HasDeSpawnQueue) { Projectiles.RunDeSpawn(); }
+		private void OnDisable()
+		{
+			Projectiles.UnsubscribeSpawnMsg();
 		}
 
 		/// <summary>

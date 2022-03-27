@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 300e934bc5034ad4cb655629fece567a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocity: 100
+  velocity: 150
   penetration: 2
-  damage: 4
+  damage: 1
 --- !u!96 &7189553553650641861
 TrailRenderer:
   serializedVersion: 2

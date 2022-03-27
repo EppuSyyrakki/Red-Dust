@@ -18,8 +18,9 @@ namespace RedDust.Control
 			base.Awake();
 		}
 
-		private void Start()
+		public override void Start()
 		{
+			base.Start();
 			SetIndicatorColor(SquadStatus.Player);
 			Mover.SetMoveIndicatorColor(Values.Color.Player);
 		}

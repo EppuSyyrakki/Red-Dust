@@ -27,7 +27,7 @@ namespace RedDust.Control
 		{
 			if (msg.Squad != Squad) { return; }
 
-			SetIndicatorColor(msg.Status);
+			base.SetIndicatorColor(msg.Status);
 		}
 
 		#region IPlayerInteractable implementation
@@ -43,7 +43,7 @@ namespace RedDust.Control
 		{
 			if (p.Squad.IsHostileTo(this))
 			{
-				return new ShootAction(p, transform.position + Vector3.up, p.Fighter.AttackFrequency);
+				return new ShootAction(p, TargetingTransform.position, Fighter.Health);
 			}
 
 			return new TalkToAction(p, this);

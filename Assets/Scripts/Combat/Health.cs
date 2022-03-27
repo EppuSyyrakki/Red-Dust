@@ -1,27 +1,77 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace RedDust.Combat
 {
-	public class Health : MonoBehaviour
+	[System.Serializable]
+	public struct HealthStatus
+	{
+		public int current;
+		public int max;
+		public int armor;
+		
+		public HealthStatus(int current, int max, int armor)
+		{
+			this.current = current;
+			this.max = max;
+			this.armor = armor;
+		}
+	}
+
+	public abstract class Health : MonoBehaviour
 	{
 		[SerializeField]
-		private int health = 1;
+		private bool logHealth = false;
 
-		public int Current => health;
+		[SerializeField]
+		private HealthStatus startingHealth = new HealthStatus(1, 1, 0);
 
-		public void TakeDamage(int amount)
+		[SerializeField]
+		protected HealthStatus status;
+	
+		public HealthStatus Status { get => status; }
+		public List<Effect> Effects { get; private set; } = new List<Effect>();
+		public bool IsDead => status.current <= 0;
+
+		private void Awake()
 		{
-			health = Mathf.Clamp(health, 0, health - amount);
-
-			if (health <= 0) { Kill(); }
+			status = startingHealth;
 		}
 
-		public void Kill()
+		/// <summary>
+		/// Subtracts health by amount. Armor should be calculated elsewhere (in the ProjectileScheduler when
+		/// handling hits).
+		/// </summary>
+		/// <param name="amount">The amount to reduce health</param>
+		/// <returns>True if health reduced to 0</returns>
+		public bool TakeDamage(int amount)
 		{
-			Debug.Log(gameObject.name + " is ded");
-			GetComponent<Animator>().enabled = false;
-			transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
+			status.current = Mathf.Clamp(status.current - amount, 0, status.current);
+
+			if (logHealth)
+			{
+				Debug.Log($"{gameObject.name} took {amount} damage, {status.current}/{status.max} remaining");
+			}
+
+			if (status.current == 0)
+			{
+				Kill();
+				return true;
+			}
+
+			return false;
 		}
+
+		public void AddEffect(Effect effect)
+		{
+			Effects.Add(effect);
+
+			if (logHealth)
+			{
+				Debug.Log($"{gameObject.name} had {effect.name} applied to them.");
+			}
+		}
+
+		public abstract void Kill();
 	}
 }

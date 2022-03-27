@@ -33,7 +33,8 @@ namespace RedDust
 			public const int MaxProjectileQueue = 64;
 			public const int MaxProjectilesPerFrame = 32;
 			public const int MaxRaycastHits = 4;
-			public const float MaxProjectileTravel = 100f;
+			public const float MaxProjectileTravel = 300f;
+			public const float MultiHitMinStep = 0.25f;
 		}
 
 		public class Input
@@ -50,8 +51,9 @@ namespace RedDust
 			public const int Character = 1 << 6;
 			public const int SoftCover = 1 << 7;
 			public const int HardCover = 1 << 8;
-			public const int Destroyable = 1 << 9;
-			public const int Projectiles = 1 << 6 | 1 << 7 | 1 << 8 | 1 << 9;
+			public const int Destructible = 1 << 9;
+			public const int Indestructible = 1 << 10;
+			public const int ProjectileHits = Ground | Character | Destructible | Indestructible;
 		}
 
 		public class Tag
@@ -59,6 +61,11 @@ namespace RedDust
 			public const string PlayerSquad = "PlayerSquad";
 			public const string CamTarget = "CameraTarget";
 			public const string TacCamera = "TacticalCamera";
+			public const string CharTarget = "CharacterTarget";
+			public const string Weapon = "Weapon";
+			public const string Muzzle = "Muzzle";
+			public const string RHandSlot = "RightHandSlot";
+			public const string LHandSlot = "LeftHandSlot";
 		}
 
 		public class Timer
