@@ -33,12 +33,16 @@ namespace RedDust.Combat
 
         private void Awake()
 		{
-
             animator = GetComponent<Animator>();
             Health = GetComponent<CharacterHealth>();
         }
 
-        public void CreateDefaultWeapon(Transform rHand, Transform lHand)
+		private void Update()
+		{
+			
+		}
+
+		public void CreateDefaultWeapon(Transform rHand, Transform lHand)
 		{
             if (defaultWeaponConfig == null) 
             {

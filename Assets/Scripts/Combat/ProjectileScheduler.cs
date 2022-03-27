@@ -206,7 +206,7 @@ namespace RedDust.Combat
 		/// <param name="i">Index of relevant projectile in the NativeArrays</param>
 		/// <param name="hit">The RaycastHit from the cast.</param>
 		private void HandleHits(int i, List<RaycastHit> hits)
-		{			
+		{
 			foreach (var hit in hits)
 			{
 				Collider col = hit.collider;
@@ -219,27 +219,34 @@ namespace RedDust.Combat
 					damage[i] = 0;
 					result[i] = new RaycastCommand(hit.point, result[i].direction, 0, layer, 0);
 				}
-				else if ((1 << layer & Values.Layer.Destructible) > 0 
+				else if ((1 << layer & Values.Layer.Destructible) > 0
 					|| (1 << layer & Values.Layer.Character) > 0)
 				{
-					var health = col.GetComponent<Health>();
+					
+					if (!col.gameObject.TryGetComponent(out Health health))
+					{
+						Debug.LogError($"{col.gameObject.name} is on layer {layer} " 
+							+ "but doesn't have a Health component!");
+						return;
+					}
+
 					damage[i] -= health.Status.armor;
 					health.TakeDamage(damage[i]);
-					penetration[i] -= health.Status.armor;	
+					penetration[i] -= health.Status.armor;
 				}
 
 				if (projectiles[i].Hit.normal != Vector3.zero) { continue; }
-				
+
 				// the projectile hasn't registered a hit before
 				projectiles[i].Hit = hit;
 
-				if (projectiles[i].Effects[0] == null) { continue; }
+				//if (projectiles[i].Effects != null && projectiles[i].Effects[0] != null) { continue; }
 
-				foreach(var effectPrefab in projectiles[i].Effects)
-				{
-					var effect = Object.Instantiate(effectPrefab, hit.collider.transform);
-					effect.Hit = hit;
-				}
+				//foreach(var effectPrefab in projectiles[i].Effects)
+				//{
+				//	var effect = Object.Instantiate(effectPrefab, hit.collider.transform);
+				//	effect.Hit = hit;
+				//}
 			}				
 		}
 	}

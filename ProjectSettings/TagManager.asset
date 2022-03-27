@@ -12,6 +12,7 @@ TagManager:
   - Weapon
   - RightHandSlot
   - LeftHandSlot
+  - CharacterAttachment
   layers:
   - Default
   - TransparentFX
