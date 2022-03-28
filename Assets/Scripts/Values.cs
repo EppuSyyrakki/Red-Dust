@@ -25,6 +25,8 @@ namespace RedDust
 			public const string Velocity = "velocity";
 			public const string Turning = "turning";
 			public const string Crouched = "crouched";
+			public const int AimLayer = 1;
+			public const float AimLayerSpeed = 25f;
 		}
 
 		public class Combat

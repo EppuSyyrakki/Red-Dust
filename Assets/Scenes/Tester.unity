@@ -225,6 +225,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5460101222545148766, guid: f9748fc0d39562d4abd38ea2b462dc2e, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: c8c20564eb982f84a96a0d4d8e357cc5, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9748fc0d39562d4abd38ea2b462dc2e, type: 3}
 --- !u!1001 &656789437
@@ -571,7 +575,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6826587844210541192, guid: 591f4e0abca5dde46a679328f4187ad0, type: 3}
       propertyPath: m_Lens.FieldOfView
-      value: 47.43071
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 6826587844515277489, guid: 591f4e0abca5dde46a679328f4187ad0, type: 3}
       propertyPath: m_RootOrder
@@ -627,7 +631,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6826587845361585213, guid: 591f4e0abca5dde46a679328f4187ad0, type: 3}
       propertyPath: field of view
-      value: 47.43071
+      value: 45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 591f4e0abca5dde46a679328f4187ad0, type: 3}

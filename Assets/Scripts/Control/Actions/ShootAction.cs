@@ -17,6 +17,12 @@ namespace RedDust.Control.Actions
 			this.targetHealth = targetHealth;
 		}
 
+		public override void OnStart()
+		{
+			base.OnStart();
+			Character.Fighter.StartAim();
+		}
+
 		public override ActionState Execute()
 		{
 			timer += Time.deltaTime;
@@ -34,6 +40,24 @@ namespace RedDust.Control.Actions
 			}
 
 			return ActionState.Running;
+		}
+
+		public override void OnCancel()
+		{
+			base.OnCancel();
+			Character.Fighter.EndAim();
+		}
+
+		public override void OnFailure()
+		{
+			base.OnFailure();
+			Character.Fighter.EndAim();
+		}
+
+		public override void OnSuccess()
+		{
+			base.OnSuccess();
+			Character.Fighter.EndAim();
 		}
 	}
 }

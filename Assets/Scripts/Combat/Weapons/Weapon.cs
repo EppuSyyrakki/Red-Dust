@@ -13,14 +13,17 @@ namespace RedDust.Combat.Weapons
 		public Transform Muzzle { get; private set; }
 		public Transform RightHandSlot { get; private set; }
 		public Transform LeftHandSlot { get; private set; }
+		public AnimatorOverrideController AnimOverride { get; private set; }
 
-		public void Set(WeaponData data, Transform userRightHand, Transform userLeftHand, Transform muzzle)
+		public void Set(WeaponData data, Transform userRightHand, Transform userLeftHand, Transform muzzle,
+			AnimatorOverrideController animOverride)
 		{
 			Data = data;
 			Muzzle = muzzle;
 			muzzleParticles = muzzle.GetComponent<ParticleSystem>();
 			RightHandSlot = transform.FindObjectWithTag(Values.Tag.RHandSlot).transform;
 			LeftHandSlot = transform.FindObjectWithTag(Values.Tag.LHandSlot).transform;
+			AnimOverride = animOverride;
 
 			if (muzzleParticles == null) 
 			{ 

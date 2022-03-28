@@ -46,7 +46,7 @@ namespace RedDust.Control.Actions
 
 			iconLookup.Add(actionName, loadedIcon);
 			return loadedIcon;
-		}
+		}		
 
 		public abstract ActionState Execute();
 

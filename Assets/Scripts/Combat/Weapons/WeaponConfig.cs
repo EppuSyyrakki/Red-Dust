@@ -9,7 +9,7 @@ namespace RedDust.Combat.Weapons
     public struct WeaponData
 	{
 		public WeaponData(string name, int damage, float range, int penetration, 
-			Projectile projectile, Effect[] effects, Weapon prefab)
+			Projectile projectile, Effect[] effects, Weapon prefab, WeaponType type)
 		{
 			this.name = name;
 			this.damage = damage;
@@ -18,6 +18,7 @@ namespace RedDust.Combat.Weapons
 			this.projectile = projectile;
 			this.effects = effects;
 			this.prefab = prefab;
+			this.type = type;
 		}
 
 		public readonly string name;
@@ -26,7 +27,18 @@ namespace RedDust.Combat.Weapons
 		public int penetration;        
 		public readonly Projectile projectile;
 		public readonly Effect[] effects;
-		public readonly Weapon prefab;	
+		public readonly Weapon prefab;
+		public readonly WeaponType type;
+	}
+	public enum WeaponType
+	{
+		Unarmed = 0,
+		SmallMelee = 1,
+		LargeMelee = 2,
+		SmallGun = 3,
+		LargeGun = 4,
+		Throwable = 5,
+		Explosive = 6
 	}
 
 	[CreateAssetMenu(fileName = "New Weapon Config", menuName = "Red Dust/New Weapon Config")]
@@ -34,6 +46,9 @@ namespace RedDust.Combat.Weapons
 	{
 		[SerializeField]
 		private string Name;
+
+		[SerializeField]
+		private WeaponType type;
 
 		[SerializeField]
 		private int damage;
@@ -53,23 +68,29 @@ namespace RedDust.Combat.Weapons
 		[SerializeField]
 		private Weapon weaponPrefab;
 
+		[SerializeField]
+		private AnimatorOverrideController animatorOverride;
+
 		public Weapon Create(Transform rHand, Transform lHand)
 		{
-			// DestroyOldWeapon(rHand);
-			var data = new WeaponData(Name, damage, range, penetration, projectilePrefab, effects, weaponPrefab);
+			DestroyOldWeapon(rHand);
+			var data = new WeaponData(Name, damage, range, penetration, projectilePrefab, effects, weaponPrefab, type);
 			Weapon wpn = Instantiate(data.prefab, rHand);
-			var muzzle = wpn.transform.FindObjectWithTag(Values.Tag.Muzzle);
-			wpn.Set(data, rHand, lHand, muzzle.transform);
+			Transform muzzle = wpn.transform.FindObjectWithTag(Values.Tag.Muzzle).transform;
+			wpn.Set(data, rHand, lHand, muzzle, animatorOverride);
 			return wpn;
 		}
 
 		private void DestroyOldWeapon(Transform hand)
 		{
-			Transform oldWeapon = hand.FindObjectWithTag(Values.Tag.Weapon).transform;
-			Transform oldMuzzle = hand.FindObjectWithTag(Values.Tag.Muzzle).transform;
+			var oldWeapon = hand.FindObjectWithTag(Values.Tag.Weapon);
+			
+			if (oldWeapon == null) { return; }
+
+			var oldMuzzle = hand.FindObjectWithTag(Values.Tag.Muzzle);
 			oldWeapon.name = "OLD WEAPON";
 			oldMuzzle.name = "OLD MUZZLE";
-			Destroy(oldWeapon.gameObject);
+			Destroy(oldWeapon);
 		}
 	}
 }
