@@ -71,8 +71,10 @@ namespace RedDust
 			public const string CharTarget = "CharacterTarget";
 			public const string Weapon = "Weapon";
 			public const string Muzzle = "Muzzle";
-			public const string RHandSlot = "RightHandSlot";
-			public const string LHandSlot = "LeftHandSlot";
+			public const string OffHandSlot = "OffHandSlot";
+			public const string RightHand = "RightHand";
+			public const string LargeHolster = "LargeHolster";
+			public const string SmallHolster = "SmallHolster";
 			public const string Head = "CharacterHead";
 		}
 

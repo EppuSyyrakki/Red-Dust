@@ -27,12 +27,12 @@ namespace RedDust.Control.Actions
 		public override void OnStart()
 		{
 			base.OnStart();
-			Character.Mover.SetDestination(destination, useIndicator);			
+			Character.Motion.SetDestination(destination, useIndicator);			
 		}
 
 		public override ActionState Execute()
 		{
-			if (Character.Mover.IsAtDestination())
+			if (Character.Motion.IsAtDestination())
 			{
 				return ActionState.Success;
 			}
@@ -43,7 +43,7 @@ namespace RedDust.Control.Actions
 		public override void OnCancel()
 		{
 			base.OnCancel();
-			Character.Mover.Stop();
+			Character.Motion.Stop();
 		}
 	}
 }

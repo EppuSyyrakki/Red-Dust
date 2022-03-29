@@ -30,8 +30,8 @@ namespace RedDust.Control.Actions
 		public override void OnStart()
 		{
 			base.OnStart();			
-			Character.Mover.SetStoppingDistance(Values.Navigation.AgentStoppingDistanceFollow);
-			Character.Mover.SetDestination(target.position);
+			Character.Motion.SetStoppingDistance(Values.Navigation.AgentStoppingDistanceFollow);
+			Character.Motion.SetDestination(target.position);
 		}
 
 		public override ActionState Execute()
@@ -40,12 +40,12 @@ namespace RedDust.Control.Actions
 
 			if (updateTargetTimer > updateInterval)
 			{
-				if (Character.Mover.GetPathStatus() != NavMeshPathStatus.PathComplete)
+				if (Character.Motion.GetPathStatus() != NavMeshPathStatus.PathComplete)
 				{
 					return ActionState.Failure;
 				}
 
-				Character.Mover.SetDestination(target.position);
+				Character.Motion.SetDestination(target.position);
 				updateTargetTimer = 0;
 			}
 			
@@ -55,15 +55,15 @@ namespace RedDust.Control.Actions
 		public override void OnFailure()
 		{
 			base.OnFailure();
-			Character.Mover.SetStoppingDistance(Values.Navigation.AgentStoppingDistance);
-			Character.Mover.Stop();
+			Character.Motion.SetStoppingDistance(Values.Navigation.AgentStoppingDistance);
+			Character.Motion.Stop();
 		}
 
 		public override void OnCancel()
 		{
 			base.OnCancel();
-			Character.Mover.SetStoppingDistance(Values.Navigation.AgentStoppingDistance);
-			Character.Mover.Stop();
+			Character.Motion.SetStoppingDistance(Values.Navigation.AgentStoppingDistance);
+			Character.Motion.Stop();
 		}
 	}
 }

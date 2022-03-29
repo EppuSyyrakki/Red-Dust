@@ -26,7 +26,7 @@ namespace RedDust.Control.Actions
 		{
 			base.OnStart();
 			updateTargetTimer = 0;
-			Character.Mover.SetDestination(GetTalkPosition(), useIndicator);
+			Character.Motion.SetDestination(GetTalkPosition(), useIndicator);
 		}
 
 		public override ActionState Execute()
@@ -36,7 +36,7 @@ namespace RedDust.Control.Actions
 			if (updateTargetTimer > updateInterval)
 			{
 				// TEST
-				if (Character.Mover.IsAtDestination())
+				if (Character.Motion.IsAtDestination())
 				{
 					talkTime += updateTargetTimer;
 					Debug.Log($"{Character.name} is talking to {target.name}");
@@ -45,12 +45,12 @@ namespace RedDust.Control.Actions
 				if (talkTime > 5f) { return ActionState.Success; }
 				// TEST
 			
-				if (Character.Mover.GetPathStatus() != NavMeshPathStatus.PathComplete)
+				if (Character.Motion.GetPathStatus() != NavMeshPathStatus.PathComplete)
 				{
 					return ActionState.Failure;
 				}
 
-				Character.Mover.SetDestination(target.transform.position);
+				Character.Motion.SetDestination(target.transform.position);
 				updateTargetTimer = 0;
 			}
 

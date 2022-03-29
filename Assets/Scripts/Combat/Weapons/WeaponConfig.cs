@@ -71,17 +71,21 @@ namespace RedDust.Combat.Weapons
 		[SerializeField]
 		private AnimatorOverrideController animatorOverride;
 
-		public Weapon Create(Transform rHand, Transform lHand)
+		/// <summary>
+		/// Spawns this weapon as a child of the hand parameter.
+		/// </summary>
+		/// <returns>The spawned weapon.</returns>
+		public Weapon Create(Transform hand)
 		{
-			DestroyOldWeapon(rHand);
+			// TODO: Must destroy old weapon, but also avoid null ref in the aiming rig constraints
 			var data = new WeaponData(Name, damage, range, penetration, projectilePrefab, effects, weaponPrefab, type);
-			Weapon wpn = Instantiate(data.prefab, rHand);
+			Weapon wpn = Instantiate(data.prefab, hand);
 			Transform muzzle = wpn.transform.FindObjectWithTag(Values.Tag.Muzzle).transform;
-			wpn.Set(data, rHand, lHand, muzzle, animatorOverride);
+			wpn.Set(data, muzzle, animatorOverride);
 			return wpn;
 		}
 
-		private void DestroyOldWeapon(Transform hand)
+		public static void DestroyOldWeapon(Transform hand)
 		{
 			var oldWeapon = hand.FindObjectWithTag(Values.Tag.Weapon);
 			

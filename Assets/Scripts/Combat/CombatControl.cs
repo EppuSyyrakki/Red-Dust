@@ -7,7 +7,7 @@ using RedDust.Combat.Weapons;
 namespace RedDust.Combat
 {
     [RequireComponent(typeof(CharacterHealth))]
-    public class Fighter : MonoBehaviour
+    public class CombatControl : MonoBehaviour
     {
         [Tooltip("Character data")]
         [SerializeField]
@@ -18,76 +18,40 @@ namespace RedDust.Combat
         private float attackFreq = 5;
         [SerializeField]
         private WeaponConfig defaultWeaponConfig;
-        [SerializeField]
-        private float aimLayerSpeed = 0.3f;
+                 
+        private Animator animator;       
+        private Transform rightHand;
 
-        private const int aimLayer = Values.Animation.AimingLayer;     
-
-        private Animator animator;
-        private Coroutine aimBlend;
-
-        public event Action<Vector3> Aiming;
-        public event Action<bool> AimingEnabled;
+        /// <summary>
+        /// Broadcasts the transform of the off-hand when a weapon was created or put away. 
+        /// If it is null, the weapon was put away (destroyed).
+        /// </summary>
+        public event Action<Transform> WeaponCreated;
 
         public Weapon Weapon { get; private set; }
         public float AttackFrequency => attackFreq;
         public CharacterHealth Health { get; private set; }
-        /// <summary>
-		/// Combat uses this transform's position as a "center of mass" target.
-		/// </summary>
-	
 
         private void Awake()
 		{
             animator = GetComponent<Animator>();
-            Health = GetComponent<CharacterHealth>();           
+            Health = GetComponent<CharacterHealth>();
+            rightHand = transform.FindObjectWithTag(Values.Tag.RightHand).transform;
         }
 
-        public void EnableAiming(bool enable)
-		{
-            if (aimBlend != null) { StopCoroutine(aimBlend); }
-
-            float target = enable ? 1 : 0;
-            aimBlend = StartCoroutine(BlendLayerTo(
-                animator.GetLayerWeight(aimLayer), target, aimLayer, aimLayerSpeed));
-            AimingEnabled?.Invoke(enable);
-		}
-
-        public void Aim(Vector3 target)
+        private void Start()
         {
-            Aiming?.Invoke(target);
+            CreateWeapon(defaultWeaponConfig);
         }
 
-        private IEnumerator BlendLayerTo(float currentWeight, float targetWeight, int layer, float time)
+        public void CreateWeapon(WeaponConfig wConfig)
 		{
-            float t = 0;
-
-            while (t < time)
-			{
-                if (Mathf.Approximately(currentWeight, targetWeight)) 
-                {
-                    currentWeight = targetWeight;
-                }
-
-                t += Time.deltaTime;
-                animator.SetLayerWeight(layer, Mathf.Lerp(currentWeight, targetWeight, t / time));
-                yield return null;
-            }
-		}
-
-		public void CreateDefaultWeapon(Transform rHand, Transform lHand)
-		{
-            if (defaultWeaponConfig == null)
-            {
-                Debug.LogWarning(gameObject.name + " has no default weapon!");
-                return; 
-            }
-
-            Weapon = defaultWeaponConfig.Create(rHand, lHand);
+            Weapon = wConfig.Create(rightHand);
             SetOverride(Weapon.AnimOverride);
+            WeaponCreated?.Invoke(Weapon.OffHandSlot);
         }
 
-		public void Shoot(Vector3 target)
+        public void Shoot(Vector3 target)
 		{
             Weapon.Fire(GetProjectileDirection(target), GetInstanceID());          
 		}

@@ -1,17 +1,16 @@
 ﻿using RedDust.Combat;
 using RedDust.Control.Actions;
-using RedDust.Movement;
+using RedDust.Motion;
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
 
 namespace RedDust.Control
 {
-	[RequireComponent(typeof(Mover), typeof(Fighter))]
+	[RequireComponent(typeof(MotionControl), typeof(CombatControl))]
 	public abstract class Character : MonoBehaviour
 	{
-		[SerializeField]
-		private bool logActions = false;
+		public bool enableLogging = false;
 
 		private Queue<ActionBase> actionQueue = new Queue<ActionBase>();
 		private ActionBase currentAction;
@@ -19,14 +18,11 @@ namespace RedDust.Control
 
 		protected HostilityIndicator Indicator { get; private set; }
 	
-		public bool LoggingEnabled => logActions;
-		public Mover Mover { get; private set; }
-		public Fighter Fighter { get; private set; }
+		public MotionControl Motion { get; private set; }
+		public CombatControl Fighter { get; private set; }
 		public Squad Squad { get; private set; }
-		
-		public Transform RightHand { get; private set; }
-		public Transform LeftHand { get; private set; }
-		public Transform Head { get; private set; }
+        
+        public Transform Head { get; private set; }
 		public Collider InteractionCollider { get; private set; }
 
 		public bool IsBusy
@@ -42,11 +38,9 @@ namespace RedDust.Control
 
 		public virtual void Awake()
 		{
-			Mover = GetComponent<Mover>();
-			Fighter = GetComponent<Fighter>();			
-			Indicator = GetComponentInChildren<HostilityIndicator>();			
-			RightHand = transform.FindObjectWithTag(Values.Tag.RHandSlot).transform;
-			LeftHand = transform.FindObjectWithTag(Values.Tag.LHandSlot).transform;
+            Motion = GetComponent<MotionControl>();
+			Fighter = GetComponent<CombatControl>();			
+			Indicator = GetComponentInChildren<HostilityIndicator>();						
 			Head = transform.FindObjectWithTag(Values.Tag.Head).transform;
 			InteractionCollider = GetComponent<Collider>();
 			AddAction(new IdleAction(this));
@@ -58,8 +52,6 @@ namespace RedDust.Control
 			{ 
 				Debug.LogError(gameObject.name + " has no Squad! Parent must have a Squad component."); 
 			}
-
-			Fighter.CreateDefaultWeapon(RightHand, LeftHand);
 		}
 
 		#endregion

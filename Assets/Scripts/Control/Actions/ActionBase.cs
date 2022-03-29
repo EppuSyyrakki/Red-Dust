@@ -60,7 +60,7 @@ namespace RedDust.Control.Actions
 		/// </summary>
 		public virtual void OnStart()
 		{
-			if (Character.LoggingEnabled)
+			if (Character.enableLogging)
 			{
 				Debug.Log(Character.gameObject.name + " started " + GetType().Name);
 			}
@@ -73,7 +73,7 @@ namespace RedDust.Control.Actions
 		{
 			OnEnd();
 
-			if (Character.LoggingEnabled)
+			if (Character.enableLogging)
 			{
 				Debug.Log(Character.gameObject.name + " succeeded in " + GetType().Name);
 			}
@@ -86,7 +86,7 @@ namespace RedDust.Control.Actions
 		{
 			OnEnd();
 
-			if (Character.LoggingEnabled)
+			if (Character.enableLogging)
 			{
 				Debug.Log(Character.gameObject.name + " failed in " + GetType().Name);
 			}
@@ -99,7 +99,7 @@ namespace RedDust.Control.Actions
 		{
 			OnEnd();
 
-			if (Character.LoggingEnabled)
+			if (Character.enableLogging)
 			{
 				Debug.Log(Character.gameObject.name + " cancelled " + GetType().Name);
 			}		

@@ -15,7 +15,7 @@ namespace RedDust.Control.Actions
 
 		public override ActionState Execute()
 		{
-			if (Character.Mover.TurnTowards(target))
+			if (Character.Motion.TurnTowards(target))
 			{
 				return ActionState.Success;
 			}

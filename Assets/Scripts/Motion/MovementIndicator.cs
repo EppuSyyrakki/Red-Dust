@@ -2,7 +2,7 @@
 using UnityEngine;
 using Utils;
 
-namespace RedDust.Movement
+namespace RedDust.Motion
 {
 	public class MovementIndicator : MonoBehaviour
 	{

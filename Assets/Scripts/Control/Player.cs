@@ -22,7 +22,7 @@ namespace RedDust.Control
 		{
 			base.Start();
 			SetIndicatorColor(SquadStatus.Player);
-			Mover.SetMoveIndicatorColor(Values.Color.Player);
+			Motion.SetMoveIndicatorColor(Values.Color.Player);
 		}
 
 		private void Update()

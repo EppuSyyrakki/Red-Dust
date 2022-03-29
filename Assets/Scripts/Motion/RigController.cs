@@ -1,12 +1,12 @@
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 using RedDust.Combat;
+using RedDust.Control;
 using Utils;
+using UnityEngine.Animations.Rigging;
 
-namespace RedDust.Control
+namespace RedDust.Motion
 {
 	public enum RigMode { None, Look, Aim }
 
@@ -21,40 +21,47 @@ namespace RedDust.Control
 		[SerializeField, Range(0.5f, 5f), Tooltip("How far to look for interactables.")]
 		private float lookRange = 3.5f;
 
-		[SerializeField, Tooltip("How fast the character turns its head towards things.")]
+		[SerializeField, Tooltip("Speed of lerp moving the lookTarget")]
 		private float lookSpeed = 4f;
 
-		[SerializeField, Tooltip("How fast the character aims their weapon towards targets")]
+		[SerializeField, Tooltip("Speed of lerp moving the aimTarget")]
 		private float aimSpeed = 6f;
 
 		[SerializeField]
 		private Vector3 defaultAimOffset = new Vector3(0, 1.5f, 2f);
 
 		[SerializeField]
-		private Transform lookTarget;
+		private Vector3 defaultRestOffset = new Vector3(-1.2f, 0, 1f);
 
 		[SerializeField]
-		private MultiAimConstraint lookConstraint;
+		private HandTargetMover offHandMover;
 
 		[SerializeField]
-		private Transform aimTarget;
+		private Transform lookTarget, aimTarget;
 
 		[SerializeField]
-		private MultiAimConstraint aimConstraint;
+		private RigWeightBlender lookBlender;
+
+		[SerializeField]
+		private RigWeightBlender[] aimBlenders;
 
 		private Timer refreshTargetTimer = null;
 		private Collider[] nearColliders;
 		private IInteractable nearTarget = null;
-		private Coroutine blend = null;
 		private Vector3 attackTarget;
 		private RigMode mode;
-		private Fighter fighter;
+		private MotionControl motion;
+		private CombatControl combat;
 
-		private void Awake()
+        #region Unity messages
+
+        private void Awake()
 		{
+			// Time.timeScale = 0.1f;
 			refreshTargetTimer = new Timer(refreshTime, true, Random.Range(0, refreshTime));
 			nearColliders = new Collider[maxNearTargets];
-			fighter = GetComponentInParent<Fighter>();
+			motion = GetComponentInParent<MotionControl>();
+			combat = GetComponentInParent<CombatControl>();
 		}
 
 		private void Start()
@@ -65,15 +72,17 @@ namespace RedDust.Control
 		private void OnEnable()
 		{
 			refreshTargetTimer.Alarm += OnRefreshTargetsTimer;
-			fighter.AimingEnabled += OnFighterAimEnabled;
-			fighter.Aiming += OnFighterAiming;
+			motion.AimingEnabled += OnMotionAimEnabled;
+			motion.Aiming += OnMotionAiming;
+			combat.WeaponCreated += OnCombatWeaponCreated;
 		}
 
 		private void OnDisable()
 		{
 			refreshTargetTimer.Alarm -= OnRefreshTargetsTimer;
-			fighter.AimingEnabled -= OnFighterAimEnabled;
-			fighter.Aiming -= OnFighterAiming;
+			motion.AimingEnabled -= OnMotionAimEnabled;
+			motion.Aiming -= OnMotionAiming;
+			combat.WeaponCreated -= OnCombatWeaponCreated;
 		}
 
 		private void Update()
@@ -89,21 +98,51 @@ namespace RedDust.Control
             }
 		}
 
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Move lookTarget toward nearest interactable, or look at default offset if none found.
+        /// </summary>
         private void Look()
         {
 			var target = nearTarget == null
-                                ? lookConstraint.transform.TransformPoint(defaultAimOffset)
+                                ? lookBlender.transform.TransformPoint(defaultAimOffset)
                                 : nearTarget.LookTarget.position;
             lookTarget.position = Vector3.MoveTowards(lookTarget.position, target, lookSpeed * Time.deltaTime);
         }
 
+		/// <summary>
+		/// Move look and aim targets towards attackTarget (set by even subscription from Fighter).
+		/// </summary>
 		private void LookAndAim()
         {
 			lookTarget.position = Vector3.MoveTowards(lookTarget.position, attackTarget, lookSpeed * Time.deltaTime);
 			aimTarget.position = Vector3.MoveTowards(aimTarget.position, attackTarget, aimSpeed * Time.deltaTime);
 		}
 
-		private void OnFighterAimEnabled(bool enabled)
+		private void SetRigMode(RigMode target)
+		{
+			mode = target;
+			// start blend in for look if mode is either Look or Aim, otherwise blend out
+			bool look = mode == RigMode.Look || mode == RigMode.Aim ? true : false;
+			// start blend in for aim if mode is Aim, otherwise blend out
+			bool aim = mode == RigMode.Aim ? true : false;
+
+			foreach (var aimBlender in aimBlenders)
+            {
+				aimBlender.StartBlend(aim);
+            }
+
+			lookBlender.StartBlend(look);
+		}
+
+		#endregion
+
+		#region Event handlers
+
+		private void OnMotionAimEnabled(bool enabled)
         {
 			if (enabled) 
 			{ 
@@ -113,14 +152,19 @@ namespace RedDust.Control
 			{
 				nearTarget = null;
 				SetRigMode(RigMode.Look);
-				aimTarget.position = aimConstraint.transform.TransformPoint(defaultAimOffset);
+				aimTarget.position = lookBlender.transform.TransformPoint(defaultAimOffset);
 				lookTarget.position = aimTarget.position;
 			}
 		}
 
-		private void OnFighterAiming(Vector3 target)
+		private void OnMotionAiming(Vector3 target)
         {
 			attackTarget = target;
+        }
+
+		private void OnCombatWeaponCreated(Transform offHandSlot)
+        {
+			offHandMover.SetTarget(offHandSlot);
         }
 
         private void OnRefreshTargetsTimer()
@@ -157,39 +201,6 @@ namespace RedDust.Control
 			nearTarget = orderedTargets[0];
 		}
 
-        private void SetRigMode(RigMode targetMode)
-        {           
-            if (blend != null) { StopCoroutine(blend); }
-
-            blend = StartCoroutine(BlendWeights(targetMode));
-
-			if (enableLogging) { Debug.Log($"{gameObject.name} rig went from {mode} to {targetMode}"); }
-
-			mode = targetMode;
-		}
-
-        private IEnumerator BlendWeights(RigMode mode)
-        {
-            float lookTarget = mode == RigMode.Look ? 1f : 0;
-            float aimTarget = mode == RigMode.Aim ? 1f : 0;
-
-            while (!Mathf.Approximately(lookConstraint.weight, lookTarget)
-                && !Mathf.Approximately(aimConstraint.weight, aimTarget))
-            {
-                var delta = lookSpeed * Time.deltaTime;
-                lookConstraint.weight = Mathf.Lerp(lookConstraint.weight, lookTarget, delta);
-                aimConstraint.weight = Mathf.Lerp(aimConstraint.weight, aimTarget, delta);
-                yield return null;
-            }
-
-			lookConstraint.weight = lookTarget;
-			aimConstraint.weight = aimTarget;
-
-			if (enableLogging)
-            {
-				Debug.Log($"{gameObject.name} Rig weight blending ended."
-				+ $"lookWeight {lookConstraint.weight}, aimWeight {aimConstraint.weight}.");
-			}			
-        }
+        #endregion
     }
 }

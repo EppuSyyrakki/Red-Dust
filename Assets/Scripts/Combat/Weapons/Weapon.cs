@@ -7,22 +7,22 @@ namespace RedDust.Combat.Weapons
 {
 	public class Weapon : MonoBehaviour
 	{
+		[SerializeField]
+		private bool showPivot;
+
 		private ParticleSystem muzzleParticles = null;
 
 		public WeaponData Data { get; private set; }
 		public Transform Muzzle { get; private set; }
-		public Transform RightHandSlot { get; private set; }
-		public Transform LeftHandSlot { get; private set; }
+		public Transform OffHandSlot { get; private set; }
 		public AnimatorOverrideController AnimOverride { get; private set; }
 
-		public void Set(WeaponData data, Transform userRightHand, Transform userLeftHand, Transform muzzle,
-			AnimatorOverrideController animOverride)
+		public void Set(WeaponData data, Transform muzzle, AnimatorOverrideController animOverride)
 		{
 			Data = data;
 			Muzzle = muzzle;
 			muzzleParticles = muzzle.GetComponent<ParticleSystem>();
-			RightHandSlot = transform.FindObjectWithTag(Values.Tag.RHandSlot).transform;
-			LeftHandSlot = transform.FindObjectWithTag(Values.Tag.LHandSlot).transform;
+			OffHandSlot = transform.FindObjectWithTag(Values.Tag.OffHandSlot).transform;
 			AnimOverride = animOverride;
 
 			if (muzzleParticles == null) 
@@ -37,5 +37,13 @@ namespace RedDust.Combat.Weapons
 			Game.Instance.Bus.Send(msg);
 			muzzleParticles.Play();
 		}
-	}
+
+        private void OnDrawGizmos()
+        {
+			if (showPivot)
+            {
+				Gizmos.DrawSphere(transform.position, 0.02f);
+			}			
+        }
+    }
 }

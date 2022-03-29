@@ -10,10 +10,12 @@ TagManager:
   - CharacterTarget
   - Muzzle
   - Weapon
-  - RightHandSlot
-  - LeftHandSlot
   - CharacterAttachment
   - CharacterHead
+  - RightHand
+  - LargeHolster
+  - SmallHolster
+  - OffHandSlot
   layers:
   - Default
   - TransparentFX
