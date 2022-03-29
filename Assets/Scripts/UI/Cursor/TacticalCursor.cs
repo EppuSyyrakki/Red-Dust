@@ -105,10 +105,12 @@ namespace RedDust.UI.Cursor
 			{
 				storedIcon = iconRenderer.sprite;
 				iconRenderer.sprite = ActionBase.LoadIcon(nameof(ShootAction));
+				iconRenderer.color = Values.Color.WhiteOpaque;
 				return;
 			}
 
 			iconRenderer.sprite = storedIcon;
+			iconRenderer.color = Values.Color.WhiteTransparent;
 		}
 
 		#endregion

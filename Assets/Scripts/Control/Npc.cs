@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace RedDust.Control
 {
-	public class Npc : Character, IPlayerInteractable
+	public class Npc : Character, IInteractable
 	{
 		/// <summary>
 		/// The player Squad sends these messages when another Squad's status for it changes so any NPC
 		/// can set their Hostility Indicator accordingly.
 		/// </summary>
-		private ISubscription<PlayerSquadMsg> statusSub = null;
+		private ISubscription<PlayerSquadMsg> statusSub = null;		
 
 		private void OnEnable()
 		{
@@ -30,7 +30,9 @@ namespace RedDust.Control
 			base.SetIndicatorColor(msg.Status);
 		}
 
-		#region IPlayerInteractable implementation
+		#region IInteractable implementation
+
+		public Transform LookTarget => Head;
 
 		public Sprite GetIcon(Player p)
 		{
@@ -39,14 +41,14 @@ namespace RedDust.Control
 			return ActionBase.LoadIcon(nameof(TalkToAction));
 		}
 
-		public ActionBase GetAction(Player p)
+		public ActionBase GetAction(Character c)
 		{
-			if (p.Squad.IsHostileTo(this))
+			if (c.Squad.IsHostileTo(this))
 			{
-				return new ShootAction(p, TargetingTransform.position, Fighter.Health);
+				return new ShootAction(c, Fighter.Health);
 			}
 
-			return new TalkToAction(p, this);
+			return new TalkToAction(c, this);
 		}
 
 		#endregion

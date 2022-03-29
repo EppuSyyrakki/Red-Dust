@@ -8,31 +8,43 @@ namespace RedDust.Control.Actions
 		private Vector3 target;
 		private Health targetHealth;
 		private float timer;
-		private bool facingTarget;
 
-		public ShootAction(Character c, Vector3 target, Health targetHealth = null) 
-			: base(c)
+		/// <summary>
+		/// Create a shoot action against something that has a health component.
+		/// </summary>
+		public ShootAction(Character c, Health targetHealth) : base(c)
 		{
-			this.target = target;
 			this.targetHealth = targetHealth;
+			target = this.targetHealth.TargetingTransform.position;
 		}
+
+		/// <summary>
+		/// Create a shoot action attacking objects without health components.
+		/// </summary>
+		public ShootAction(Character c, Vector3 target) : base(c)
+        {
+			this.target = target;
+			targetHealth = null;
+        }
 
 		public override void OnStart()
 		{
 			base.OnStart();
-			Character.Fighter.StartAim();
+			Character.Fighter.EnableAiming(true);
 		}
 
 		public override ActionState Execute()
 		{
 			timer += Time.deltaTime;
 
-			if (!Character.Mover.TurnTowards(target) 
-				&& timer > Character.Fighter.AttackFrequency)
-			{
-				Character.Fighter.Shoot(target);
-				timer = 0;
-			}	
+			if (targetHealth == null)
+            {
+				AimTurnShoot(target);
+			}
+			else
+            {
+				AimTurnShoot(targetHealth.TargetingTransform.position);
+            }					
 
 			if (targetHealth != null && targetHealth.IsDead)
 			{
@@ -42,22 +54,21 @@ namespace RedDust.Control.Actions
 			return ActionState.Running;
 		}
 
-		public override void OnCancel()
+		public override void OnEnd()
 		{
-			base.OnCancel();
-			Character.Fighter.EndAim();
+			Character.Fighter.EnableAiming(false);
 		}
 
-		public override void OnFailure()
-		{
-			base.OnFailure();
-			Character.Fighter.EndAim();
-		}
+		private void AimTurnShoot(Vector3 target)
+        {
+			Character.Fighter.Aim(target);
 
-		public override void OnSuccess()
-		{
-			base.OnSuccess();
-			Character.Fighter.EndAim();
+			if (!Character.Mover.TurnTowards(target)
+			&& timer > Character.Fighter.AttackFrequency)
+			{
+				Character.Fighter.Shoot(target);
+				timer = 0;
+			}
 		}
 	}
 }

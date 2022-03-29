@@ -28,12 +28,13 @@ namespace RedDust.Combat
 
 		[SerializeField]
 		protected HealthStatus status;
-	
+
+		public Transform TargetingTransform { get; protected set; }
 		public HealthStatus Status { get => status; }
 		public List<Effect> Effects { get; private set; } = new List<Effect>();
 		public bool IsDead => status.current <= 0;
 
-		private void Awake()
+		public virtual void Awake()
 		{
 			status = startingHealth;
 		}

@@ -7,7 +7,7 @@ using Utils;
 
 namespace RedDust.Control
 {
-	[RequireComponent(typeof(Mover), typeof(Fighter), typeof(CharacterHealth))]
+	[RequireComponent(typeof(Mover), typeof(Fighter))]
 	public abstract class Character : MonoBehaviour
 	{
 		[SerializeField]
@@ -22,10 +22,12 @@ namespace RedDust.Control
 		public bool LoggingEnabled => logActions;
 		public Mover Mover { get; private set; }
 		public Fighter Fighter { get; private set; }
-		public Squad Squad { get; private set; }		
-		public Transform TargetingTransform { get; private set; }
+		public Squad Squad { get; private set; }
+		
 		public Transform RightHand { get; private set; }
 		public Transform LeftHand { get; private set; }
+		public Transform Head { get; private set; }
+		public Collider InteractionCollider { get; private set; }
 
 		public bool IsBusy
 		{
@@ -42,10 +44,11 @@ namespace RedDust.Control
 		{
 			Mover = GetComponent<Mover>();
 			Fighter = GetComponent<Fighter>();			
-			Indicator = GetComponentInChildren<HostilityIndicator>();
-			TargetingTransform = transform.FindObjectWithTag(Values.Tag.CharTarget).transform;
+			Indicator = GetComponentInChildren<HostilityIndicator>();			
 			RightHand = transform.FindObjectWithTag(Values.Tag.RHandSlot).transform;
 			LeftHand = transform.FindObjectWithTag(Values.Tag.LHandSlot).transform;
+			Head = transform.FindObjectWithTag(Values.Tag.Head).transform;
+			InteractionCollider = GetComponent<Collider>();
 			AddAction(new IdleAction(this));
 		}
 

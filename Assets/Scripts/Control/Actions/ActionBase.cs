@@ -48,6 +48,11 @@ namespace RedDust.Control.Actions
 			return loadedIcon;
 		}		
 
+		/// <summary>
+		/// Gets Called each frame by the character action queue. Should return different ActionStates
+		/// depending on the results of that frame's execution.
+		/// </summary>
+		/// <returns>Enum used to decide if a new action should be pulled from the queue.</returns>
 		public abstract ActionState Execute();
 
 		/// <summary>
@@ -66,6 +71,8 @@ namespace RedDust.Control.Actions
 		/// </summary>
 		public virtual void OnSuccess()
 		{
+			OnEnd();
+
 			if (Character.LoggingEnabled)
 			{
 				Debug.Log(Character.gameObject.name + " succeeded in " + GetType().Name);
@@ -77,6 +84,8 @@ namespace RedDust.Control.Actions
 		/// </summary>
 		public virtual void OnFailure()
 		{
+			OnEnd();
+
 			if (Character.LoggingEnabled)
 			{
 				Debug.Log(Character.gameObject.name + " failed in " + GetType().Name);
@@ -88,10 +97,19 @@ namespace RedDust.Control.Actions
 		/// </summary>
 		public virtual void OnCancel()
 		{
+			OnEnd();
+
 			if (Character.LoggingEnabled)
 			{
 				Debug.Log(Character.gameObject.name + " cancelled " + GetType().Name);
-			}
+			}		
+		}
+
+		/// <summary>
+		/// Gets called in base.OnSuccess, OnFailure and OnCancel. Can be used to reduce repetition in those.
+		/// </summary>
+		public virtual void OnEnd()
+		{
 		}
 	}
 }

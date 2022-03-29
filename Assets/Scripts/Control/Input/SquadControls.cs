@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using static RedDust.Control.Input.GameInputs;
+using RedDust.Combat;
 
 namespace RedDust.Control.Input
 {
@@ -30,7 +31,7 @@ namespace RedDust.Control.Input
 		private Vector2 dragOrigin;
 		private bool addModifier = false;
 		private bool forceAttack = false;
-		private IPlayerInteractable interactable = null;
+		private IInteractable interactable = null;
 
 		public DragMode Drag { get; private set; }
 
@@ -75,7 +76,7 @@ namespace RedDust.Control.Input
 			// 2. some activated ability check? Like first aid
 			// 3. Interactable check
 
-			if (TryGetInteractable(ray, out IPlayerInteractable newInteractable)) 
+			if (TryGetInteractable(ray, out IInteractable newInteractable)) 
 			{
 				TryChangeInteractable(newInteractable);
 			}
@@ -89,7 +90,7 @@ namespace RedDust.Control.Input
 
 		#region Private functionality
 
-		private bool TryGetInteractable(Ray cursorRay, out IPlayerInteractable newInteractable)
+		private bool TryGetInteractable(Ray cursorRay, out IInteractable newInteractable)
 		{
 			newInteractable = null;
 
@@ -109,7 +110,7 @@ namespace RedDust.Control.Input
 			return false;			
 		}
 
-		private void TryChangeInteractable(IPlayerInteractable newInteractable)
+		private void TryChangeInteractable(IInteractable newInteractable)
 		{
 			if (interactable == null || newInteractable != interactable)
 			{
@@ -158,11 +159,17 @@ namespace RedDust.Control.Input
 		{
 			if (Physics.Raycast(cursorRay, out RaycastHit hit, castRange, Values.Layer.ProjectileHits))
 			{
+				var health = hit.collider.gameObject.GetComponent<Health>();
+				ShootAction action;
+
 				for (int i = 0; i < selected.Count; i++)
 				{
 					if (!addModifier) { selected[i].CancelActions(); }
 
-					selected[i].AddAction(new ShootAction(selected[i], hit.point));
+					if (health != null) { action = new ShootAction(selected[i], health); }
+					else { action = new ShootAction(selected[i], hit.point); }
+
+					selected[i].AddAction(action);
 				}
 			}
 		}

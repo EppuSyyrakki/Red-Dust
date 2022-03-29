@@ -25,8 +25,11 @@ namespace RedDust
 			public const string Velocity = "velocity";
 			public const string Turning = "turning";
 			public const string Crouched = "crouched";
-			public const int AimLayer = 1;
-			public const float AimLayerSpeed = 25f;
+			public const int AimingLayer = 1;
+			public const float DefaultLayerBlendTime = 0.5f;
+			public const string AimingTargetName = "IK Aiming target";
+			public const int MaxNearTargets = 4;
+			public const float LookRefresh = 1.5f;
 		}
 
 		public class Combat
@@ -55,7 +58,9 @@ namespace RedDust
 			public const int HardCover = 1 << 8;
 			public const int Destructible = 1 << 9;
 			public const int Indestructible = 1 << 10;
+			public const int PointOfInterest = 1 << 11;
 			public const int ProjectileHits = Ground | Character | Destructible | Indestructible;
+			public const int LookAts = Character | Destructible | PointOfInterest;
 		}
 
 		public class Tag
@@ -68,6 +73,7 @@ namespace RedDust
 			public const string Muzzle = "Muzzle";
 			public const string RHandSlot = "RightHandSlot";
 			public const string LHandSlot = "LeftHandSlot";
+			public const string Head = "CharacterHead";
 		}
 
 		public class Timer

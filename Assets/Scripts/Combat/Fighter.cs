@@ -1,12 +1,12 @@
-using RedDust.Combat.Weapons;
-using RedDust.Messages;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Utils;
+using RedDust.Combat.Weapons;
 
 namespace RedDust.Combat
 {
+    [RequireComponent(typeof(CharacterHealth))]
     public class Fighter : MonoBehaviour
     {
         [Tooltip("Character data")]
@@ -21,44 +21,42 @@ namespace RedDust.Combat
         [SerializeField]
         private float aimLayerSpeed = 0.3f;
 
-        private const int aimLayer = Values.Animation.AimLayer;     
+        private const int aimLayer = Values.Animation.AimingLayer;     
 
         private Animator animator;
         private Coroutine aimBlend;
 
+        public event Action<Vector3> Aiming;
+        public event Action<bool> AimingEnabled;
+
         public Weapon Weapon { get; private set; }
         public float AttackFrequency => attackFreq;
         public CharacterHealth Health { get; private set; }
-        public WeaponConfig DefaultWeaponCfg => defaultWeaponConfig;
+        /// <summary>
+		/// Combat uses this transform's position as a "center of mass" target.
+		/// </summary>
+	
 
         private void Awake()
 		{
             animator = GetComponent<Animator>();
-            Health = GetComponent<CharacterHealth>();
-
+            Health = GetComponent<CharacterHealth>();           
         }
 
-        /// <summary>
-        /// Starts to blend animator layer weight towards aiming.
-        /// </summary>
-        public void StartAim()
+        public void EnableAiming(bool enable)
 		{
             if (aimBlend != null) { StopCoroutine(aimBlend); }
 
+            float target = enable ? 1 : 0;
             aimBlend = StartCoroutine(BlendLayerTo(
-                animator.GetLayerWeight(aimLayer), 1, aimLayer, aimLayerSpeed));
+                animator.GetLayerWeight(aimLayer), target, aimLayer, aimLayerSpeed));
+            AimingEnabled?.Invoke(enable);
 		}
 
-        /// <summary>
-        /// Starts to blend animator layer weight towards base layer.
-        /// </summary>
-        public void EndAim()
-		{
-            if (aimBlend != null) { StopCoroutine(aimBlend); }
-
-            aimBlend = StartCoroutine(BlendLayerTo(
-                animator.GetLayerWeight(aimLayer), 0, aimLayer, aimLayerSpeed * 2f));
-		}
+        public void Aim(Vector3 target)
+        {
+            Aiming?.Invoke(target);
+        }
 
         private IEnumerator BlendLayerTo(float currentWeight, float targetWeight, int layer, float time)
 		{
@@ -86,11 +84,7 @@ namespace RedDust.Combat
             }
 
             Weapon = defaultWeaponConfig.Create(rHand, lHand);
-
-            if (Weapon.AnimOverride != null)
-			{
-                animator.runtimeAnimatorController = Weapon.AnimOverride;
-            }          
+            SetOverride(Weapon.AnimOverride);
         }
 
 		public void Shoot(Vector3 target)
@@ -109,8 +103,9 @@ namespace RedDust.Combat
             // Just some testing mod alues
             float statModifiers = 1f / (weaponSkill + perception) * 10f;
 
-			// Get a random sphere multiplied by mod values
-			Vector3 toRangeLocalRandomized = toRangeLocal + Random.insideUnitSphere.normalized * statModifiers;
+            // Get a random sphere multiplied by mod values
+            Vector3 unitSphere = UnityEngine.Random.insideUnitSphere.normalized;
+			Vector3 toRangeLocalRandomized = toRangeLocal + unitSphere * statModifiers;
 			return Weapon.Muzzle.TransformDirection(toRangeLocalRandomized.normalized);
         }
 

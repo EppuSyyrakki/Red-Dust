@@ -20,7 +20,7 @@ namespace RedDust.Control
 		private List<Squad> hostiles = new List<Squad>();
 		[SerializeField]
 		private List<Squad> allies = new List<Squad>();
-
+		
 		private bool isPlayerSquad = false;
 
 		public Character[] Members => members.ToArray();

@@ -60,7 +60,10 @@ namespace RedDust.Movement
 			animator.SetFloat(Values.Animation.Velocity, forwardSpeed);
 			animator.SetFloat(Values.Animation.Turning, turningSpeed);
 
-			if (indicatorEnabled && IsAtDestination()) { EnableMoveIndicator(false); }
+			if (indicatorEnabled && IsAtDestination()) 
+			{ 
+				DisableMoveIndicator(); 
+			}
 		}
 
 		private void SetSpeed(float speed)
@@ -81,14 +84,14 @@ namespace RedDust.Movement
 			Vector3 toTarget = (navMeshAgent.destination - transform.position).normalized;
 			Vector3 stopPosition = transform.position + toTarget * Values.Navigation.StopDistance;
 			SetDestination(stopPosition);
-			EnableMoveIndicator(false);
+			DisableMoveIndicator();
 		}
 
 		public void SetDestination(Vector3 destination, bool useIndicator = false)
 		{
 			navMeshAgent.SetDestination(destination);
 			
-			if (useIndicator) { EnableMoveIndicator(true); }
+			if (useIndicator) { EnableMoveIndicator(destination); }
 		}
 
 		public bool IsAtDestination()
@@ -157,23 +160,20 @@ namespace RedDust.Movement
 			transform.rotation = rotation;
 		}
 
-		private void EnableMoveIndicator(bool enable)
+		private void EnableMoveIndicator(Vector3 destination)
 		{
-			Transform t = indicator.transform;		
+			indicatorEnabled = true;
+			indicator.transform.SetParent(null);
+			indicator.transform.position = destination;			
+			indicator.gameObject.SetActive(false);
+		}
 
-			if (enable) 
-			{ 
-				t.SetParent(null);
-				t.position = navMeshAgent.destination;
-			}
-			else 
-			{
-				t.position = transform.position;
-				t.SetParent(transform); 
-			}
-
-			indicatorEnabled = enable;
-			indicator.gameObject.SetActive(enable);			
+		private void DisableMoveIndicator()
+        {
+			indicatorEnabled = false;
+			indicator.transform.position = transform.position;
+			indicator.transform.SetParent(transform);			
+			indicator.gameObject.SetActive(false);
 		}
 
 		public void SetMoveIndicatorColor(Color color)

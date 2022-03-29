@@ -28,9 +28,9 @@ namespace RedDust.Combat
 
 		public void UnsubscribeSpawnMsg() { Game.Instance.Bus.Unsubscribe(spawnSub); }
 
-		private const int totalMax = Values.Combat.MaxProjectiles;
-		private const int hitsPerResult = Values.Combat.MaxRaycastHits;
-		private const float multiHitStep = Values.Combat.MultiHitMinStep;
+		private int totalMax = Values.Combat.MaxProjectiles;
+		private int hitsPerResult = Values.Combat.MaxRaycastHits;
+		private float multiHitStep = Values.Combat.MultiHitMinStep;
 		private List<Projectile> projectiles;
 		private Queue<ProjectileMsg> createQueue;
 		private Queue<Projectile> removeQueue;
@@ -147,7 +147,7 @@ namespace RedDust.Combat
 			// BUG: original RaycastCommand only returns a single hit. Multihit is a "hack"
 			// TIP: Can't access colliders inside a job, but RaycastHit.normal is Vector3.zero for rays
 			// that hit nothing.
-			raycastHandle = RaycastCommandMultihit.ScheduleBatch(raycasts, hits, 8, hitsPerResult, default, multiHitStep);
+			raycastHandle = RaycastCommandMultihit.ScheduleBatch(raycasts, hits, 32, hitsPerResult, default, multiHitStep);
 			projectileJob = new ProjectileJob() 
 			{ 
 				info = info, result = result, travelled = travelled

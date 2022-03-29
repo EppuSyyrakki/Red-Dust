@@ -7,7 +7,7 @@ namespace RedDust.Control
 	/// <summary>
 	/// No other characters should be Players except those in Squad with PlayerSquad tag.
 	/// </summary>
-	public class Player : Character, IPlayerInteractable
+	public class Player : Character, IInteractable
 	{
 		public int PlayerIndex { get; set; } = -1;
 
@@ -46,16 +46,18 @@ namespace RedDust.Control
 
 		#endregion
 
-		#region IPlayerInteractable implementation
+		#region IInteractable implementation
+
+		public Transform LookTarget => Head;
 
 		public Sprite GetIcon(Player p)
 		{
 			return ActionBase.LoadIcon(nameof(FollowAction));
 		}
 
-		public ActionBase GetAction(Player p)
+		public ActionBase GetAction(Character c)
 		{
-			return new FollowAction(p, transform);
+			return new FollowAction(c, transform);
 		}
 
 		#endregion	

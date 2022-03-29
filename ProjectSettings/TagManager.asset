@@ -13,6 +13,7 @@ TagManager:
   - RightHandSlot
   - LeftHandSlot
   - CharacterAttachment
+  - CharacterHead
   layers:
   - Default
   - TransparentFX
@@ -25,7 +26,7 @@ TagManager:
   - HardCover
   - Destructible
   - Indestructible
-  - 
+  - PointOfInterest
   - 
   - 
   - 
