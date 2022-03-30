@@ -43,10 +43,15 @@ namespace RedDust.Motion
 		public bool IsSneaking => isSneaking;
 		public bool IsMoving => forwardSpeed > Values.Navigation.MovingThreshold;
 
+		//private void Start()
+		//{
+		//	BlendCombat(true);  // TEMPORARY FOR RIGGING
+		//}
+
 		#region Unity messages
 
 		private void Awake()
-		{
+		{			
 			navMeshAgent = GetComponent<NavMeshAgent>();
 			navMeshAgent.SetDestination(transform.position);
 			navMeshAgent.speed = moveSpeed;
@@ -60,7 +65,7 @@ namespace RedDust.Motion
 			navMeshAgent.enabled = false;
 		}
 
-		private void Update()
+        private void Update()
 		{
 			UpdateAnimator();
 		}
@@ -205,11 +210,14 @@ namespace RedDust.Motion
 
 		public void BlendCombat(bool blendIn)
 		{
+			var current = animator.GetLayerWeight(Values.Animation.AimingLayer);
+
+			if ((blendIn && current == 1) || (!blendIn && current == 0)) { return; }
+
 			if (aimBlend != null) { StopCoroutine(aimBlend); }
 
 			float target = blendIn ? 1 : 0;
-			aimBlend = StartCoroutine(BlendLayerTo(
-				animator.GetLayerWeight(aimLayer), target, aimLayer, aimLayerBlendTime));
+			aimBlend = StartCoroutine(BlendLayerTo(current, target, aimLayer, aimLayerBlendTime));
 			AimingEnabled?.Invoke(blendIn);
 		}
 

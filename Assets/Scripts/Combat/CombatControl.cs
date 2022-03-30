@@ -41,7 +41,7 @@ namespace RedDust.Combat
 
         private void Start()
         {
-            CreateWeapon(defaultWeaponConfig);
+            // CreateWeapon(defaultWeaponConfig);
         }
 
         public void CreateWeapon(WeaponConfig wConfig)

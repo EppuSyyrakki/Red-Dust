@@ -32,13 +32,11 @@ namespace RedDust.Combat.Weapons
 	}
 	public enum WeaponType
 	{
-		Unarmed = 0,
-		SmallMelee = 1,
-		LargeMelee = 2,
-		SmallGun = 3,
-		LargeGun = 4,
-		Throwable = 5,
-		Explosive = 6
+		SmallMelee = 0,
+		LargeMelee = 1,
+		SmallGun = 2,
+		LargeGun = 3,
+		Throwable = 4
 	}
 
 	[CreateAssetMenu(fileName = "New Weapon Config", menuName = "Red Dust/New Weapon Config")]

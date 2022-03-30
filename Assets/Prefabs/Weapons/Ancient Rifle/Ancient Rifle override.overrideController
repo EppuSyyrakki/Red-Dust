@@ -8,6 +8,4 @@ AnimatorOverrideController:
   m_PrefabAsset: {fileID: 0}
   m_Name: Ancient Rifle override
   m_Controller: {fileID: 9100000, guid: 6ac1d17dbbdc192409c29161f0800c22, type: 2}
-  m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: 1ab26df685fc9444ea559d4461819d62, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 3d83c1da65d6130428656da2187ab56c, type: 2}
+  m_Clips: []
