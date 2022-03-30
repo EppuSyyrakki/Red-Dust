@@ -32,16 +32,20 @@ namespace RedDust.Combat.Weapons
 	}
 	public enum WeaponType
 	{
-		SmallMelee = 0,
-		LargeMelee = 1,
-		SmallGun = 2,
-		LargeGun = 3,
-		Throwable = 4
+		Unarmed = 0,
+		SmallMelee = 1,
+		LargeMelee = 2,
+		SmallGun = 3,
+		LargeGun = 4,
+		Throwable = 5
 	}
 
 	[CreateAssetMenu(fileName = "New Weapon Config", menuName = "Red Dust/New Weapon Config")]
 	public class WeaponConfig : ScriptableObject
 	{
+		private const string TAG_WEAPON = Values.Tag.Weapon;
+		private const string TAG_MUZZLE = Values.Tag.Muzzle;
+
 		[SerializeField]
 		private string Name;
 
@@ -66,9 +70,6 @@ namespace RedDust.Combat.Weapons
 		[SerializeField]
 		private Weapon weaponPrefab;
 
-		[SerializeField]
-		private AnimatorOverrideController animatorOverride;
-
 		/// <summary>
 		/// Spawns this weapon as a child of the hand parameter.
 		/// </summary>
@@ -79,17 +80,17 @@ namespace RedDust.Combat.Weapons
 			var data = new WeaponData(Name, damage, range, penetration, projectilePrefab, effects, weaponPrefab, type);
 			Weapon wpn = Instantiate(data.prefab, hand);
 			Transform muzzle = wpn.transform.FindObjectWithTag(Values.Tag.Muzzle).transform;
-			wpn.Set(data, muzzle, animatorOverride);
+			wpn.Set(data, muzzle);
 			return wpn;
 		}
 
 		public static void DestroyOldWeapon(Transform hand)
 		{
-			var oldWeapon = hand.FindObjectWithTag(Values.Tag.Weapon);
+			var oldWeapon = hand.FindObjectWithTag(TAG_WEAPON);
 			
 			if (oldWeapon == null) { return; }
 
-			var oldMuzzle = hand.FindObjectWithTag(Values.Tag.Muzzle);
+			var oldMuzzle = hand.FindObjectWithTag(TAG_MUZZLE);
 			oldWeapon.name = "OLD WEAPON";
 			oldMuzzle.name = "OLD MUZZLE";
 			Destroy(oldWeapon);

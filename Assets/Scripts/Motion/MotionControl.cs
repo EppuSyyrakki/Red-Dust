@@ -11,7 +11,6 @@ namespace RedDust.Motion
 	[RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent), typeof(Animator))]
 	public class MotionControl : MonoBehaviour
 	{
-		private const int ANIM_LAYER_COMBAT = Values.Animation.CombatLayer;
 		private const float MAX_SPEED = Values.Navigation.MaxSpeed;
 		private const float STOP_DISTANCE = Values.Navigation.StopDistance;
 		private const float MOVE_THRESHOLD = Values.Navigation.MovingThreshold;
@@ -35,18 +34,7 @@ namespace RedDust.Motion
 		private Animator animator;
 		private bool isSneaking;
 		private float forwardSpeed;
-		private MovementIndicator indicator = null;
-		private bool indicatorEnabled = false;
-		private Coroutine aimBlend;
-
-		/// <summary>
-		/// Broadcasts location of aimed object. Used by Actions.
-		/// </summary>
-		public event Action<Vector3> Aiming;
-		/// <summary>
-		/// Broadcasts if aiming was started (true) or finished (false). Used by Actions.
-		/// </summary>
-		public event Action<bool> AimingEnabled;
+		private MovementIndicator indicator = null;		
 		
 		public float MoveSpeed => moveSpeed;
 		public bool IsSneaking => isSneaking;
@@ -89,13 +77,10 @@ namespace RedDust.Motion
 			Vector3 local = transform.InverseTransformDirection(velocity);
 			forwardSpeed = local.z / MAX_SPEED;
 			float turningSpeed = Mathf.Lerp(local.x, 0, 40f * Time.deltaTime);
-			Debug.Log(local);
-
-
 			animator.SetFloat(ANIM_VELOCITY, forwardSpeed);
 			animator.SetFloat(ANIM_TURNING, turningSpeed);
 
-			if (indicatorEnabled && IsAtDestination()) 
+			if (indicator.gameObject.activeInHierarchy && IsAtDestination()) 
 			{ 
 				DisableMoveIndicator(); 
 			}
@@ -108,15 +93,13 @@ namespace RedDust.Motion
 
 		private void EnableMoveIndicator(Vector3 destination)
 		{
-			indicatorEnabled = true;
-			indicator.transform.SetParent(null);
 			indicator.transform.position = destination;
-			indicator.gameObject.SetActive(false);
+			indicator.transform.SetParent(null);			
+			indicator.gameObject.SetActive(true);
 		}
 
 		private void DisableMoveIndicator()
 		{
-			indicatorEnabled = false;
 			indicator.transform.position = transform.position;
 			indicator.transform.SetParent(transform);
 			indicator.gameObject.SetActive(false);
@@ -211,44 +194,11 @@ namespace RedDust.Motion
 			transform.rotation = rotation;
 		}
 
-		public void Aim(Vector3 target)
-		{
-			Aiming?.Invoke(target);
-		}
+		
 
 		public void SetMoveIndicatorColor(Color color)
 		{
 			indicator.Color = color;
-		}
-
-		public void BlendCombat(bool blendIn)
-		{
-			var current = animator.GetLayerWeight(ANIM_LAYER_COMBAT);
-
-			if ((blendIn && current == 1) || (!blendIn && current == 0)) { return; }
-
-			if (aimBlend != null) { StopCoroutine(aimBlend); }
-
-			float target = blendIn ? 1 : 0;
-			aimBlend = StartCoroutine(BlendLayerTo(current, target, ANIM_LAYER_COMBAT, aimLayerBlendTime));
-			AimingEnabled?.Invoke(blendIn);
-		}
-
-		private IEnumerator BlendLayerTo(float currentWeight, float targetWeight, int layer, float time)
-		{
-			float t = 0;
-
-			while (t < time)
-			{
-				if (Mathf.Approximately(currentWeight, targetWeight))
-				{
-					currentWeight = targetWeight;
-				}
-
-				t += Time.deltaTime;
-				animator.SetLayerWeight(layer, Mathf.Lerp(currentWeight, targetWeight, t / time));
-				yield return null;
-			}
 		}
 
 		#endregion Public API

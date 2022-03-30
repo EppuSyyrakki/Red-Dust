@@ -4,7 +4,6 @@ namespace RedDust
 {
 	public static class Values
 	{
-		// TODO: Make the relevant things (like Colors) user changeable via properties.
 		public class Navigation
 		{
 			public const float MoveTargetTreshold = 0.5f;
@@ -26,6 +25,9 @@ namespace RedDust
 			public const string Velocity = "velocity";
 			public const string Turning = "turning";
 			public const string Crouched = "crouched";
+			public const string WeaponType = "weaponType";
+			public const string IsInCombat = "isInCombat";
+			public const string WeaponDrawn = "weaponDrawn";
 			public const int CombatLayer = 1;
 			public const float DefaultLayerBlendTime = 0.5f;
 			public const int MaxNearTargets = 4;
@@ -40,6 +42,7 @@ namespace RedDust
 			public const int MaxRaycastHits = 4;
 			public const float MaxProjectileTravel = 300f;
 			public const float MultiHitMinStep = 0.25f;
+			public const float RelaxTimer = 20f;
 		}
 
 		public class Input

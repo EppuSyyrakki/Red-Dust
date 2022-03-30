@@ -8,7 +8,7 @@ using UnityEngine.Animations.Rigging;
 
 namespace RedDust.Motion
 {
-	public enum RigMode { None, Look, Aim }
+	public enum RigMode { None, Interact, Look, HoldWeapon, Aim }
 
     public class RigController : MonoBehaviour
     {
@@ -28,13 +28,10 @@ namespace RedDust.Motion
 		private float aimSpeed = 6f;
 
 		[SerializeField]
-		private Vector3 defaultAimOffset = new Vector3(0, 1.5f, 2f);
+		private Vector3 defaultLookOffset = new Vector3(0, 1.5f, 2f);
 
 		[SerializeField]
-		private Vector3 defaultRestOffset = new Vector3(-1.2f, 0, 1f);
-
-		[SerializeField]
-		private HandTargetMover offHandMover;
+		private HandTargetMover leftHandMover;
 
 		[SerializeField]
 		private Transform lookTarget, aimTarget;
@@ -43,51 +40,58 @@ namespace RedDust.Motion
 		private RigWeightBlender lookBlender;
 
 		[SerializeField]
-		private RigWeightBlender[] aimBlenders;
+		private RigWeightBlender aimBlender;
+
+		[SerializeField]
+		private RigWeightBlender rHandBlender;
+
+		[SerializeField]
+		private RigWeightBlender lHandBlender;
 
 		private Timer refreshTargetTimer = null;
 		private Collider[] nearColliders;
 		private IInteractable nearTarget = null;
-		private Vector3 attackTarget;
+		private Vector3 weaponTarget;
 		private RigMode mode;
-		private MotionControl motion;
 		private CombatControl combat;
+		private Vector3 defaultAimOffset;
 
         #region Unity messages
 
         private void Awake()
 		{
-			// Time.timeScale = 0.1f;
 			refreshTargetTimer = new Timer(refreshTime, true, Random.Range(0, refreshTime));
 			nearColliders = new Collider[maxNearTargets];
-			motion = GetComponentInParent<MotionControl>();
 			combat = GetComponentInParent<CombatControl>();
+			defaultAimOffset = aimTarget.localPosition;
 		}
 
 		private void Start()
 		{
-			// SetRigMode(RigMode.Look);
+			// SetRigMode(RigMode.Aim);
 		}
 
 		private void OnEnable()
 		{
 			refreshTargetTimer.Alarm += OnRefreshTargetsTimer;
-			motion.AimingEnabled += OnMotionAimEnabled;
-			motion.Aiming += OnMotionAiming;
-			combat.WeaponCreated += OnCombatWeaponCreated;
+			combat.CombatEntered += OnCombatEntered;
+			combat.WeaponDrawn += OnCombatWeaponDrawn;
+			combat.Aiming += OnCombatAiming;
+			combat.AimingEnded += OnCombatAimingEnded;
 		}
 
 		private void OnDisable()
 		{
 			refreshTargetTimer.Alarm -= OnRefreshTargetsTimer;
-			motion.AimingEnabled -= OnMotionAimEnabled;
-			motion.Aiming -= OnMotionAiming;
-			combat.WeaponCreated -= OnCombatWeaponCreated;
+			combat.CombatEntered -= OnCombatEntered;
+			combat.WeaponDrawn -= OnCombatWeaponDrawn;
+			combat.Aiming -= OnCombatAiming;
+			combat.AimingEnded -= OnCombatAimingEnded;
 		}
 
 		private void Update()
 		{
-			if (mode == RigMode.Look)
+			if (mode == RigMode.Look || mode == RigMode.HoldWeapon)
             {
                 refreshTargetTimer.Tick();
                 Look();
@@ -107,10 +111,12 @@ namespace RedDust.Motion
         /// </summary>
         private void Look()
         {
-			var target = nearTarget == null
-                                ? lookBlender.transform.TransformPoint(defaultAimOffset)
+			Vector3 look = nearTarget == null
+                                ? lookBlender.transform.TransformPoint(defaultLookOffset)
                                 : nearTarget.LookTarget.position;
-            lookTarget.position = Vector3.MoveTowards(lookTarget.position, target, lookSpeed * Time.deltaTime);
+            lookTarget.position = Vector3.MoveTowards(lookTarget.position, look, lookSpeed * Time.deltaTime);
+			Vector3 aim = aimBlender.transform.InverseTransformPoint(defaultAimOffset);
+			aimTarget.position = Vector3.MoveTowards(aimTarget.position, aim, aimSpeed * Time.deltaTime);
         }
 
 		/// <summary>
@@ -118,53 +124,67 @@ namespace RedDust.Motion
 		/// </summary>
 		private void LookAndAim()
         {
-			lookTarget.position = Vector3.MoveTowards(lookTarget.position, attackTarget, lookSpeed * Time.deltaTime);
-			aimTarget.position = Vector3.MoveTowards(aimTarget.position, attackTarget, aimSpeed * Time.deltaTime);
+			lookTarget.position = Vector3.MoveTowards(lookTarget.position, weaponTarget, lookSpeed * Time.deltaTime);
+			aimTarget.position = Vector3.MoveTowards(aimTarget.position, weaponTarget, aimSpeed * Time.deltaTime);
 		}
 
-		private void SetRigMode(RigMode target)
+		private void SetRigMode(RigMode mode)
 		{
-			mode = target;
-			// start blend in for look if mode is either Look or Aim, otherwise blend out
-			bool look = mode == RigMode.Look || mode == RigMode.Aim ? true : false;
-			// start blend in for aim if mode is Aim, otherwise blend out
+			// Looking at things should be true in on all modes except None.
+			bool look = mode != RigMode.None ? true : false;
+			// Aim should be true only in Aim mode.
 			bool aim = mode == RigMode.Aim ? true : false;
-
-			foreach (var aimBlender in aimBlenders)
-            {
-				aimBlender.StartBlend(aim);
-            }
+			// Constraining left hand should be false in None and Look modes.
+			bool leftHand = mode == RigMode.None || mode == RigMode.Look ? false : true;
+			// Constraining right hand should only be true in Interact.
+			bool rightHand = mode == RigMode.Interact ? true : false;
 
 			lookBlender.StartBlend(look);
+			aimBlender.StartBlend(aim);
+			lHandBlender.StartBlend(leftHand);
+			rHandBlender.StartBlend(rightHand);
+			this.mode = mode;
 		}
 
 		#endregion
 
 		#region Event handlers
 
-		private void OnMotionAimEnabled(bool enabled)
+		private void OnCombatEntered(bool entered)
         {
-			if (enabled) 
-			{ 
-				SetRigMode(RigMode.Aim);	
+			if (entered) 
+			{
+				// Interact before HoldWeapon. The Grab weapon animation will call to change it to
+				// HoldWeapon once its completed via an event in CombatControl.
+				SetRigMode(RigMode.Interact);
 			}
 			else 
 			{
 				nearTarget = null;
 				SetRigMode(RigMode.Look);
-				aimTarget.position = lookBlender.transform.TransformPoint(defaultAimOffset);
-				lookTarget.position = aimTarget.position;
+				weaponTarget = aimBlender.transform.InverseTransformPoint(defaultAimOffset);
+				lookTarget.position = lookBlender.transform.InverseTransformPoint(defaultLookOffset);
 			}
 		}
 
-		private void OnMotionAiming(Vector3 target)
+		private void OnCombatAiming(Vector3 target)
         {
-			attackTarget = target;
+			// Check first, because this gets called every frame the character is aiming.
+			if (mode != RigMode.Aim) { SetRigMode(RigMode.Aim); }
+
+			weaponTarget = target;
         }
 
-		private void OnCombatWeaponCreated(Transform offHandSlot)
+		private void OnCombatAimingEnded()
         {
-			offHandMover.SetTarget(offHandSlot);
+			if (mode != RigMode.HoldWeapon) { SetRigMode(RigMode.HoldWeapon); }
+        }
+
+		// Gets called when the "draw weapon" animation is complete.
+		private void OnCombatWeaponDrawn(Transform offHandSlot)
+        {
+			SetRigMode(RigMode.HoldWeapon);
+			leftHandMover.SetTarget(offHandSlot);
         }
 
         private void OnRefreshTargetsTimer()

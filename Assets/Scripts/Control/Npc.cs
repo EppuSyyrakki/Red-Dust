@@ -45,7 +45,7 @@ namespace RedDust.Control
 		{
 			if (c.Squad.IsHostileTo(this))
 			{
-				return new ShootAction(c, Fighter.Health);
+				return new ShootAction(c, Combat.Health);
 			}
 
 			return new TalkToAction(c, this);

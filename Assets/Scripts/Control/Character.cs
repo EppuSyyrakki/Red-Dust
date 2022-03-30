@@ -19,7 +19,7 @@ namespace RedDust.Control
 		protected HostilityIndicator Indicator { get; private set; }
 	
 		public MotionControl Motion { get; private set; }
-		public CombatControl Fighter { get; private set; }
+		public CombatControl Combat { get; private set; }
 		public Squad Squad { get; private set; }
         
         public Transform Head { get; private set; }
@@ -39,7 +39,7 @@ namespace RedDust.Control
 		public virtual void Awake()
 		{
             Motion = GetComponent<MotionControl>();
-			Fighter = GetComponent<CombatControl>();			
+			Combat = GetComponent<CombatControl>();			
 			Indicator = GetComponentInChildren<HostilityIndicator>();						
 			Head = transform.FindObjectWithTag(Values.Tag.Head).transform;
 			InteractionCollider = GetComponent<Collider>();
@@ -62,7 +62,7 @@ namespace RedDust.Control
 			{ 
 				currentAction = GetNextAction();
 				currentAction.OnStart();
-				return;	// TODO: Is this return necessary? Written as a safety measure.
+				return;
 			}
 
 			actionState = currentAction.Execute();

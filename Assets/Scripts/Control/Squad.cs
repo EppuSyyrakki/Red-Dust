@@ -177,8 +177,6 @@ namespace RedDust.Control
 		//		AddHostileGroup(c.Squad);
 		//	}
 
-		//	// TODO: Change alerting to only alert members close by (shouting distance basically)
-
 		//	foreach (var member in members)
 		//	{
 		//		if (!member.Memory.Contains(c))

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7bb9434649943fe47a827c1af0aaa76d, type: 3}
-  m_Name: AncientRifleConfig
+  m_Name: Unarmed
   m_EditorClassIdentifier: 
-  Name: Ancient Rifle
-  type: 4
-  damage: 3
-  range: 30
-  penetration: 1
-  projectilePrefab: {fileID: 1128916607346370950, guid: e83bdd09973be61438be8fd0236134dd, type: 3}
+  Name: Unarmed
+  type: 0
+  damage: 1
+  range: 0
+  penetration: 0
+  projectilePrefab: {fileID: 0}
   effects: []
-  weaponPrefab: {fileID: 6529065835909202366, guid: c48974518c0b95c4e8f491e563d66899, type: 3}
+  weaponPrefab: {fileID: 0}

@@ -30,13 +30,13 @@ namespace RedDust.Motion
             {
                 if (constraint == ConstraintType.MultiAim) { return multiAim.weight; }
                 else if (constraint == ConstraintType.TwoBone) { return twoBone.weight; }
-                else { Debug.Log("Constraint Type is invalid!"); return -1; }
+                else { Debug.Log(transform.parent.gameObject.name + "Constraint Type is invalid!"); return -1; }
             } 
             private set
             {
                 if (constraint == ConstraintType.MultiAim) { multiAim.weight = value; }
                 else if (constraint == ConstraintType.TwoBone) { twoBone.weight = value; }
-                else { Debug.Log("Constraint Type is invalid!"); }
+                else { Debug.Log(transform.parent.gameObject.name + "Constraint Type is invalid!"); }
             }
         }
 
@@ -56,28 +56,26 @@ namespace RedDust.Motion
             Weight = startingWeight;
         }
 
+        // TODO: Instead of waiting for the previous blend to finish, start at the current level.
         public void StartBlend(bool blendIn)
         {
+            float target = blendIn ? 1f : 0;
+
             // Already at target weight, don't do anything.
-            if ((blendIn && Weight == 1) || (!blendIn && Weight == 0)) { return; }
+            if (Weight == target) { return; }
 
             if (blendIn)
             {
                 // Start the blend in routine, but wait until blend out has finished if still running.
-                inRoutine = StartCoroutine(Blend(inTime, outRoutine, inCurve));
+                inRoutine = StartCoroutine(Blend(target, inTime, outRoutine, inCurve));
                 return;
             }
 
             // Start the blend out, but wait until blend in has finished if still running.
-            outRoutine = StartCoroutine(Blend(outTime, inRoutine, outCurve));
+            outRoutine = StartCoroutine(Blend(target, outTime, inRoutine, outCurve));
         }
 
-        public void SetBoneTarget(Transform target)
-        {
-            twoBone.data.target = target;
-        }
-
-        private IEnumerator Blend(float time, Coroutine mustBeFinished, AnimationCurve curve)
+        private IEnumerator Blend(float target, float time, Coroutine mustBeFinished, AnimationCurve curve)
         {
             float t = 0;
 
@@ -89,6 +87,8 @@ namespace RedDust.Motion
                 t += Time.deltaTime;
                 yield return null;
             }
+
+            Weight = target;
         }
     }
 }

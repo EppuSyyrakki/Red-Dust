@@ -331,9 +331,6 @@ namespace RedDust.Control.Input
 
 		public void OnDrag(InputAction.CallbackContext ctx)
 		{
-			// TODO: Change drag functionality from	selection box to moving & looking towards dragged position
-			// depending on _addModifier
-
 			if (ctx.phase == InputActionPhase.Started) { return; }
 
 			if (ctx.phase == InputActionPhase.Performed)

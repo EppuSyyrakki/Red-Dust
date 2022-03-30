@@ -64,7 +64,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isCrouched
@@ -92,7 +92,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 6029819505838033175}
   m_DstState: {fileID: 0}
@@ -184,7 +184,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 3
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 8420745380317399013}
@@ -234,7 +234,7 @@ AnimatorStateTransition:
     m_ConditionEvent: weaponType
     m_EventTreshold: 2
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5213886695277344548}
@@ -494,7 +494,7 @@ AnimatorStateTransition:
     m_ConditionEvent: weaponType
     m_EventTreshold: 3
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5006033808039771946}
@@ -568,7 +568,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isCrouched
@@ -850,7 +850,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isCrouched
@@ -1046,7 +1046,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isCrouched
@@ -1105,7 +1105,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 3
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8313320239163728221}
@@ -1207,7 +1207,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 4
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -6299603790014829395}
@@ -1275,7 +1275,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 1
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 2074152271686978834}
@@ -1337,7 +1337,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 3
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7255069070334668895}
@@ -1709,7 +1709,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 1
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7253950062546049652}
@@ -1983,7 +1983,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 2
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 225777111096424854}
@@ -2228,7 +2228,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 2
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -2040172313135266129}
@@ -2275,7 +2275,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -939611501832273223}
@@ -2460,7 +2460,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -280514771672360504}
@@ -2559,7 +2559,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: isCrouched
@@ -2660,11 +2660,11 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
+  - m_ConditionMode: 6
     m_ConditionEvent: weaponType
-    m_EventTreshold: 4
+    m_EventTreshold: 5
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -993213476168878669}
@@ -2852,6 +2852,33 @@ BlendTree:
   m_UseAutomaticThresholds: 1
   m_NormalizedBlendValues: 0
   m_BlendType: 2
+--- !u!1102 &-209400640658433106
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WeaponType
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions:
+  - {fileID: 8120872560496794321}
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 0}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1107 &-144798517124448584
 AnimatorStateMachine:
   serializedVersion: 6
@@ -2860,7 +2887,16 @@ AnimatorStateMachine:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Combat
-  m_ChildStates: []
+  m_ChildStates:
+  - serializedVersion: 1
+    m_State: {fileID: -209400640658433106}
+    m_Position: {x: 260, y: 110, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 2424275552967327029}
+    m_Position: {x: 550, y: 30, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 4042561952158322463}
+    m_Position: {x: 830, y: 120, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -2868,9 +2904,9 @@ AnimatorStateMachine:
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
-  m_ExitPosition: {x: 800, y: 120, z: 0}
+  m_ExitPosition: {x: 1100, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
-  m_DefaultState: {fileID: 0}
+  m_DefaultState: {fileID: -209400640658433106}
 --- !u!1102 &-91416152055869432
 AnimatorState:
   serializedVersion: 6
@@ -2934,43 +2970,43 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: turning
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isCrouched
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
-  - m_Name: isAttacking
+    m_Controller: {fileID: 9100000}
+  - m_Name: isInCombat
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
-  - m_Name: attack
+    m_Controller: {fileID: 9100000}
+  - m_Name: weaponDrawn
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: weaponType
     m_Type: 3
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: animationIndex
     m_Type: 3
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -2992,7 +3028,7 @@ AnimatorController:
     m_Behaviours: []
     m_BlendingMode: 0
     m_SyncedLayerIndex: -1
-    m_DefaultWeight: 0
+    m_DefaultWeight: 1
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
@@ -3008,7 +3044,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 4
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1391822087533853146}
@@ -3298,7 +3334,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 1
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -2668829007234257613}
@@ -3362,7 +3398,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: isCrouched
@@ -3464,7 +3500,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 4
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 2633747096484501431}
@@ -3576,7 +3612,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3962844201990490805}
@@ -3627,6 +3663,33 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1102 &2424275552967327029
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Draw Small Holster
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions:
+  - {fileID: 9135876831222490755}
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: f8b741fcf0703274395b48bbac894ad5, type: 2}
+  m_Tag: 
+  m_SpeedParameter: velocity
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1101 &2457593594985301975
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -3763,7 +3826,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isCrouched
@@ -3794,7 +3857,7 @@ AnimatorStateTransition:
     m_ConditionEvent: weaponType
     m_EventTreshold: 0
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7813000449704343757}
@@ -3887,7 +3950,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: isCrouched
@@ -3997,6 +4060,32 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!1102 &4042561952158322463
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Holding weapon
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 0}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!206 &4081830175270700370
 BlendTree:
   m_ObjectHideFlags: 1
@@ -4067,7 +4156,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -2432077448477516991}
@@ -4153,7 +4242,7 @@ AnimatorStateTransition:
     m_ConditionEvent: weaponType
     m_EventTreshold: 4
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 8978471289905107092}
@@ -4234,7 +4323,7 @@ AnimatorStateTransition:
     m_ConditionEvent: animationIndex
     m_EventTreshold: 2
   - m_ConditionMode: 1
-    m_ConditionEvent: attack
+    m_ConditionEvent: weaponDrawn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7397825404697771936}
@@ -4563,7 +4652,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: isCrouched
@@ -4619,7 +4708,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: isCrouched
@@ -4753,7 +4842,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: isCrouched
@@ -4869,7 +4958,7 @@ AnimatorStateTransition:
     m_ConditionEvent: weaponType
     m_EventTreshold: 1
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1104064286122708911}
@@ -5006,7 +5095,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isCrouched
@@ -5034,7 +5123,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: isAttacking
+    m_ConditionEvent: isInCombat
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 6029819505838033175}
   m_DstState: {fileID: 0}
@@ -5045,6 +5134,34 @@ AnimatorStateTransition:
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
   m_ExitTime: 0.8148148
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
+--- !u!1101 &8120872560496794321
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: weaponDrawn
+    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: weaponType
+    m_EventTreshold: 3
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 2424275552967327029}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.65924275
+  m_TransitionOffset: 0
+  m_ExitTime: 0.0000000014741133
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -5245,3 +5362,25 @@ AnimatorStateMachine:
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 0}
+--- !u!1101 &9135876831222490755
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions: []
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 4042561952158322463}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.625
+  m_HasExitTime: 1
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1

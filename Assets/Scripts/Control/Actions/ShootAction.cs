@@ -30,7 +30,9 @@ namespace RedDust.Control.Actions
 		public override void OnStart()
 		{
 			base.OnStart();
-			Character.Motion.BlendCombat(true);
+			if (Character.Combat.IsInCombat) { return; }
+
+			Character.Combat.EnterCombat(true);
 		}
 
 		public override ActionState Execute()
@@ -54,19 +56,20 @@ namespace RedDust.Control.Actions
 			return ActionState.Running;
 		}
 
-		public override void OnEnd()
-		{
-			Character.Motion.BlendCombat(false);
-		}
-
-		private void AimTurnShoot(Vector3 target)
+        public override void OnEnd()
         {
-			Character.Motion.Aim(target);
+            base.OnEnd();
+			Character.Combat.EndAim();
+        }
+
+        private void AimTurnShoot(Vector3 target)
+        {
+			Character.Combat.Aim(target);
 
 			if (!Character.Motion.TurnTowards(target)
-			&& timer > Character.Fighter.AttackFrequency)
+			&& timer > Character.Combat.AttackFrequency)
 			{
-				Character.Fighter.Shoot(target);
+				Character.Combat.Shoot(target);
 				timer = 0;
 			}
 		}
