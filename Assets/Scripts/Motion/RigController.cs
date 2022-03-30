@@ -66,7 +66,7 @@ namespace RedDust.Motion
 
 		private void Start()
 		{
-			SetRigMode(RigMode.Look);
+			// SetRigMode(RigMode.Look);
 		}
 
 		private void OnEnable()

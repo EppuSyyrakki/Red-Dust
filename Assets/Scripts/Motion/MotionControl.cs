@@ -11,7 +11,16 @@ namespace RedDust.Motion
 	[RequireComponent(typeof(Rigidbody), typeof(NavMeshAgent), typeof(Animator))]
 	public class MotionControl : MonoBehaviour
 	{
-		private const int aimLayer = Values.Animation.AimingLayer;
+		private const int ANIM_LAYER_COMBAT = Values.Animation.CombatLayer;
+		private const float MAX_SPEED = Values.Navigation.MaxSpeed;
+		private const float STOP_DISTANCE = Values.Navigation.StopDistance;
+		private const float MOVE_THRESHOLD = Values.Navigation.MovingThreshold;
+		private const float WALK_MULTIPLIER = Values.Navigation.WalkMulti;
+		private const float CROUCH_MULTIPLIER = Values.Navigation.CrouchMulti;
+		private const float TARGET_THRESHOLD = Values.Navigation.MoveTargetTreshold;
+		private const string ANIM_VELOCITY = Values.Animation.Velocity;
+		private const string ANIM_TURNING = Values.Animation.Turning;
+		private const string ANIM_CROUCHED = Values.Animation.Crouched;		
 
 		[SerializeField, Range(2, Values.Navigation.MaxSpeed)]
 		float moveSpeed = 5f;
@@ -41,7 +50,7 @@ namespace RedDust.Motion
 		
 		public float MoveSpeed => moveSpeed;
 		public bool IsSneaking => isSneaking;
-		public bool IsMoving => forwardSpeed > Values.Navigation.MovingThreshold;
+		public bool IsMoving => forwardSpeed > MOVE_THRESHOLD;
 
 		//private void Start()
 		//{
@@ -76,11 +85,15 @@ namespace RedDust.Motion
 
 		private void UpdateAnimator()
 		{
-			Vector3 local = transform.InverseTransformDirection(navMeshAgent.velocity);
-			forwardSpeed = local.z / Values.Navigation.MaxSpeed;
-			float turningSpeed = Mathf.Lerp(local.normalized.x, 0, 10f * Time.deltaTime);
-			animator.SetFloat(Values.Animation.Velocity, forwardSpeed);
-			animator.SetFloat(Values.Animation.Turning, turningSpeed);
+			var velocity = navMeshAgent.velocity;
+			Vector3 local = transform.InverseTransformDirection(velocity);
+			forwardSpeed = local.z / MAX_SPEED;
+			float turningSpeed = Mathf.Lerp(local.x, 0, 40f * Time.deltaTime);
+			Debug.Log(local);
+
+
+			animator.SetFloat(ANIM_VELOCITY, forwardSpeed);
+			animator.SetFloat(ANIM_TURNING, turningSpeed);
 
 			if (indicatorEnabled && IsAtDestination()) 
 			{ 
@@ -120,7 +133,7 @@ namespace RedDust.Motion
 		public void Stop()
 		{
 			Vector3 toTarget = (navMeshAgent.destination - transform.position).normalized;
-			Vector3 stopPosition = transform.position + toTarget * Values.Navigation.StopDistance;
+			Vector3 stopPosition = transform.position + toTarget * STOP_DISTANCE;
 			SetDestination(stopPosition);
 			DisableMoveIndicator();
 		}
@@ -134,7 +147,7 @@ namespace RedDust.Motion
 
 		public bool IsAtDestination()
 		{
-			return navMeshAgent.remainingDistance < Values.Navigation.MoveTargetTreshold;
+			return navMeshAgent.remainingDistance < TARGET_THRESHOLD;
 		}
 
 		/// <summary>
@@ -158,7 +171,7 @@ namespace RedDust.Motion
 
 		public void Walk()
 		{
-			SetSpeed(MoveSpeed * Values.Navigation.WalkMulti);
+			SetSpeed(MoveSpeed * WALK_MULTIPLIER);
 		}
 
 		public void Run()
@@ -170,7 +183,7 @@ namespace RedDust.Motion
 		{
 			if (!isSneaking)
 			{
-				SetSpeed(MoveSpeed * Values.Navigation.CrouchMulti);
+				SetSpeed(MoveSpeed * CROUCH_MULTIPLIER);
 				isSneaking = true;
 			}
 			else
@@ -179,7 +192,7 @@ namespace RedDust.Motion
 				isSneaking = false;
 			}
 
-			animator.SetBool(Values.Animation.Crouched, isSneaking);
+			animator.SetBool(ANIM_CROUCHED, isSneaking);
 		}
 
 		public void SetStoppingDistance(float stoppingDistance)
@@ -210,14 +223,14 @@ namespace RedDust.Motion
 
 		public void BlendCombat(bool blendIn)
 		{
-			var current = animator.GetLayerWeight(Values.Animation.AimingLayer);
+			var current = animator.GetLayerWeight(ANIM_LAYER_COMBAT);
 
 			if ((blendIn && current == 1) || (!blendIn && current == 0)) { return; }
 
 			if (aimBlend != null) { StopCoroutine(aimBlend); }
 
 			float target = blendIn ? 1 : 0;
-			aimBlend = StartCoroutine(BlendLayerTo(current, target, aimLayer, aimLayerBlendTime));
+			aimBlend = StartCoroutine(BlendLayerTo(current, target, ANIM_LAYER_COMBAT, aimLayerBlendTime));
 			AimingEnabled?.Invoke(blendIn);
 		}
 

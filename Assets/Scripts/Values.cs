@@ -22,12 +22,12 @@ namespace RedDust
 
 		public class Animation
 		{
+			public const string AnimationIndex = "animationIndex";
 			public const string Velocity = "velocity";
 			public const string Turning = "turning";
 			public const string Crouched = "crouched";
-			public const int AimingLayer = 1;
+			public const int CombatLayer = 1;
 			public const float DefaultLayerBlendTime = 0.5f;
-			public const string AimingTargetName = "IK Aiming target";
 			public const int MaxNearTargets = 4;
 			public const float LookRefresh = 1.5f;
 		}
